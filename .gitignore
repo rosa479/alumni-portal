@@ -1,0 +1,21 @@
+# Virtual Environment
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Local database file
+*.sqlite3
+db.sqlite3
+
+# Environment variables file (VERY IMPORTANT)
+.env
+
+# Media and Static files (optional, but common)
+/media/
+/staticfiles/
+
+# IDE files
+.idea/
+.vscode/
