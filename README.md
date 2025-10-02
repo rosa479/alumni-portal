@@ -6,5 +6,5 @@ _*Under Construction 🏗️*_
 
 Backend:
 
-    Python ^3.13
+    Python ^3.13.7
     Django REST Framework (drf)
