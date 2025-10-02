@@ -2,7 +2,7 @@
 
 _*Under Construction 🏗️*_
 
-# TECH STACK
+## TECH STACK
 
 Backend:
 
