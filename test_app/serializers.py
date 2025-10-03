@@ -64,3 +64,43 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(f"An error occurred during registration: {e}")
 
         return user
+    
+    # test_app/serializers.py
+# ... (keep existing imports and serializers)
+
+class AlumniProfileSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the AlumniProfile model. Made this a standalone class
+    so we can reuse it.
+    """
+    class Meta:
+        model = AlumniProfile
+        fields = ['full_name', 'graduation_year', 'department', 'about_me', 'credit_score', 'profile_picture_url']
+        read_only_fields = ['credit_score'] # Users should not be able to edit their score directly
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    """
+    Serializer for retrieving and updating the logged-in user's profile.
+    """
+    # Use the serializer above for the nested alumni_profile
+    alumni_profile = AlumniProfileSerializer()
+
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'role', 'status', 'alumni_profile']
+        # These fields are read-only because they are managed by the system, not the user.
+        read_only_fields = ['id', 'email', 'role', 'status']
+
+    def update(self, instance, validated_data):
+        # Handle the nested profile data update
+        profile_data = validated_data.pop('alumni_profile', {})
+        
+        # Update the AlumniProfile instance
+        alumni_profile = instance.alumni_profile
+        for attr, value in profile_data.items():
+            setattr(alumni_profile, attr, value)
+        alumni_profile.save()
+
+        # The parent update() method will handle the User fields if any
+        return super().update(instance, validated_data)

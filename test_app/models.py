@@ -74,7 +74,7 @@ class User(AbstractUser):
 
 class AlumniProfile(models.Model):
     # One-to-one link to the User model
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='alumni_profile')
 
     # Fields from your schema
     full_name = models.CharField(max_length=255)
