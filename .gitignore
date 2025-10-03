@@ -1,6 +1,8 @@
+# dev
+
 # Virtual Environment
 venv/
-
+.venv
 # Python cache
 __pycache__/
 *.pyc
