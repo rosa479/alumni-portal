@@ -33,7 +33,7 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-    # Enum-like classes for choices, as per your spec
+    # Enum-like classes for choices
     class Role(models.TextChoices):
         ALUMNI = "ALUMNI", "Alumni"
         ASSOCIATE = "ASSOCIATE", "Associate Member"
@@ -86,3 +86,29 @@ class AlumniProfile(models.Model):
 
     def __str__(self):
         return self.full_name
+    
+class Community(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField()
+    members = models.ManyToManyField(User, related_name='joined_communities', blank=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_communities')
+
+    def __str__(self):
+        return self.name
+
+class Post(models.Model):
+    class Status(models.TextChoices):
+        PENDING = "PENDING", "Pending Approval"
+        APPROVED = "APPROVED", "Approved"
+        REJECTED = "REJECTED", "Rejected"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
+    community = models.ForeignKey(Community, on_delete=models.CASCADE, related_name='posts')
+    content = models.TextField()
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Post by {self.author.email} in {self.community.name}'

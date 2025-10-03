@@ -2,15 +2,17 @@
 
 from django.db import transaction
 from rest_framework import serializers
-from .models import User, AlumniProfile
+from .models import User, AlumniProfile, Community, Post
 
 class AlumniProfileSerializer(serializers.ModelSerializer):
     """
-    Serializer for the AlumniProfile model.
+    Serializer for the AlumniProfile model. Made this a standalone class
+    so we can reuse it.
     """
     class Meta:
         model = AlumniProfile
-        fields = ['full_name', 'graduation_year', 'department', 'about_me', 'credit_score']
+        fields = ['full_name', 'graduation_year', 'department', 'about_me', 'credit_score', 'profile_picture_url']
+        read_only_fields = ['credit_score'] # Users should not be able to edit their score directly
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -51,7 +53,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         }
 
         # Use a database transaction to ensure atomicity.
-        # If profile creation fails, the user creation will be rolled back.
         try:
             with transaction.atomic():
                 # The 'create_user' method handles password hashing automatically
@@ -60,24 +61,10 @@ class RegisterSerializer(serializers.ModelSerializer):
                 # Create the associated AlumniProfile
                 AlumniProfile.objects.create(user=user, **profile_data)
         except Exception as e:
-            # Handle potential integrity errors or other exceptions
             raise serializers.ValidationError(f"An error occurred during registration: {e}")
 
         return user
     
-    # test_app/serializers.py
-# ... (keep existing imports and serializers)
-
-class AlumniProfileSerializer(serializers.ModelSerializer):
-    """
-    Serializer for the AlumniProfile model. Made this a standalone class
-    so we can reuse it.
-    """
-    class Meta:
-        model = AlumniProfile
-        fields = ['full_name', 'graduation_year', 'department', 'about_me', 'credit_score', 'profile_picture_url']
-        read_only_fields = ['credit_score'] # Users should not be able to edit their score directly
-
 
 class UserProfileSerializer(serializers.ModelSerializer):
     """
@@ -104,3 +91,30 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
         # The parent update() method will handle the User fields if any
         return super().update(instance, validated_data)
+    
+class CommunitySerializer(serializers.ModelSerializer):
+    """
+    Serializer for listing communities.
+    """
+    class Meta:
+        model = Community
+        fields = ['id', 'name', 'description']
+
+
+class PostSerializer(serializers.ModelSerializer):
+    """
+    Serializer for reading posts. Includes read-only author details.
+    """
+    # Use a simple string representation for the author for readability
+    author_email = serializers.EmailField(source='author.email', read_only=True)
+
+    class Meta:
+        model = Post
+        fields = ['id', 'community', 'content', 'status', 'created_at', 'author_email']
+        read_only_fields = ['status', 'author_email']
+
+    def create(self, validated_data):
+        # Automatically set the author to the currently logged-in user
+        validated_data['author'] = self.context['request'].user
+        post = Post.objects.create(**validated_data)
+        return post
