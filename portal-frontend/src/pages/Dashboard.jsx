@@ -1,5 +1,5 @@
 import Header from '../components/Header'
-import Post from '../components/Post'
+import Post from '../components/Post/Post'
 import CreatePost from '../components/CreatePost'
 import Sidebar from '../components/Sidebar'
 import Rightbar from '../components/Rightbar'
