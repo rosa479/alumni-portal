@@ -26,9 +26,14 @@ const postsData = [
 function Dashboard() {
 
   return (
+    <div className="bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50 min-h-screen">
       <main className="container mx-auto p-4 lg:p-8 grid grid-cols-1 sm:grid-cols-5 gap-8 items-start">
         <Sidebar />
-        <section className="sm:col-span-3">
+        <section className="sm:col-span-3 space-y-6">
+          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome to IITKGP Connect</h1>
+            <p className="text-gray-600">Stay connected with your alma mater and fellow alumni</p>
+          </div>
           <CreatePost />
           {postsData.map(post => (
             <Post
@@ -42,6 +47,7 @@ function Dashboard() {
         </section>
         <Rightbar />
       </main>
+    </div>
   )
 }
 

@@ -8,7 +8,11 @@ from .views import (
     AdminApproveVerificationView,
     CommunityListView,
     PostCreateView,
-    CommunityPostListView
+    CommunityPostListView,
+    ScholarshipListView,
+    ScholarshipDetailView,
+    ScholarshipContributionCreateView,
+    ScholarshipContributionsListView
 )
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -32,5 +36,11 @@ urlpatterns = [
     path('communities/', CommunityListView.as_view(), name='community_list'),
     path('posts/', PostCreateView.as_view(), name='post_create'),
     path('communities/<uuid:community_id>/posts/', CommunityPostListView.as_view(), name='community_post_list'),
+
+    # Service: Scholarships
+    path('scholarships/', ScholarshipListView.as_view(), name='scholarship_list'),
+    path('scholarships/<uuid:pk>/', ScholarshipDetailView.as_view(), name='scholarship_detail'),
+    path('scholarships/<uuid:scholarship_id>/contributions/', ScholarshipContributionCreateView.as_view(), name='scholarship_contribution_create'),
+    path('scholarships/<uuid:scholarship_id>/contributions/list/', ScholarshipContributionsListView.as_view(), name='scholarship_contributions_list'),
 
 ]

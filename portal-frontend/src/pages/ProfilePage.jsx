@@ -11,26 +11,28 @@ const isVerified = false;
 
 function ProfilePage() {
   return (
-    <div className="container mx-auto p-4 lg:p-8">
-      <ProfileHeader />
-      
-      {/* Conditionally render the alert */}
-      {!isVerified && <VerificationAlert />}
-      
-      {/* --- 3. New Two-Column Layout --- */}
-      <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* Main Content (Left Column) */}
-        <div className="lg:col-span-2 space-y-8">
-          <ExperienceSection />
-          <EducationSection />
-        </div>
-        
-        {/* Sidebar (Right Column) */}
-        <div className="lg:col-span-1 space-y-8">
-          <SkillsSection />
-        </div>
+    <div className="bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50 min-h-screen">
+      <div className="container mx-auto p-4 lg:p-8">
+        <ProfileHeader />
 
+        {/* Conditionally render the alert */}
+        {!isVerified && <VerificationAlert />}
+
+        {/* --- 3. New Two-Column Layout --- */}
+        <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+          {/* Main Content (Left Column) */}
+          <div className="lg:col-span-2 space-y-8">
+            <ExperienceSection />
+            <EducationSection />
+          </div>
+
+          {/* Sidebar (Right Column) */}
+          <div className="lg:col-span-1 space-y-8">
+            <SkillsSection />
+          </div>
+
+        </div>
       </div>
     </div>
   );

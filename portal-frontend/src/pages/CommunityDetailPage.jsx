@@ -30,41 +30,71 @@ function CommunityDetailPage() {
   // Handle case where community doesn't exist
   if (!community) {
     return (
-      <div className="container mx-auto p-8 text-center">
-        <h1 className="text-2xl font-bold">Community not found.</h1>
+      <div className="bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50 min-h-screen">
+        <div className="container mx-auto p-8 text-center">
+          <div className="bg-white rounded-3xl shadow-2xl p-12 border border-gray-100">
+            <h1 className="text-4xl font-bold text-gray-800 mb-4">Community Not Found</h1>
+            <p className="text-lg text-gray-600 mb-8">The community you're looking for doesn't exist or has been removed.</p>
+            <a href="/communities" className="bg-blue-800 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors font-medium">
+              Back to Communities
+            </a>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-4 lg:p-8">
-      <CommunityHeader community={community} />
+    <div className="bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50 min-h-screen">
+      <div className="container mx-auto p-4 lg:p-8">
+        <CommunityHeader community={community} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        <main className="lg:col-span-2">
-          {/* Note: In a real app, you'd want a more specific CreatePost component */}
-          <CreatePost /> 
-          <div className="mt-6 space-y-6">
-            {community.posts.map(post => (
-              <Post 
-                key={post.id} 
-                 id={post.id}
-                authorName={post.authorName} 
-                authorAvatar={post.authorAvatar} 
-                meta={post.meta} 
-                content={post.content} 
-              />
-            ))}
-          </div>
-        </main>
-        
-        {/* You can add a community-specific right sidebar here later */}
-        <aside className="hidden lg:block">
-           <div className="bg-white p-6 rounded-xl shadow-lg">
-             <h4 className="font-bold text-dark-text mb-4">About Community</h4>
-             <p className="text-sm text-light-text">This is a space for members to share insights, ask questions, and collaborate.</p>
-           </div>
-        </aside>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+          <main className="lg:col-span-2 space-y-6">
+            {/* Note: In a real app, you'd want a more specific CreatePost component */}
+            <CreatePost />
+            <div className="space-y-6">
+              {community.posts.map(post => (
+                <Post
+                  key={post.id}
+                  id={post.id}
+                  authorName={post.authorName}
+                  authorAvatar={post.authorAvatar}
+                  meta={post.meta}
+                  content={post.content}
+                />
+              ))}
+            </div>
+          </main>
+
+          {/* Community-specific right sidebar */}
+          <aside className="lg:col-span-1 space-y-6">
+            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+              <h4 className="text-xl font-bold text-gray-800 mb-4">About Community</h4>
+              <p className="text-gray-600 mb-6">This is a space for members to share insights, ask questions, and collaborate.</p>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Members</span>
+                  <span className="font-bold text-blue-800">{community.members.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Posts</span>
+                  <span className="font-bold text-blue-800">{community.posts.length}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+              <h4 className="text-xl font-bold text-gray-800 mb-4">Community Rules</h4>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li>• Be respectful and professional</li>
+                <li>• Stay on topic and relevant</li>
+                <li>• No spam or self-promotion</li>
+                <li>• Help fellow community members</li>
+              </ul>
+            </div>
+          </aside>
+        </div>
       </div>
     </div>
   );

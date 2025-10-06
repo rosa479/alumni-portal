@@ -2,7 +2,7 @@
 
 from django.db import transaction
 from rest_framework import serializers
-from .models import User, AlumniProfile, Community, Post
+from .models import User, AlumniProfile, Community, Post, Scholarship, ScholarshipContribution
 
 class AlumniProfileSerializer(serializers.ModelSerializer):
     """
@@ -118,3 +118,66 @@ class PostSerializer(serializers.ModelSerializer):
         validated_data['author'] = self.context['request'].user
         post = Post.objects.create(**validated_data)
         return post
+
+
+class ScholarshipContributionSerializer(serializers.ModelSerializer):
+    """
+    Serializer for scholarship contributions.
+    """
+    contributor_name = serializers.CharField(source='contributor.alumni_profile.full_name', read_only=True)
+    contributor_email = serializers.EmailField(source='contributor.email', read_only=True)
+    
+    class Meta:
+        model = ScholarshipContribution
+        fields = ['id', 'amount', 'is_anonymous', 'message', 'created_at', 'contributor_name', 'contributor_email']
+        read_only_fields = ['id', 'created_at', 'contributor_name', 'contributor_email']
+    
+    def create(self, validated_data):
+        # Automatically set the contributor to the currently logged-in user
+        validated_data['contributor'] = self.context['request'].user
+        contribution = ScholarshipContribution.objects.create(**validated_data)
+        return contribution
+
+
+class ScholarshipSerializer(serializers.ModelSerializer):
+    """
+    Serializer for scholarships with progress information.
+    """
+    progress_percentage = serializers.ReadOnlyField()
+    remaining_amount = serializers.ReadOnlyField()
+    created_by_name = serializers.CharField(source='created_by.alumni_profile.full_name', read_only=True)
+    contributions = ScholarshipContributionSerializer(many=True, read_only=True)
+    contribution_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Scholarship
+        fields = [
+            'id', 'title', 'description', 'target_amount', 'current_amount', 
+            'status', 'created_by', 'created_by_name', 'created_at', 'updated_at', 
+            'image_url', 'progress_percentage', 'remaining_amount', 'contributions', 'contribution_count'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'current_amount']
+    
+    def get_contribution_count(self, obj):
+        return obj.contributions.count()
+
+
+class ScholarshipListSerializer(serializers.ModelSerializer):
+    """
+    Simplified serializer for listing scholarships.
+    """
+    progress_percentage = serializers.ReadOnlyField()
+    remaining_amount = serializers.ReadOnlyField()
+    created_by_name = serializers.CharField(source='created_by.alumni_profile.full_name', read_only=True)
+    contribution_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Scholarship
+        fields = [
+            'id', 'title', 'description', 'target_amount', 'current_amount', 
+            'status', 'created_by_name', 'created_at', 'image_url', 
+            'progress_percentage', 'remaining_amount', 'contribution_count'
+        ]
+    
+    def get_contribution_count(self, obj):
+        return obj.contributions.count()

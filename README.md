@@ -65,13 +65,24 @@ _*Under Construction 🏗️*_
     python manage.py migrate
     ```
 
-7.  **Create a Superuser (Admin):**
+7.  **Load Sample Data (Optional but Recommended):**
+    Load sample data including users, communities, posts, and scholarships for testing.
+    ```bash
+    python manage.py load_sample_data
+    ```
+    
+    To clear existing data and reload fresh sample data:
+    ```bash
+    python manage.py load_sample_data --clear
+    ```
+
+8.  **Create a Superuser (Admin):**
     This account will have admin privileges on the platform.
     ```bash
     python manage.py createsuperuser
     ```
 
-8.  **Run the Development Server:**
+9.  **Run the Development Server:**
     ```bash
     python manage.py runserver
     ```
@@ -91,6 +102,10 @@ Here are the primary API endpoints currently available.
 | `GET`  | `/api/communities/`                        | List all communities.              | User (Authenticated) |
 | `POST` | `/api/posts/`                              | Create a new post (pending).       | User (Authenticated) |
 | `GET`  | `/api/communities/<uuid>/posts/`           | List approved posts in a community.| User (Authenticated) |
+| `GET`  | `/api/scholarships/`                       | List all scholarships.             | User (Authenticated) |
+| `GET`  | `/api/scholarships/<uuid>/`                | Get scholarship details.           | User (Authenticated) |
+| `POST` | `/api/scholarships/`                       | Create a new scholarship.          | User (Authenticated) |
+| `POST` | `/api/scholarships/<uuid>/contribute/`     | Contribute to a scholarship.       | User (Authenticated) |
 | `GET`  | `/api/admin/verifications/`                | List users pending verification.   | Admin              |
 | `POST` | `/api/admin/verifications/<uuid>/approve/` | Approve a user's verification.     | Admin              |
 | `GET`  | `/api/admin/posts/pending/`                | List posts pending moderation.     | Admin              |

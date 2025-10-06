@@ -112,3 +112,55 @@ class Post(models.Model):
 
     def __str__(self):
         return f'Post by {self.author.email} in {self.community.name}'
+
+
+class Scholarship(models.Model):
+    class Status(models.TextChoices):
+        ACTIVE = "ACTIVE", "Active"
+        INACTIVE = "INACTIVE", "Inactive"
+        COMPLETED = "COMPLETED", "Completed"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    target_amount = models.DecimalField(max_digits=12, decimal_places=2)
+    current_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.ACTIVE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_scholarships')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    image_url = models.URLField(max_length=500, null=True, blank=True)
+    
+    @property
+    def progress_percentage(self):
+        if self.target_amount > 0:
+            return min(100, (self.current_amount / self.target_amount) * 100)
+        return 0
+    
+    @property
+    def remaining_amount(self):
+        return max(0, self.target_amount - self.current_amount)
+
+    def __str__(self):
+        return self.title
+
+
+class ScholarshipContribution(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    scholarship = models.ForeignKey(Scholarship, on_delete=models.CASCADE, related_name='contributions')
+    contributor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='scholarship_contributions')
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    is_anonymous = models.BooleanField(default=False)
+    message = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Update scholarship current amount
+        self.scholarship.current_amount = sum(
+            contribution.amount for contribution in self.scholarship.contributions.all()
+        )
+        self.scholarship.save()
+
+    def __str__(self):
+        return f'{self.contributor.email} contributed ₹{self.amount} to {self.scholarship.title}'

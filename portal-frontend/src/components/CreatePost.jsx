@@ -12,7 +12,7 @@ function CreatePost() {
           rows="3"
         ></textarea>
         <div className="flex justify-end mt-3">
-          <button className="bg-primary-blue text-white font-semibold py-2 px-6 rounded-full hover:bg-opacity-90 transition-all transform hover:-translate-y-0.5">
+          <button className="bg-blue-800 text-white font-semibold py-2 px-6 rounded-full hover:bg-opacity-90 transition-all transform hover:-translate-y-0.5">
             Post
           </button>
         </div>

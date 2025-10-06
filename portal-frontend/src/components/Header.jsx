@@ -1,18 +1,89 @@
 // src/components/Header.jsx
-import React from 'react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Menu, X } from 'react-feather';
 
 function Header() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center p-4">
-        <h2 className="text-xl font-bold text-primary-blue">IITKGP Connect</h2>
+        <Link to="/" className="text-xl font-bold text-blue-800">IITKGP Connect</Link>
+
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6">
-          <a href="#" className="text-dark-text font-medium hover:text-primary-blue transition-colors">Dashboard</a>
-          <a href="#" className="text-dark-text font-medium hover:text-primary-blue transition-colors">Communities</a>
-          <a href="#" className="text-dark-text font-medium hover:text-primary-blue transition-colors">Profile</a>
-          <a href="#" className="text-dark-text font-medium hover:text-primary-blue transition-colors">Donate</a>
+          <Link to="/dashboard" className="text-gray-800 font-medium hover:text-orange-600 transition-colors">Dashboard</Link>
+          <Link to="/communities" className="text-gray-800 font-medium hover:text-orange-600 transition-colors">Communities</Link>
+          <Link to="/profile" className="text-gray-800 font-medium hover:text-orange-600 transition-colors">Profile</Link>
+          <Link to="/donate" className="text-gray-800 font-medium hover:text-orange-600 transition-colors">Donate</Link>
+          <Link to="/scholarships" className="text-gray-800 font-medium hover:text-orange-600 transition-colors">Scholarships</Link>
         </nav>
+
+        {/* Mobile Menu Button */}
+        <button
+          onClick={toggleMobileMenu}
+          className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+          aria-label="Toggle mobile menu"
+        >
+          {isMobileMenuOpen ? (
+            <X className="w-6 h-6 text-gray-800" />
+          ) : (
+            <Menu className="w-6 h-6 text-gray-800" />
+          )}
+        </button>
       </div>
+
+      {/* Mobile Navigation Menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-white border-t border-gray-200 shadow-lg">
+          <nav className="container mx-auto px-4 py-4 space-y-2">
+            <Link
+              to="/dashboard"
+              onClick={closeMobileMenu}
+              className="block py-3 px-4 text-gray-800 font-medium hover:text-orange-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+            >
+              Dashboard
+            </Link>
+            <Link
+              to="/communities"
+              onClick={closeMobileMenu}
+              className="block py-3 px-4 text-gray-800 font-medium hover:text-orange-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+            >
+              Communities
+            </Link>
+            <Link
+              to="/profile"
+              onClick={closeMobileMenu}
+              className="block py-3 px-4 text-gray-800 font-medium hover:text-orange-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+            >
+              Profile
+            </Link>
+            <Link
+              to="/donate"
+              onClick={closeMobileMenu}
+              className="block py-3 px-4 text-gray-800 font-medium hover:text-orange-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+            >
+              Donate
+            </Link>
+            <Link
+              to="/scholarships"
+              onClick={closeMobileMenu}
+              className="block py-3 px-4 text-gray-800 font-medium hover:text-orange-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+            >
+              Scholarships
+            </Link>
+          </nav>
+        </div>
+      )}
     </header>
   );
 }

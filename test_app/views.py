@@ -3,8 +3,8 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from .serializers import RegisterSerializer, UserSerializer, UserProfileSerializer, CommunitySerializer, PostSerializer
-from .models import User, Community, Post
+from .serializers import RegisterSerializer, UserSerializer, UserProfileSerializer, CommunitySerializer, PostSerializer, ScholarshipSerializer, ScholarshipListSerializer, ScholarshipContributionSerializer
+from .models import User, Community, Post, Scholarship, ScholarshipContribution
 from .permissions import IsAdminUser
 
 class RegisterView(generics.CreateAPIView):
@@ -115,4 +115,60 @@ class CommunityPostListView(generics.ListAPIView):
         return Post.objects.filter(
             community_id=community_id,
             status=Post.Status.APPROVED
+        ).order_by('-created_at')
+
+
+class ScholarshipListView(generics.ListCreateAPIView):
+    """
+    Lists all scholarships or creates a new scholarship.
+    Corresponds to: GET /api/scholarships/, POST /api/scholarships/
+    """
+    queryset = Scholarship.objects.filter(status=Scholarship.Status.ACTIVE).order_by('-created_at')
+    permission_classes = [IsAuthenticated]
+    
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return ScholarshipListSerializer
+        return ScholarshipSerializer
+    
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+
+class ScholarshipDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update or delete a scholarship.
+    Corresponds to: GET /api/scholarships/{id}/, PUT /api/scholarships/{id}/, DELETE /api/scholarships/{id}/
+    """
+    queryset = Scholarship.objects.all()
+    serializer_class = ScholarshipSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class ScholarshipContributionCreateView(generics.CreateAPIView):
+    """
+    Create a contribution to a scholarship.
+    Corresponds to: POST /api/scholarships/{scholarship_id}/contributions/
+    """
+    serializer_class = ScholarshipContributionSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def perform_create(self, serializer):
+        scholarship_id = self.kwargs['scholarship_id']
+        scholarship = Scholarship.objects.get(id=scholarship_id)
+        serializer.save(scholarship=scholarship)
+
+
+class ScholarshipContributionsListView(generics.ListAPIView):
+    """
+    List all contributions for a specific scholarship.
+    Corresponds to: GET /api/scholarships/{scholarship_id}/contributions/
+    """
+    serializer_class = ScholarshipContributionSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        scholarship_id = self.kwargs['scholarship_id']
+        return ScholarshipContribution.objects.filter(
+            scholarship_id=scholarship_id
         ).order_by('-created_at')
