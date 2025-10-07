@@ -2,7 +2,7 @@
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, AlumniProfile
+from .models import User, AlumniProfile, Community, Post, Scholarship, ScholarshipContribution
 
 class CustomUserAdmin(UserAdmin):
 
@@ -26,3 +26,7 @@ class CustomUserAdmin(UserAdmin):
 
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(AlumniProfile)
+admin.site.register(Community)
+admin.site.register(Post)
+admin.site.register(Scholarship)
+admin.site.register(ScholarshipContribution)
