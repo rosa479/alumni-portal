@@ -1,0 +1,17 @@
+# you can exec into ther pg container using:
+# docker exec -it <container_id> psql -U postgres
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=$(DB_NAME)
+      - POSTGRES_USER=$(DB_USER)
+      - POSTGRES_PASSWORD=$(DB_PASSWORD)
+    ports:
+      - "5431:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+volumes:
+  db_data:
