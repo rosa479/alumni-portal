@@ -1,4 +1,6 @@
 # dev
+status.md
+docker-compose.yaml
 
 # Virtual Environment
 venv/
