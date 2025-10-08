@@ -75,7 +75,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'role', 'status', 'alumni_profile']
+        fields = ['id', 'roll_number', 'email', 'role', 'status', 'alumni_profile']
         # These fields are read-only because they are managed by the system, not the user.
         read_only_fields = ['id', 'email', 'roll_number', 'role', 'status']
 
