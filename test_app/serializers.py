@@ -97,15 +97,6 @@ class UserPublicSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'email', 'roll_number', 'alumni_profile']
     
-class CommunitySerializer(serializers.ModelSerializer):
-    """
-    Serializer for listing communities.
-    """
-    members = UserPublicSerializer(many=True, read_only=True)
-    class Meta:
-        model = Community
-        fields = ['id', 'name', 'description', 'members']
-
 
 class PostSerializer(serializers.ModelSerializer):
     """
@@ -113,10 +104,12 @@ class PostSerializer(serializers.ModelSerializer):
     """
     # Use a simple string representation for the author for readability
     author_email = serializers.EmailField(source='author.email', read_only=True)
-
+    author_profile_picture = serializers.URLField(source='author.alumni_profile.profile_picture_url', read_only=True)
+    author_name = serializers.CharField(source='author.alumni_profile.full_name', read_only=True)
+    
     class Meta:
         model = Post
-        fields = ['id', 'community', 'content', 'status', 'created_at', 'author_email']
+        fields = ['id', 'community', 'content', 'status', 'created_at', 'author_email', 'author_profile_picture', 'author_name']
         read_only_fields = ['status', 'author_email']
 
     def create(self, validated_data):
@@ -124,6 +117,16 @@ class PostSerializer(serializers.ModelSerializer):
         validated_data['author'] = self.context['request'].user
         post = Post.objects.create(**validated_data)
         return post
+
+class CommunitySerializer(serializers.ModelSerializer):
+    """
+    Serializer for listing communities.
+    """
+    members = UserPublicSerializer(many=True, read_only=True)
+    posts = PostSerializer(many=True, read_only=True)
+    class Meta:
+        model = Community
+        fields = ['id', 'name', 'description', 'members', 'posts']
 
 
 class ScholarshipContributionSerializer(serializers.ModelSerializer):
