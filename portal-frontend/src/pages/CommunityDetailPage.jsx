@@ -6,52 +6,52 @@ import CreatePost from "../components/CreatePost"; // We can reuse this
 import Post from "../components/Post/Post"; // and this!
 import apiClient from "../interceptor";
 
-// Let's create a more detailed mock database
-const communitiesDBMock = {
-  1: {
-    id: 1,
-    name: "Entrepreneurship Hub",
-    description:
-      "Connect with founders, investors, and mentors in the KGP network.",
-    members: 1250,
-    posts: [
-      {
-        id: 101,
-        authorName: "Rohan Shah",
-        authorAvatar: "https://i.pravatar.cc/150?u=rohan",
-        meta: "2h ago",
-        content:
-          "Just closed our Series A funding! Huge thanks to the KGP network for the early support.",
-      },
-      {
-        id: 102,
-        authorName: "Priya Mehta",
-        authorAvatar: "https://i.pravatar.cc/150?u=priya",
-        meta: "1d ago",
-        content:
-          "Looking for a co-founder with a strong tech background for a new EdTech startup. DM me!",
-      },
-    ],
-  },
-  2: {
-    id: 2,
-    name: "AI & Machine Learning",
-    description:
-      "Discussions on the latest trends, research, and career opportunities in AI/ML.",
-    members: 2800,
-    posts: [
-      {
-        id: 201,
-        authorName: "Dr. Vikram Singh",
-        authorAvatar: "https://i.pravatar.cc/150?u=vikram",
-        meta: "8h ago",
-        content:
-          "Just published a new paper on transformer models in NLP. Happy to share the pre-print with anyone interested.",
-      },
-    ],
-  },
-  // Add other communities here...
-};
+// // Let's create a more detailed mock database
+// const communitiesDBMock = {
+//   1: {
+//     id: 1,
+//     name: "Entrepreneurship Hub",
+//     description:
+//       "Connect with founders, investors, and mentors in the KGP network.",
+//     members: 1250,
+//     posts: [
+//       {
+//         id: 101,
+//         authorName: "Rohan Shah",
+//         authorAvatar: "https://i.pravatar.cc/150?u=rohan",
+//         meta: "2h ago",
+//         content:
+//           "Just closed our Series A funding! Huge thanks to the KGP network for the early support.",
+//       },
+//       {
+//         id: 102,
+//         authorName: "Priya Mehta",
+//         authorAvatar: "https://i.pravatar.cc/150?u=priya",
+//         meta: "1d ago",
+//         content:
+//           "Looking for a co-founder with a strong tech background for a new EdTech startup. DM me!",
+//       },
+//     ],
+//   },
+//   2: {
+//     id: 2,
+//     name: "AI & Machine Learning",
+//     description:
+//       "Discussions on the latest trends, research, and career opportunities in AI/ML.",
+//     members: 2800,
+//     posts: [
+//       {
+//         id: 201,
+//         authorName: "Dr. Vikram Singh",
+//         authorAvatar: "https://i.pravatar.cc/150?u=vikram",
+//         meta: "8h ago",
+//         content:
+//           "Just published a new paper on transformer models in NLP. Happy to share the pre-print with anyone interested.",
+//       },
+//     ],
+//   },
+//   // Add other communities here...
+// };
 
 function CommunityDetailPage() {
   const { communityId } = useParams(); // Get the ID from the URL, e.g., "1"
@@ -150,9 +150,9 @@ function CommunityDetailPage() {
                 <Post
                   key={post.id}
                   id={post.id}
-                  authorName={post.authorName}
-                  authorAvatar={post.authorAvatar}
-                  meta={post.meta}
+                  authorName={post.author_name}
+                  created_at={post.created_at}
+                  authorAvatar={post.author_profile_picture}
                   content={post.content}
                 />
               ))}
@@ -173,7 +173,7 @@ function CommunityDetailPage() {
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Members</span>
                   <span className="font-bold text-blue-800">
-                    {community.members.toLocaleString()}
+                    {community.members.length}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">

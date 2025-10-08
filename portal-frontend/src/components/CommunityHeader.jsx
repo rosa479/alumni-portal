@@ -1,6 +1,6 @@
 // src/features/communities/components/CommunityHeader.jsx
-import React from 'react';
-import { Users, Rss } from 'react-feather';
+import React from "react";
+import { Users, Rss } from "react-feather";
 
 // This component receives the specific community's data as a prop
 function CommunityHeader({ community }) {
@@ -13,7 +13,9 @@ function CommunityHeader({ community }) {
       <div className="flex flex-wrap items-center gap-6 mt-4 pt-4 border-t border-gray-200">
         <div className="flex items-center gap-2 text-dark-text">
           <Users size={16} />
-          <span className="font-semibold">{community.members.toLocaleString()} Members</span>
+          <span className="font-semibold">
+            {community.members.length} Members
+          </span>
         </div>
         <div className="flex items-center gap-2 text-dark-text">
           <Rss size={16} />
