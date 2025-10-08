@@ -55,6 +55,7 @@ class User(AbstractUser):
     roll_number = models.CharField(max_length=20, primary_key=True, default='2XDDNNNNN', editable=True)
     role = models.CharField(max_length=10, choices=Role.choices, default=Role.ALUMNI)
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
+    credit_points = models.IntegerField(default=0)
     invited_by = models.ForeignKey(
         'self',
         on_delete=models.SET_NULL,
