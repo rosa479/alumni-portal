@@ -91,14 +91,20 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
         # The parent update() method will handle the User fields if any
         return super().update(instance, validated_data)
+class UserPublicSerializer(serializers.ModelSerializer):
+    alumni_profile = AlumniProfileSerializer()
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'alumni_profile']
     
 class CommunitySerializer(serializers.ModelSerializer):
     """
     Serializer for listing communities.
     """
+    members = UserPublicSerializer(many=True, read_only=True)
     class Meta:
         model = Community
-        fields = ['id', 'name', 'description']
+        fields = ['id', 'name', 'description', 'members']
 
 
 class PostSerializer(serializers.ModelSerializer):
