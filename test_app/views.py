@@ -89,15 +89,22 @@ class CommunityListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
 
-class PostCreateView(generics.CreateAPIView):
+class PostListCreateView(generics.ListCreateAPIView):
     """
-    Creates a new post, which will be in a PENDING state for moderation.
-    Corresponds to: POST /api/posts/
+    Lists latest posts or creates a new post.
+    Corresponds to: GET /api/posts/, POST /api/posts/
     """
-    queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        """
+        This method defines the list of items to be returned.
+        We filter it to get the 10 most recent posts.
+        """
+        # 1. order_by('-created_at') sorts posts from newest to oldest.
+        # 2. [:10] slices the result to get only the first 10 items.
+        return Post.objects.all().order_by('-created_at')[:10]
 
 class CommunityPostListView(generics.ListAPIView):
     """

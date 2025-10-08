@@ -106,10 +106,11 @@ class PostSerializer(serializers.ModelSerializer):
     author_email = serializers.EmailField(source='author.email', read_only=True)
     author_profile_picture = serializers.URLField(source='author.alumni_profile.profile_picture_url', read_only=True)
     author_name = serializers.CharField(source='author.alumni_profile.full_name', read_only=True)
-    
+    community_name = serializers.CharField(source='community.name', read_only=True)
+            
     class Meta:
         model = Post
-        fields = ['id', 'community', 'content', 'status', 'created_at', 'author_email', 'author_profile_picture', 'author_name']
+        fields = ['id', 'community', 'community_name', 'content', 'status', 'created_at', 'author_email', 'author_profile_picture', 'author_name']
         read_only_fields = ['status', 'author_email']
 
     def create(self, validated_data):

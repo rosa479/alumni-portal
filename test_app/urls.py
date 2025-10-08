@@ -7,7 +7,7 @@ from .views import (
     AdminVerificationListView,
     AdminApproveVerificationView,
     CommunityListView,
-    PostCreateView,
+    PostListCreateView,
     CommunityPostListView,
     ScholarshipListView,
     ScholarshipDetailView,
@@ -34,7 +34,7 @@ urlpatterns = [
 
     # Service: Community & Posts
     path('communities/', CommunityListView.as_view(), name='community_list'),
-    path('posts/', PostCreateView.as_view(), name='post_create'),
+    path('posts/', PostListCreateView.as_view(), name='post_create'),
     path('communities/<uuid:community_id>/posts/', CommunityPostListView.as_view(), name='community_post_list'),
 
     # Service: Scholarships

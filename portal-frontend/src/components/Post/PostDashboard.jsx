@@ -1,11 +1,18 @@
-// src/components/Post.jsx
+// src/components/PostDashboard.jsx
 import React from "react";
 import { ThumbsUp, MessageSquare, Share2 } from "react-feather";
 import { Link } from "react-router-dom"; // <-- 1. Import Link
 import { formatDistanceToNow, isValid } from "date-fns";
 
 // Add `id` as a prop
-function Post({ id, authorName, authorAvatar, created_at, content }) {
+function PostDashboard({
+  id,
+  authorName,
+  authorAvatar,
+  created_at,
+  community,
+  content,
+}) {
   // To get the "ago" suffix, add the { addSuffix: true } option
   const parsedDate = new Date(created_at);
   const validDate = isValid(parsedDate)
@@ -24,10 +31,9 @@ function Post({ id, authorName, authorAvatar, created_at, content }) {
         />
         <div>
           <span className="font-semibold text-dark-text">{authorName}</span>
-          <p
-            className="text-xs text-light-text"
-            dangerouslySetInnerHTML={{ __html: timeAgo }}
-          />
+          <p className="text-xs text-light-text">
+            {community ? `posted in ${community} • ${timeAgo}` : timeAgo}
+          </p>
         </div>
       </div>
       {/* 2. Wrap the content in a Link */}
@@ -41,4 +47,4 @@ function Post({ id, authorName, authorAvatar, created_at, content }) {
   );
 }
 
-export default Post;
+export default PostDashboard;

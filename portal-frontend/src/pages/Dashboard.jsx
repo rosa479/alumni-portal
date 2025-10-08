@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Header from "../components/Header";
-import Post from "../components/Post/Post";
+import PostDashboard from "../components/Post/PostDashboard";
 import CreatePost from "../components/CreatePost";
 import Sidebar from "../components/Sidebar";
 import Rightbar from "../components/Rightbar";
@@ -27,41 +27,47 @@ const postsData = [
 ];
 
 function Dashboard() {
-  // 1. The user object is now a state variable, initialized to null.
+  // 1. All state variables are declared at the top level.
   const [user, setUser] = useState(null);
+  const [posts, setPosts] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 2. useEffect hook to fetch data when the component mounts.
+  // 2. A single useEffect hook to fetch all necessary data when the component mounts.
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchDashboardData = async () => {
       try {
-        // 3. Send a GET request using the configured apiClient.
-        const response = await apiClient.get("/api/profiles/me/");
+        // 3. Use Promise.all to run both API calls in parallel for better performance.
+        const [profileResponse, postsResponse] = await Promise.all([
+          apiClient.get("/api/profiles/me/"),
+          apiClient.get("/api/posts/"),
+        ]);
 
-        // 4. Print the received object to the console, as requested.
-        console.log("Received Profile Data:", response.data);
+        // 4. Log the received data.
+        console.log("Received Profile Data:", profileResponse.data);
+        console.log("Received Posts Data:", postsResponse.data);
 
-        // 5. Update the user state with the data from the API response.
-        setUser(response.data);
+        // 5. Update the state for both user and posts.
+        setUser(profileResponse.data);
+        setPosts(postsResponse.data);
       } catch (err) {
-        console.error("Failed to fetch user profile:", err);
-        setError("Could not load profile information.");
+        console.error("Failed to fetch dashboard data:", err);
+        setError("Could not load dashboard information.");
       } finally {
-        // 6. Set loading to false regardless of success or failure.
+        // 6. Set loading to false once all calls are complete.
         setLoading(false);
       }
     };
 
-    fetchUserProfile();
+    fetchDashboardData();
   }, []); // The empty dependency array ensures this effect runs only once.
 
-  // --- Render logic based on the state ---
+  // --- A single, consolidated block for render logic ---
 
   if (loading) {
     return (
       <div className="bg-white p-6 rounded-xl shadow-lg text-center">
-        <p>Loading Profile...</p>
+        <p>Loading Dashboard...</p>
       </div>
     );
   }
@@ -74,9 +80,13 @@ function Dashboard() {
     );
   }
 
-  // This check prevents rendering errors if the API returns an empty object
-  if (!user) {
-    return null;
+  // This check prevents rendering errors if the API returns an empty object for either request.
+  if (!user || !posts) {
+    return (
+      <div className="bg-white p-6 rounded-xl shadow-lg text-center">
+        <p>Could not load all dashboard components.</p>
+      </div>
+    );
   }
 
   return (
@@ -99,13 +109,14 @@ function Dashboard() {
             </p>
           </div>
           <CreatePost />
-          {postsData.map((post) => (
-            <Post
+          {posts.map((post) => (
+            <PostDashboard
               key={post.id}
-              authorName={post.authorName}
-              authorAvatar={post.authorAvatar}
-              meta={post.meta}
+              authorName={post.author_name}
+              authorAvatar={post.author_profile_picture}
+              created_at={post.created_at}
               content={post.content}
+              community={post.community_name}
             />
           ))}
         </section>
