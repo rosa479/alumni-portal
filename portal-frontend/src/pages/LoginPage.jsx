@@ -1,12 +1,16 @@
-// src/features/auth/LoginPage.jsx
 import React, { useState } from "react";
-import { Link } from "react-router-dom"; // Import Link for navigation
+import { Link, useNavigate } from "react-router-dom";
 import Input from "../components/Input";
 import Button from "../components/Button";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+// 1. IMPORT THE useAuth HOOK
+import { useAuth } from "../context/AuthContext";
+// 2. IMPORT YOUR CONFIGURED API CLIENT
+import apiClient from "../interceptor";
 
 function LoginPage() {
+  // 3. GET THE `login` FUNCTION FROM THE CONTEXT
+  const { login } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -14,27 +18,31 @@ function LoginPage() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      // Send a POST request to your Django token endpoint
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/auth/login/",
+      // 4. USE `apiClient` INSTEAD OF THE RAW `axios`
+      const response = await apiClient.post(
+        "/api/auth/login/", // The base URL is already in apiClient
         {
+          // NOTE: Your previous code used 'username', but your form uses 'email'.
+          // Make sure your backend expects 'email' or change this key to 'username'.
           email: email,
           password: password,
         }
       );
 
-      // On success, Django returns access and refresh tokens
       const { access, refresh } = response.data;
 
-      // Store tokens in localStorage (or HttpOnly cookies for more security)
-      localStorage.setItem("accessToken", access);
-      localStorage.setItem("refreshToken", refresh);
+      // 5. REMOVE THE OLD localStorage LOGIC
+      // localStorage.setItem("accessToken", access); <--- DELETE THIS
+      // localStorage.setItem("refreshToken", refresh); <--- DELETE THIS
 
-      // Redirect user to a protected page, like their dashboard
+      // 6. CALL THE `login` FUNCTION FROM THE CONTEXT INSTEAD
+      // This single function updates the global state AND stores the tokens.
+      login(access, refresh);
+
       navigate("/dashboard");
     } catch (error) {
       console.error("Login failed:", error);
-      // Handle login errors (e.g., show an error message)
+      // TODO: Add state to show an error message to the user, e.g., "Invalid credentials."
     }
   };
 

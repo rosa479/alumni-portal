@@ -1,11 +1,10 @@
-// src/api.js
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: "http://127.0.0.1:8000",
+  baseURL: "http://127.0.0.1:8000", // Your backend URL
 });
 
-// Request Interceptor: Attaches the JWT access token to every outgoing request
+// Request Interceptor: Attach the access token to every request
 apiClient.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem("accessToken");
@@ -19,23 +18,24 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Response Interceptor: Handles token refresh logic
+// Response Interceptor: Handle token refresh logic
 apiClient.interceptors.response.use(
-  // If the response is successful, just return it
   (response) => response,
-
-  // If the response has an error (like 401)
   async (error) => {
     const originalRequest = error.config;
 
     // Check if the error is 401 and it's not a retry request
     if (error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true; // Mark it as a retry
+      originalRequest._retry = true;
 
       try {
         const refreshToken = localStorage.getItem("refreshToken");
+        if (!refreshToken) {
+          // If no refresh token, logout immediately
+          window.location.href = "/login";
+          return Promise.reject(error);
+        }
 
-        // Request a new access token using the refresh token
         const response = await axios.post(
           "http://127.0.0.1:8000/api/token/refresh/",
           {
@@ -46,22 +46,21 @@ apiClient.interceptors.response.use(
         const newAccessToken = response.data.access;
         localStorage.setItem("accessToken", newAccessToken);
 
-        // Update the header of the original request with the new token
         originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-
-        // Retry the original request
         return apiClient(originalRequest);
       } catch (refreshError) {
-        // If refresh fails, the refresh token is likely expired or invalid
-        // Log the user out
-        console.error("Token refresh failed:", refreshError);
+        // **THIS IS THE CRITICAL PART**
+        // If the refresh token is expired or invalid, force a logout.
+        console.error("Token refresh failed. Logging out.");
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
-        window.location.href = "/login"; // Force a redirect to the login page
+
+        // Force a full page redirect to clear all application state
+        window.location.href = "/login";
+
         return Promise.reject(refreshError);
       }
     }
-    // For other errors, just pass them along
     return Promise.reject(error);
   }
 );

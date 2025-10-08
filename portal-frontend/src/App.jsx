@@ -8,7 +8,7 @@ import {
   Navigate,
 } from "react-router-dom";
 
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./ProtectedRoute";
 
 import Header from "./components/Header";
 import LoginPage from "./pages/LoginPage";
