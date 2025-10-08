@@ -23,7 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'role', 'status', 'alumni_profile']
+        fields = ['id', 'roll_number', 'email', 'role', 'status', 'alumni_profile']
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -42,7 +42,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         # Fields required for creating a User instance
-        fields = ['email', 'password', 'full_name', 'graduation_year', 'department']
+        fields = ['email', 'roll_number', 'password', 'full_name', 'graduation_year', 'department']
 
     def create(self, validated_data):
         # Pop the profile data from the validated data before creating the user
@@ -77,7 +77,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'email', 'role', 'status', 'alumni_profile']
         # These fields are read-only because they are managed by the system, not the user.
-        read_only_fields = ['id', 'email', 'role', 'status']
+        read_only_fields = ['id', 'email', 'roll_number', 'role', 'status']
 
     def update(self, instance, validated_data):
         # Handle the nested profile data update
@@ -95,7 +95,7 @@ class UserPublicSerializer(serializers.ModelSerializer):
     alumni_profile = AlumniProfileSerializer()
     class Meta:
         model = User
-        fields = ['id', 'email', 'alumni_profile']
+        fields = ['id', 'email', 'roll_number', 'alumni_profile']
     
 class CommunitySerializer(serializers.ModelSerializer):
     """

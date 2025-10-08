@@ -1,24 +1,53 @@
 // src/features/communities/CommunityDetailPage.jsx
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import CommunityHeader from '../components/CommunityHeader';
-import CreatePost from '../components/CreatePost'; // We can reuse this
-import Post from '../components/Post/Post';         // and this!
+import React from "react";
+import { useParams } from "react-router-dom";
+import CommunityHeader from "../components/CommunityHeader";
+import CreatePost from "../components/CreatePost"; // We can reuse this
+import Post from "../components/Post/Post"; // and this!
 
 // Let's create a more detailed mock database
-const communitiesDB = {
+const communitiesDBMock = {
   1: {
-    id: 1, name: 'Entrepreneurship Hub', description: 'Connect with founders, investors, and mentors in the KGP network.', members: 1250,
+    id: 1,
+    name: "Entrepreneurship Hub",
+    description:
+      "Connect with founders, investors, and mentors in the KGP network.",
+    members: 1250,
     posts: [
-      { id: 101, authorName: 'Rohan Shah', authorAvatar: 'https://i.pravatar.cc/150?u=rohan', meta: '2h ago', content: 'Just closed our Series A funding! Huge thanks to the KGP network for the early support.' },
-      { id: 102, authorName: 'Priya Mehta', authorAvatar: 'https://i.pravatar.cc/150?u=priya', meta: '1d ago', content: 'Looking for a co-founder with a strong tech background for a new EdTech startup. DM me!' }
-    ]
+      {
+        id: 101,
+        authorName: "Rohan Shah",
+        authorAvatar: "https://i.pravatar.cc/150?u=rohan",
+        meta: "2h ago",
+        content:
+          "Just closed our Series A funding! Huge thanks to the KGP network for the early support.",
+      },
+      {
+        id: 102,
+        authorName: "Priya Mehta",
+        authorAvatar: "https://i.pravatar.cc/150?u=priya",
+        meta: "1d ago",
+        content:
+          "Looking for a co-founder with a strong tech background for a new EdTech startup. DM me!",
+      },
+    ],
   },
   2: {
-    id: 2, name: 'AI & Machine Learning', description: 'Discussions on the latest trends, research, and career opportunities in AI/ML.', members: 2800,
+    id: 2,
+    name: "AI & Machine Learning",
+    description:
+      "Discussions on the latest trends, research, and career opportunities in AI/ML.",
+    members: 2800,
     posts: [
-      { id: 201, authorName: 'Dr. Vikram Singh', authorAvatar: 'https://i.pravatar.cc/150?u=vikram', meta: '8h ago', content: 'Just published a new paper on transformer models in NLP. Happy to share the pre-print with anyone interested.' }
-    ]
+      {
+        id: 201,
+        authorName: "Dr. Vikram Singh",
+        authorAvatar: "https://i.pravatar.cc/150?u=vikram",
+        meta: "8h ago",
+        content:
+          "Just published a new paper on transformer models in NLP. Happy to share the pre-print with anyone interested.",
+      },
+    ],
   },
   // Add other communities here...
 };
@@ -33,9 +62,17 @@ function CommunityDetailPage() {
       <div className="bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50 min-h-screen">
         <div className="container mx-auto p-8 text-center">
           <div className="bg-white rounded-3xl shadow-2xl p-12 border border-gray-100">
-            <h1 className="text-4xl font-bold text-gray-800 mb-4">Community Not Found</h1>
-            <p className="text-lg text-gray-600 mb-8">The community you're looking for doesn't exist or has been removed.</p>
-            <a href="/communities" className="bg-blue-800 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors font-medium">
+            <h1 className="text-4xl font-bold text-gray-800 mb-4">
+              Community Not Found
+            </h1>
+            <p className="text-lg text-gray-600 mb-8">
+              The community you're looking for doesn't exist or has been
+              removed.
+            </p>
+            <a
+              href="/communities"
+              className="bg-blue-800 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors font-medium"
+            >
               Back to Communities
             </a>
           </div>
@@ -54,7 +91,7 @@ function CommunityDetailPage() {
             {/* Note: In a real app, you'd want a more specific CreatePost component */}
             <CreatePost />
             <div className="space-y-6">
-              {community.posts.map(post => (
+              {community.posts.map((post) => (
                 <Post
                   key={post.id}
                   id={post.id}
@@ -70,22 +107,33 @@ function CommunityDetailPage() {
           {/* Community-specific right sidebar */}
           <aside className="lg:col-span-1 space-y-6">
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <h4 className="text-xl font-bold text-gray-800 mb-4">About Community</h4>
-              <p className="text-gray-600 mb-6">This is a space for members to share insights, ask questions, and collaborate.</p>
+              <h4 className="text-xl font-bold text-gray-800 mb-4">
+                About Community
+              </h4>
+              <p className="text-gray-600 mb-6">
+                This is a space for members to share insights, ask questions,
+                and collaborate.
+              </p>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Members</span>
-                  <span className="font-bold text-blue-800">{community.members.toLocaleString()}</span>
+                  <span className="font-bold text-blue-800">
+                    {community.members.toLocaleString()}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Posts</span>
-                  <span className="font-bold text-blue-800">{community.posts.length}</span>
+                  <span className="font-bold text-blue-800">
+                    {community.posts.length}
+                  </span>
                 </div>
               </div>
             </div>
 
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <h4 className="text-xl font-bold text-gray-800 mb-4">Community Rules</h4>
+              <h4 className="text-xl font-bold text-gray-800 mb-4">
+                Community Rules
+              </h4>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li>• Be respectful and professional</li>
                 <li>• Stay on topic and relevant</li>

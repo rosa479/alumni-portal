@@ -33,6 +33,7 @@ class Command(BaseCommand):
         users_data = [
             {
                 'email': 'john.doe@example.com',
+                'roll_number': '24MA10060',
                 'password': 'password123',
                 'role': User.Role.ALUMNI,
                 'status': User.Status.VERIFIED,
@@ -47,6 +48,7 @@ class Command(BaseCommand):
             },
             {
                 'email': 'priya.sharma@example.com',
+                'roll_number': '24MA10061',
                 'password': 'password123',
                 'role': User.Role.ALUMNI,
                 'status': User.Status.VERIFIED,
@@ -61,6 +63,7 @@ class Command(BaseCommand):
             },
             {
                 'email': 'rajesh.kumar@example.com',
+                'roll_number': '24MA10062',
                 'password': 'password123',
                 'role': User.Role.ALUMNI,
                 'status': User.Status.VERIFIED,
@@ -75,6 +78,7 @@ class Command(BaseCommand):
             },
             {
                 'email': 'sneha.reddy@example.com',
+                'roll_number': '24MA10063',
                 'password': 'password123',
                 'role': User.Role.ALUMNI,
                 'status': User.Status.VERIFIED,
