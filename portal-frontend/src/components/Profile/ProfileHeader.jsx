@@ -34,40 +34,34 @@ function ProfileHeader({ user }) {
           </div>
         </div>
 
-{/* --- START: Dashing Impact Card --- */}
-<div className="bg-gradient-to-br from-slate-800 to-gray-900 text-white p-6 rounded-xl shadow-2xl w-full md:w-auto md:min-w-[320px] flex flex-col justify-between">
-  {/* Header Title */}
-  <h3 className="text-sm font-semibold text-gray-400 tracking-wider text-center mb-4">
-    LEGACY SCORE
-  </h3>
+{/* --- START: New MVP Impact Card --- */}
+        <div className="bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-200 w-full md:w-auto md:min-w-[280px] text-center">
+          <h3 className="text-sm font-bold text-dark-text mb-2">
+            LEGACY SCORE
+          </h3>
 
-    {/* Main Score and Rank */}
-    <div className="text-center">
-      <p className="text-6xl font-bold">
-        3,480
-      </p>
-      <p className="font-semibold text-xl text-gray-200 mt-2 flex items-center justify-center gap-2">
-        Distinguished Benefactor
-        <span className="text-yellow-400 text-lg">🌾</span> {/* Icon/Emoji */}
-      </p>
-    </div>
+          {/* Score and Rank */}
+          <div className="mb-4">
+            <p className="text-4xl font-bold text-primary-blue">2,150</p>
+            <p className="font-semibold text-lg text-dark-text mt-1">
+              🏅 Community Pillar
+            </p>
+          </div>
 
-    {/* Progress Section */}
-    <div className="mt-8">
-      <p className="text-xs text-gray-400 text-center mb-2">
-        1,520 points to next rank
-      </p>
-      {/* Progress Bar Track */}
-      <div className="bg-gray-700 rounded-full h-2.5 w-full">
-        {/* Progress Bar Fill with Gradient */}
-        <div
-          className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 h-2.5 rounded-full"
-          style={{ width: "70%" }} // Dummy progress
-        ></div>
-      </div>
-    </div>
-  </div>
-{/* --- END: Dashing Impact Card --- */}
+          {/* Progress Bar */}
+          <div>
+            <p className="text-xs text-light-text mb-1">
+              450 points to next rank
+            </p>
+            <div className="bg-gray-200 rounded-full h-2 w-full">
+              <div
+                className="bg-primary-blue h-2 rounded-full"
+                style={{ width: "82%" }} // Dummy progress
+              ></div>
+            </div>
+          </div>
+        </div>
+        {/* --- END: New MVP Impact Card --- */}
       </div>
     </div>
   );
