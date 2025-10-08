@@ -37,7 +37,7 @@ apiClient.interceptors.response.use(
         }
 
         const response = await axios.post(
-          "http://127.0.0.1:8000/api/token/refresh/",
+          "http://127.0.0.1:8000/api/auth/refresh/",
           {
             refresh: refreshToken,
           }

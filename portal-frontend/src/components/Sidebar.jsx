@@ -1,19 +1,25 @@
 // src/components/Sidebar.jsx
 import React from "react";
 
-function Sidebar() {
+function Sidebar({
+  profile_image,
+  full_name,
+  role,
+  graduation_year,
+  department,
+}) {
   return (
     <aside className="hidden lg:block">
       <div className="bg-white p-6 rounded-xl shadow-lg text-center mb-6">
         <img
-          src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+          src={profile_image}
           alt="Profile"
           className="w-20 h-20 rounded-full mx-auto mb-4 border-4 border-primary-blue"
         />
-        <h3 className="text-lg font-bold text-primary-blue">John Doe</h3>
-        <p className="text-sm text-light-text">Senior Software Engineer</p>
+        <h3 className="text-lg font-bold text-primary-blue">{full_name}</h3>
+        <p className="text-sm text-light-text">{role}</p>
         <p className="text-sm text-light-text">
-          Class of 2018, Computer Science
+          Class of {graduation_year}, {department}
         </p>
       </div>
       <div className="bg-white p-6 rounded-xl shadow-lg">
