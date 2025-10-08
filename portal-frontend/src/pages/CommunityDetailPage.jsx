@@ -1,9 +1,10 @@
 // src/features/communities/CommunityDetailPage.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import CommunityHeader from "../components/CommunityHeader";
 import CreatePost from "../components/CreatePost"; // We can reuse this
 import Post from "../components/Post/Post"; // and this!
+import apiClient from "../interceptor";
 
 // Let's create a more detailed mock database
 const communitiesDBMock = {
@@ -54,7 +55,61 @@ const communitiesDBMock = {
 
 function CommunityDetailPage() {
   const { communityId } = useParams(); // Get the ID from the URL, e.g., "1"
-  const community = communitiesDB[communityId];
+
+  // communities api setup
+  // 1. The community object is now a state variable, initialized to null.
+  const [communityBackend, setCommunityBackend] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // 2. useEffect hook to fetch data when the component mounts.
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        // 3. Send a GET request using the configured apiClient.
+        const response = await apiClient.get("/api/communities/");
+
+        // 4. Print the received object to the console, as requested.
+        console.log("Received CommunityBackend Data:", response.data);
+
+        // 5. Update the communityBackend state with the data from the API response.
+        setCommunityBackend(response.data);
+      } catch (err) {
+        console.error("Failed to fetch communityBackend profile:", err);
+        setError("Could not load communityBackend information.");
+      } finally {
+        // 6. Set loading to false regardless of success or failure.
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, []); // The empty dependency array ensures this effect runs only once.
+
+  // --- Render logic based on the state ---
+
+  if (loading) {
+    return (
+      <div className="bg-white p-6 rounded-xl shadow-lg text-center">
+        <p>Loading Profile...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-white p-6 rounded-xl shadow-lg text-center text-red-500">
+        <p>{error}</p>
+      </div>
+    );
+  }
+
+  // This check prevents rendering errors if the API returns an empty object
+  if (!communityBackend) {
+    return null;
+  }
+
+  const community = communityBackend.find((item) => item.id === communityId);
 
   // Handle case where community doesn't exist
   if (!community) {
