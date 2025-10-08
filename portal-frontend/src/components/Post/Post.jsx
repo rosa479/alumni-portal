@@ -2,16 +2,17 @@
 import React from "react";
 import { ThumbsUp, MessageSquare, Share2 } from "react-feather";
 import { Link } from "react-router-dom"; // <-- 1. Import Link
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, isValid } from "date-fns";
 
 // Add `id` as a prop
 function Post({ id, authorName, authorAvatar, created_at, meta, content }) {
   // To get the "ago" suffix, add the { addSuffix: true } option
-  const timeAgo = formatDistanceToNow(new Date(created_at), {
-    addSuffix: true,
-  });
-  // => "about 5 hours ago"
+  const parsedDate = new Date(created_at);
+  const validDate = isValid(parsedDate)
+    ? parsedDate
+    : new Date("2025-10-08T15:28:37.020322Z");
 
+  const timeAgo = formatDistanceToNow(validDate, { addSuffix: true });
   return (
     <div className="bg-white p-6 rounded-xl shadow-lg">
       {/* ... (Post header and content remain the same) ... */}
