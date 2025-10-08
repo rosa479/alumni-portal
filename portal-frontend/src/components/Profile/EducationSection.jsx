@@ -1,18 +1,23 @@
 // src/features/profile/components/EducationSection.jsx
-import React from 'react';
-import { BookOpen } from 'react-feather';
+import React from "react";
+import { BookOpen } from "react-feather";
 
-// Mock data
-const education = [
-  { id: 1, degree: 'Bachelor of Technology, Computer Science', school: 'Indian Institute of Technology, Kharagpur', period: '2014 - 2018' },
-];
-
-function EducationSection() {
+function EducationSection({ user }) {
+  const education = [
+    {
+      id: 1,
+      degree: `Bachelor of Technology, ${user.alumni_profile.department}`,
+      school: "Indian Institute of Technology, Kharagpur",
+      period: `${parseInt(user.alumni_profile.graduation_year) - 4} - ${
+        user.alumni_profile.graduation_year
+      }`,
+    },
+  ];
   return (
     <div className="bg-white p-6 rounded-xl shadow-lg">
       <h3 className="text-xl font-bold text-dark-text mb-4">Education</h3>
       <ul className="space-y-4">
-        {education.map(edu => (
+        {education.map((edu) => (
           <li key={edu.id} className="flex items-start gap-4">
             <div className="bg-light-bg p-3 rounded-full">
               <BookOpen className="text-primary-blue" />
