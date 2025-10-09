@@ -2,12 +2,21 @@
 import React, { useState } from "react";
 import apiClient from "../interceptor";
 
-function CreatePost({ avatar, communities }) {
+function CreatePost({ avatar, communities = [] }) {
+  if (!communities || communities.length === 0) {
+    // You can return a loading spinner or just nothing
+    return (
+      <div className="bg-white p-6 rounded-xl shadow-lg mb-6">
+        Loading communities...
+      </div>
+    );
+  }
+
   const [content, setContent] = useState("");
   // 2. Add state to track the selected community.
   //    Initialize it with the ID of the first community.
   const [selectedCommunity, setSelectedCommunity] = useState(
-    communities[0]?.id
+    communities[0]?.id || ""
   );
 
   /**
@@ -16,12 +25,12 @@ function CreatePost({ avatar, communities }) {
    * @param {string} postContent - The text content of the post.
    * @returns {Promise<object>} The newly created post object from the server.
    */
-  const createNewPost = async (communityId, postContent) => {
+  const createNewPost = async () => {
     try {
       // 1. Define the data payload. It only needs the writable fields.
       const postData = {
-        community: communityId,
-        content: postContent,
+        community: selectedCommunity,
+        content: content.trim(),
       };
 
       console.log("Sending post data:", postData);
@@ -47,7 +56,10 @@ function CreatePost({ avatar, communities }) {
       <img src={avatar} alt="My Profile" className="w-12 h-12 rounded-full" />
       <form
         className="w-full"
-        onSubmit={async (e) => createNewPost(selectedCommunity, content)}
+        onSubmit={(e) => {
+          e.preventDefault();
+          createNewPost();
+        }}
       >
         <textarea
           value={content}

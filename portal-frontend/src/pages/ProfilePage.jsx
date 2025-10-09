@@ -6,6 +6,7 @@ import ExperienceSection from "../components/Profile/ExperienceSection";
 import EducationSection from "../components/Profile/EducationSection"; // <-- 1. Import Education
 import SkillsSection from "../components/Profile/SkillsSection"; // <-- 2. Import Skills
 import apiClient from "../interceptor";
+import NetworkStatsSection from "../components/Profile/NetworkStat";
 
 // We'll assume the user is pending verification for this example
 const isVerified = false;
@@ -69,7 +70,7 @@ function ProfilePage() {
         <ProfileHeader user={user} />
 
         {/* Conditionally render the alert */}
-        {!isVerified && <VerificationAlert />}
+        {!isVerified && <VerificationAlert status={user.status} />}
 
         {/* --- 3. New Two-Column Layout --- */}
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -81,6 +82,7 @@ function ProfilePage() {
 
           {/* Sidebar (Right Column) */}
           <div className="lg:col-span-1 space-y-8">
+            <NetworkStatsSection user={user} />
             <SkillsSection />
           </div>
         </div>
