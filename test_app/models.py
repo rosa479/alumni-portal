@@ -82,7 +82,7 @@ class AlumniProfile(models.Model):
     full_name = models.CharField(max_length=255)
     graduation_year = models.PositiveIntegerField()
     department = models.CharField(max_length=100)
-    profile_picture_url = models.URLField(max_length=500, null=True, blank=True)
+    profile_picture_url = models.URLField(max_length=500, null=True, blank=True, default='https://i.ibb.co/FbQ7wC2Q/random-pfp.jpg')
     about_me = models.TextField(blank=True)
     credit_score = models.IntegerField(default=0)
 
