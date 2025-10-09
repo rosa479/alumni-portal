@@ -30,6 +30,7 @@ function Dashboard() {
   // 1. All state variables are declared at the top level.
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState(null);
+  const [community, setCommunity] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -38,18 +39,22 @@ function Dashboard() {
     const fetchDashboardData = async () => {
       try {
         // 3. Use Promise.all to run both API calls in parallel for better performance.
-        const [profileResponse, postsResponse] = await Promise.all([
-          apiClient.get("/api/profiles/me/"),
-          apiClient.get("/api/posts/"),
-        ]);
+        const [profileResponse, postsResponse, communityResponse] =
+          await Promise.all([
+            apiClient.get("/api/profiles/me/"),
+            apiClient.get("/api/posts/"),
+            apiClient.get("/api/communities/"),
+          ]);
 
         // 4. Log the received data.
         console.log("Received Profile Data:", profileResponse.data);
         console.log("Received Posts Data:", postsResponse.data);
+        console.log("Received Community Data:", communityResponse.data);
 
         // 5. Update the state for both user and posts.
         setUser(profileResponse.data);
         setPosts(postsResponse.data);
+        setCommunity(communityResponse.data);
       } catch (err) {
         console.error("Failed to fetch dashboard data:", err);
         setError("Could not load dashboard information.");
@@ -81,7 +86,7 @@ function Dashboard() {
   }
 
   // This check prevents rendering errors if the API returns an empty object for either request.
-  if (!user || !posts) {
+  if (!user || !posts || !community) {
     return (
       <div className="bg-white p-6 rounded-xl shadow-lg text-center">
         <p>Could not load all dashboard components.</p>
@@ -108,7 +113,10 @@ function Dashboard() {
               Stay connected with your alma mater and fellow alumni
             </p>
           </div>
-          <CreatePost />
+          <CreatePost
+            avatar={user.alumni_profile.profile_picture_url}
+            communities={community}
+          />
           {posts.map((post) => (
             <PostDashboard
               key={post.id}

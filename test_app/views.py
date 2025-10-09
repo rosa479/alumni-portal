@@ -104,7 +104,8 @@ class PostListCreateView(generics.ListCreateAPIView):
         """
         # 1. order_by('-created_at') sorts posts from newest to oldest.
         # 2. [:10] slices the result to get only the first 10 items.
-        return Post.objects.all().order_by('-created_at')[:10]
+        # 3. We filter by APPROVED status to ensure only approved posts are shown.
+        return Post.objects.filter(status=Post.Status.APPROVED).order_by('-created_at')[:10]
 
 class CommunityPostListView(generics.ListAPIView):
     """
