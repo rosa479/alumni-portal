@@ -129,3 +129,16 @@ Here are the primary API endpoints currently available.
 | `POST` | `/api/admin/posts/<uuid>/reject/`          | Reject a pending post.              | Admin                |
 
 ---
+
+## Work Remaning:
+
+1. The Posts section don't have comments setup yet
+2. Scholarships section needs to be api integrated
+3. payment gateway
+4. fund-raising system
+5. messaging system (not yet decided upon)
+6. profile editing is not enabled form the frontend
+7. admin flow for doing stuff in admin panel
+8. credit_points logic (backend)
+
+Lastly, some bug fixing and testing itertations are left as well.
