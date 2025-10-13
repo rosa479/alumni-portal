@@ -1,0 +1,367 @@
+import React from "react";
+import { Link } from "react-router-dom";
+import { Users, Calendar, Briefcase, GraduationCap, TrendingUp, Globe, Award, Heart } from "lucide-react";
+import heroImage from "./hero.jpg";
+
+// Inline Button Component
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "default" | "outline" | "hero" | "secondary";
+  size?: "default" | "lg";
+  asChild?: boolean;
+  children: React.ReactNode;
+}
+
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className = "", variant = "default", size = "default", asChild = false, children, ...props }, ref) => {
+    const baseStyles = "inline-flex items-center justify-center rounded-md font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
+    
+    const variants = {
+      default: "bg-[hsl(199,89%,48%)] text-white hover:bg-[hsl(199,89%,40%)]",
+      outline: "border border-[hsl(199,89%,48%)] text-[hsl(199,89%,48%)] hover:bg-[hsl(199,89%,48%)]/10",
+      hero: "bg-[hsl(199,89%,48%)] text-white hover:bg-[hsl(197,71%,73%)] shadow-[0_0_40px_hsl(197,71%,73%,0.4)] hover:shadow-[0_0_40px_hsl(197,71%,73%,0.4)]",
+      secondary: "bg-white text-[hsl(199,89%,48%)] hover:bg-white/90",
+    };
+    
+    const sizes = {
+      default: "h-10 px-4 py-2",
+      lg: "h-12 px-8 py-3 text-lg",
+    };
+    
+    const classes = `${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`;
+    
+    if (asChild && React.isValidElement(children)) {
+      return React.cloneElement(children, {
+        ...children.props,
+        className: `${classes} ${children.props.className || ""}`,
+      } as any);
+    }
+    
+    return (
+      <button className={classes} ref={ref} {...props}>
+        {children}
+      </button>
+    );
+  }
+);
+Button.displayName = "Button";
+
+// Inline Card Component
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+}
+
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className = "", children, ...props }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={`rounded-lg border border-[hsl(214,32%,91%)] bg-white text-[hsl(222,47%,11%)] shadow-sm ${className}`}
+        {...props}
+      >
+        {children}
+      </div>
+    );
+  }
+);
+Card.displayName = "Card";
+
+const Navbar = () => {
+  return (
+    <header className="bg-background shadow-sm sticky top-0 z-50 backdrop-blur-xl">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          
+          {/* Left Corner: Logo */}
+          <div className="flex-shrink-0">
+            <Link to="/" className="text-3xl font-bold text-foreground">
+              alumn<span className="text-primary">IIT</span>
+            </Link>
+          </div>
+
+          {/* Center Options - Hidden on mobile, visible on medium screens and up */}
+          <div className="hidden md:block">
+            <div className="ml-10 flex items-baseline space-x-4">
+              <Link to="/directory" className="text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors">Directory</Link>
+              <Link to="/events" className="text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors">Events</Link>
+              <Link to="/jobs" className="text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors">Career Hub</Link>
+              <Link to="/mentorship" className="text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors">Mentorship</Link>
+              <Link to="/news" className="text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors">News</Link>
+            </div>
+          </div>
+
+          {/* Right End: Authentication - Hidden on mobile */}
+          <div className="hidden md:block">
+            <div className="ml-4 flex items-center md:ml-6 gap-2 backdrop-blur-xl">
+              <Button variant="outline" asChild>
+                <Link to="/login">Login</Link>
+              </Button>
+              <Button asChild>
+                <Link to="/register">Sign Up</Link>
+              </Button>
+            </div>
+          </div>
+          
+          {/* Mobile Menu Button - Hidden on medium screens and up */}
+          <div className="-mr-2 flex md:hidden">
+            <button
+              type="button"
+              className="inline-flex items-center justify-center p-2 rounded-md text-muted-foreground hover:text-primary hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              aria-controls="mobile-menu"
+              aria-expanded="false"
+            >
+              <span className="sr-only">Open main menu</span>
+              <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
+
+        </div>
+      </nav>
+    </header>
+  );
+};
+
+const HeroSection = () => {
+  return (
+    <section className="relative bg-gradient-to-br from-secondary/30 via-background to-background overflow-hidden">
+      <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
+        <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div className="space-y-8">
+            <div className="inline-block">
+              <span className="bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold">
+                IIT Kharagpur Alumni Network
+              </span>
+            </div>
+            <h1 className="text-4xl md:text-6xl font-bold leading-tight">
+              Connect. Collaborate. 
+              <span className="block bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                Create Impact.
+              </span>
+            </h1>
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              Join thousands of IIT Kharagpur alumni worldwide. Network with fellow graduates, 
+              mentor the next generation, and unlock opportunities that shape the future.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button variant="hero" size="lg" asChild>
+                <Link to="/register">Join the Network</Link>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <Link to="/directory">Explore Directory</Link>
+              </Button>
+            </div>
+            <div className="flex items-center gap-8 pt-4">
+              <div>
+                <div className="text-3xl font-bold text-primary">50K+</div>
+                <div className="text-sm text-muted-foreground">Alumni Members</div>
+              </div>
+              <div className="h-12 w-px bg-border"></div>
+              <div>
+                <div className="text-3xl font-bold text-primary">150+</div>
+                <div className="text-sm text-muted-foreground">Countries</div>
+              </div>
+              <div className="h-12 w-px bg-border"></div>
+              <div>
+                <div className="text-3xl font-bold text-primary">2000+</div>
+                <div className="text-sm text-muted-foreground">Companies</div>
+              </div>
+            </div>
+          </div>
+          <div className="relative">
+            <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-accent/20 rounded-3xl blur-3xl"></div>
+            <img 
+              src={heroImage} 
+              alt="IIT Kharagpur Alumni Network" 
+              className="relative rounded-2xl shadow-2xl w-full h-auto"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const FeaturesSection = () => {
+  const features = [
+    {
+      icon: Users,
+      title: "Alumni Directory",
+      description: "Connect with over 50,000 alumni across the globe. Find classmates, colleagues, and industry leaders.",
+      color: "text-primary"
+    },
+    {
+      icon: Calendar,
+      title: "Events & Reunions",
+      description: "Stay updated on alumni gatherings, workshops, webinars, and annual reunions happening worldwide.",
+      color: "text-accent"
+    },
+    {
+      icon: Briefcase,
+      title: "Career Hub",
+      description: "Discover job opportunities, post openings, and advance your career with exclusive alumni connections.",
+      color: "text-primary"
+    },
+    {
+      icon: GraduationCap,
+      title: "Mentorship Program",
+      description: "Guide students and young alumni, or seek mentorship from experienced professionals in your field.",
+      color: "text-accent"
+    }
+  ];
+
+  return (
+    <section className="py-20 bg-background">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-5xl font-bold mb-4">
+            Everything You Need to Stay Connected
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            AlumnIIT provides a comprehensive platform designed to strengthen the bonds of our global alumni community
+          </p>
+        </div>
+        
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {features.map((feature, index) => (
+            <Card key={index} className="p-6 hover:shadow-[var(--shadow-glow)] transition-shadow duration-300 border-border bg-gradient-to-br from-card to-secondary/10">
+              <feature.icon className={`h-12 w-12 ${feature.color} mb-4`} />
+              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+              <p className="text-muted-foreground">{feature.description}</p>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const ImpactSection = () => {
+  const stats = [
+    { icon: TrendingUp, value: "95%", label: "Career Advancement", description: "Alumni report career growth through network" },
+    { icon: Globe, value: "150+", label: "Global Chapters", description: "Active alumni chapters worldwide" },
+    { icon: Award, value: "5000+", label: "Success Stories", description: "Alumni achievements celebrated" },
+    { icon: Heart, value: "₹50Cr+", label: "Giving Back", description: "Contributions to alma mater" }
+  ];
+
+  return (
+    <section className="py-20 bg-gradient-to-br from-primary/5 via-secondary/20 to-accent/5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-5xl font-bold mb-4">
+            Making a Difference Together
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Our alumni network creates lasting impact through collaboration, mentorship, and giving back
+          </p>
+        </div>
+        
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {stats.map((stat, index) => (
+            <div key={index} className="text-center p-6 rounded-xl bg-card border border-border hover:border-primary/50 transition-colors">
+              <stat.icon className="h-10 w-10 text-primary mx-auto mb-4" />
+              <div className="text-4xl font-bold text-primary mb-2">{stat.value}</div>
+              <div className="text-lg font-semibold mb-1">{stat.label}</div>
+              <p className="text-sm text-muted-foreground">{stat.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const CTASection = () => {
+  return (
+    <section className="py-20 bg-gradient-to-r from-primary via-primary to-accent relative overflow-hidden">
+      <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <h2 className="text-3xl md:text-5xl font-bold text-primary-foreground mb-6">
+          Ready to Reconnect with Your Alma Mater?
+        </h2>
+        <p className="text-lg text-primary-foreground/90 mb-8 max-w-2xl mx-auto">
+          Join AlumnIIT today and become part of a thriving global community of IIT Kharagpur graduates making waves across industries.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button size="lg" variant="secondary" asChild className="text-primary font-semibold">
+            <Link to="/register">Create Your Profile</Link>
+          </Button>
+          <Button size="lg" variant="outline" asChild className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
+            <Link to="/about">Learn More</Link>
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const Footer = () => {
+  return (
+    <footer className="bg-foreground/5 border-t border-border py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid md:grid-cols-4 gap-8">
+          <div className="col-span-2">
+            <Link to="/" className="text-3xl font-bold text-foreground inline-block mb-4">
+              alumn<span className="text-primary">IIT</span>
+            </Link>
+            <p className="text-muted-foreground mb-4">
+              Connecting IIT Kharagpur alumni across the globe. Building networks, creating opportunities, fostering excellence.
+            </p>
+            <div className="flex gap-4">
+              <a href="#" className="text-muted-foreground hover:text-primary transition-colors" aria-label="LinkedIn">
+                <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              </a>
+              <a href="#" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Twitter">
+                <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+              </a>
+              <a href="#" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Facebook">
+                <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              </a>
+            </div>
+          </div>
+          
+          <div>
+            <h3 className="font-semibold text-foreground mb-4">Quick Links</h3>
+            <ul className="space-y-2">
+              <li><Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">About Us</Link></li>
+              <li><Link to="/directory" className="text-muted-foreground hover:text-primary transition-colors">Alumni Directory</Link></li>
+              <li><Link to="/events" className="text-muted-foreground hover:text-primary transition-colors">Events</Link></li>
+              <li><Link to="/news" className="text-muted-foreground hover:text-primary transition-colors">News & Updates</Link></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 className="font-semibold text-foreground mb-4">Resources</h3>
+            <ul className="space-y-2">
+              <li><Link to="/mentorship" className="text-muted-foreground hover:text-primary transition-colors">Mentorship</Link></li>
+              <li><Link to="/jobs" className="text-muted-foreground hover:text-primary transition-colors">Career Hub</Link></li>
+              <li><Link to="/donate" className="text-muted-foreground hover:text-primary transition-colors">Give Back</Link></li>
+              <li><Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">Contact Us</Link></li>
+            </ul>
+          </div>
+        </div>
+        
+        <div className="border-t border-border mt-12 pt-8 text-center text-muted-foreground">
+          <p>&copy; {new Date().getFullYear()} AlumnIIT - IIT Kharagpur Alumni Association. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+function LandingPage() {
+  return (
+    <>
+      <Navbar />
+      <HeroSection />
+      <FeaturesSection />
+      <ImpactSection />
+      <CTASection />
+      <Footer />
+    </>
+  );
+}
+
+export default LandingPage;
+
