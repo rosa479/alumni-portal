@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
   Users,
@@ -11,6 +11,7 @@ import {
   Heart,
 } from "lucide-react";
 import heroImage from "./hero.jpg";
+import { CountUp } from "countup.js";
 
 // Inline Button Component
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -179,6 +180,61 @@ const Navbar = () => {
 };
 
 const HeroSection = () => {
+  // 1. Create refs for each element you want to animate
+  const membersRef = useRef(null);
+  const countriesRef = useRef(null);
+  const companiesRef = useRef(null);
+
+  useEffect(() => {
+    // 2. Create and start the CountUp instances inside useEffect
+    // This ensures it runs only once after the component mounts
+
+    // Animate Members
+    if (membersRef.current) {
+      const membersCountUp = new CountUp(membersRef.current, 50000, {
+        duration: 3,
+        suffix: "+",
+        enableScrollSpy: true,
+        scrollSpyDelay: 200,
+      });
+      if (!membersCountUp.error) {
+        membersCountUp.start();
+      } else {
+        console.error(membersCountUp.error);
+      }
+    }
+
+    // Animate Countries
+    if (countriesRef.current) {
+      const countriesCountUp = new CountUp(countriesRef.current, 150, {
+        duration: 3,
+        suffix: "+",
+        enableScrollSpy: true,
+        scrollSpyDelay: 200,
+      });
+      if (!countriesCountUp.error) {
+        countriesCountUp.start();
+      } else {
+        console.error(countriesCountUp.error);
+      }
+    }
+
+    // Animate Companies
+    if (companiesRef.current) {
+      const companiesCountUp = new CountUp(companiesRef.current, 2000, {
+        duration: 3,
+        suffix: "+",
+        enableScrollSpy: true,
+        scrollSpyDelay: 200,
+      });
+      if (!companiesCountUp.error) {
+        companiesCountUp.start();
+      } else {
+        console.error(companiesCountUp.error);
+      }
+    }
+  }, []); // The empty array ensures this effect runs only once on mount
+
   return (
     <section className="relative bg-gradient-to-br from-secondary/30 via-background to-background overflow-hidden">
       <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
@@ -206,19 +262,35 @@ const HeroSection = () => {
             </div>
             <div className="flex items-center gap-8 pt-4">
               <div>
-                <div className="text-3xl font-bold text-primary">50K+</div>
+                {/* 3. Attach the refs to the DOM elements */}
+                <div
+                  ref={membersRef}
+                  className="text-3xl font-bold text-primary"
+                >
+                  50,000+
+                </div>
                 <div className="text-sm text-muted-foreground">
                   Alumni Members
                 </div>
               </div>
               <div className="h-12 w-px bg-border"></div>
               <div>
-                <div className="text-3xl font-bold text-primary">150+</div>
+                <div
+                  ref={countriesRef}
+                  className="text-3xl font-bold text-primary"
+                >
+                  150+
+                </div>
                 <div className="text-sm text-muted-foreground">Countries</div>
               </div>
               <div className="h-12 w-px bg-border"></div>
               <div>
-                <div className="text-3xl font-bold text-primary">2000+</div>
+                <div
+                  ref={companiesRef}
+                  className="text-3xl font-bold text-primary"
+                >
+                  2000+
+                </div>
                 <div className="text-sm text-muted-foreground">Companies</div>
               </div>
             </div>
