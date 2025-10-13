@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import heroImage from "./hero.jpg";
 import { CountUp } from "countup.js";
-import iitkgpDrone from "../assets/iitkgp-drone.mp4";
+import iitkgpDrone from "../assets/dist_iitkgpvideo1.webm";
 import AboutSection from "../components/HomeFeatures";
 
 // Inline Button Component
@@ -254,17 +254,14 @@ const HeroSection = () => {
           Your browser does not support the video tag.
         </video>
         {/* This overlay improves text readability over the video */}
-        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="absolute inset-0 bg-black/30"></div>
       </div>
 
-      {/* The original grid pattern can still be used on top of the overlay */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-
       {/* Content */}
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-7xl md:ml-40 px-4 sm:px-6 lg:px-8">
         {/* The content now lives in a single, width-constrained container */}
         <div className="max-w-3xl">
-          <div className="space-y-8">
+          <div className="space-y-8 ">
             {/* Text colors are updated for better contrast */}
             <h1 className="text-4xl md:text-5xl font-bold leading-tight text-white">
               Welcome to the IIT Kharagpur Community
