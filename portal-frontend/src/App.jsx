@@ -21,6 +21,7 @@ import CommunityDetailPage from "./pages/CommunityDetailPage";
 import SinglePostPage from "./pages/SinglePostPage";
 import ContributionsPage from "./pages/ContributionsPage";
 import ContributionDetailPage from "./pages/ContributionDetailPage";
+import LandingPage from "./pages/LandingPage";
 
 function MainLayout() {
   return (
@@ -36,6 +37,7 @@ function App() {
     <Router>
       <Routes>
         {/* Routes WITHOUT the main header */}
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
