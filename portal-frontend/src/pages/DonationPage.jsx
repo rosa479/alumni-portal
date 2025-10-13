@@ -29,12 +29,12 @@ function DonationPage() {
   };
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50 py-12 px-4 min-h-screen">
+    <div className="bg-gradient-to-br from-gray-50 via-[#E3F0FB] to-orange-50 py-12 px-4 min-h-screen">
       <div className="container mx-auto max-w-6xl">
         {/* IIT Kharagpur Header */}
         <div className="text-center mb-12">
           <div>
-            <h1 className="text-4xl font-bold text-blue-800 mb-4">Indian Institute of Technology Kharagpur</h1>
+            <h1 className="text-4xl font-bold text-[#0077B5] mb-4">Indian Institute of Technology Kharagpur</h1>
           </div>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
             Support the growth and development of your alma mater. Your contributions help IIT Kharagpur
@@ -45,13 +45,13 @@ function DonationPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Donation Form */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-3xl shadow-xl p-10 border border-gray-100">
-              <h3 className="text-3xl font-bold text-gray-800 mb-8 text-center">Make a Donation to IIT Kharagpur</h3>
+            <div className="bg-white rounded-3xl p-10 border border-gray-100">
+              <h3 className="text-3xl font-bold text-[#0077B5] mb-8 text-center">Make a Donation to IIT Kharagpur</h3>
 
               <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Amount Selection */}
                 <div>
-                  <h4 className="font-semibold text-lg mb-4 text-gray-800">Select Donation Amount (INR)</h4>
+                  <h4 className="font-semibold text-lg mb-4 text-[#0077B5]">Select Donation Amount (INR)</h4>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                     {amounts.map(amount => (
                       <button
@@ -59,8 +59,8 @@ function DonationPage() {
                         type="button"
                         onClick={() => handleAmountClick(amount)}
                         className={`p-3 rounded-xl font-bold text-center transition-all transform hover:scale-105 ${selectedAmount === amount
-                          ? 'bg-gradient-to-br from-blue-800 to-blue-700 text-white ring-4 ring-offset-2 -lg scale-105'
-                          : 'bg-white text-gray-800 hover:bg-gradient-to-br hover:from-orange-600 hover:to-orange-500 hover:text-white shadow-md border-2 border-gray-200 hover:border-orange-600'
+                          ? 'bg-gradient-to-br from-[#0077B5] to-[#005983] text-white ring-4 ring-offset-2 scale-105'
+                          : 'bg-white text-[#0077B5] hover:bg-gradient-to-br hover:from-[#0077B5] hover:to-[#005983] hover:text-white border-2 border-[#E3EAF3] hover:border-[#0077B5]'
                           }`}
                       >
                         ₹{amount.toLocaleString()}
@@ -73,22 +73,22 @@ function DonationPage() {
                     value={customAmount}
                     onChange={handleCustomAmountChange}
                     placeholder="Or enter a custom amount"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-iit-blue focus:outline-none"
+                    className="w-full p-3 border border-[#E3EAF3] rounded-lg focus:ring-2 focus:ring-[#0077B5] focus:outline-none"
                   />
                 </div>
 
                 {/* Frequency Selection */}
                 <div>
-                  <h4 className="font-semibold text-lg mb-4 text-gray-800">Donation Frequency</h4>
-                  <div className="flex bg-gray-100 rounded-full p-1">
+                  <h4 className="font-semibold text-lg mb-4 text-[#0077B5]">Donation Frequency</h4>
+                  <div className="flex bg-[#F5F8FA] rounded-full p-1">
                     {frequencies.map(freq => (
                       <button
                         key={freq}
                         type="button"
                         onClick={() => setFrequency(freq)}
                         className={`w-1/3 py-3 rounded-full font-semibold transition-all duration-300 ${frequency === freq
-                          ? 'bg-blue-800 text-white shadow-lg transform scale-105'
-                          : 'text-gray-600 hover:text-blue-800 hover:bg-white hover:shadow-md'
+                          ? 'bg-[#0077B5] text-white scale-105'
+                          : 'text-[#0077B5] hover:bg-white'
                           }`}
                       >
                         {freq}
@@ -101,7 +101,7 @@ function DonationPage() {
                 <button
                   type="button"
                   onClick={() => alert('Coming Soon!')}
-                  className="w-full bg-orange-600 text-white font-bold py-4 px-6 rounded-full text-lg hover:bg-orange-700 transition-all transform hover:-translate-y-0.5 shadow-lg"
+                  className="w-full bg-orange-600 text-white font-bold py-4 px-6 rounded-full text-lg hover:bg-orange-700 transition-all transform hover:-translate-y-0.5"
                 >
                   Proceed to Donate
                 </button>
@@ -111,11 +111,11 @@ function DonationPage() {
 
           {/* Sidebar Info */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-              <h4 className="text-xl font-bold text-dark-text mb-4">How Your Donation Helps</h4>
+            <div className="bg-white rounded-xl p-6 mb-6 border border-[#E3EAF3]">
+              <h4 className="text-xl font-bold text-[#0077B5] mb-4">How Your Donation Helps</h4>
               <div className="space-y-4">
                 <div className="flex items-start">
-                  <Book className="h-6 w-6 text-iit-blue mr-3 mt-1" />
+                  <Book className="h-6 w-6 text-[#0077B5] mr-3 mt-1" />
                   <div>
                     <h5 className="font-semibold text-dark-text">Student Support</h5>
                     <p className="text-sm text-light-text">Scholarships and financial aid for deserving students</p>
@@ -138,36 +138,36 @@ function DonationPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl p-6 shadow-xl ">
-              <h4 className="text-xl font-bold mb-4 flex items-center">
-                <Heart className="w-5 h-5 mr-2" />
+            <div className="bg-white rounded-xl p-6 border border-[#E3EAF3]">
+              <h4 className="text-xl font-bold text-[#0077B5] mb-4 flex items-center">
+                <Heart className="w-5 h-5 mr-2 text-[#0077B5]" />
                 IIT Kharagpur Impact
               </h4>
               <div className="space-y-4 text-sm">
                 <div className="flex justify-between items-center py-2 border-b border-white/20">
                   <span className="flex items-center">
-                    <Book className="w-4 h-4 mr-2" />
+                    <Book className="w-4 h-4 mr-2 text-[#0077B5]" />
                     Students
                   </span>
                   <span className="font-bold text-lg">15,000+</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-white/20">
                   <span className="flex items-center">
-                    <Home className="w-4 h-4 mr-2" />
+                    <Home className="w-4 h-4 mr-2 text-iit-orange" />
                     Faculty
                   </span>
                   <span className="font-bold text-lg">750+</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-white/20">
                   <span className="flex items-center">
-                    <Heart className="w-4 h-4 mr-2" />
+                    <Heart className="w-4 h-4 mr-2 text-[#0077B5]" />
                     Research Projects
                   </span>
                   <span className="font-bold text-lg">1,330+</span>
                 </div>
                 <div className="flex justify-between items-center py-2">
                   <span className="flex items-center">
-                    <Home className="w-4 h-4 mr-2" />
+                    <Home className="w-4 h-4 mr-2 text-iit-orange" />
                     Alumni Worldwide
                   </span>
                   <span className="font-bold text-lg">50,000+</span>

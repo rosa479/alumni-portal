@@ -45,7 +45,7 @@ function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="bg-white p-6 rounded-xl shadow-lg text-center">
+      <div className="bg-white p-6 rounded-xl text-center">
         <p>Loading Profile...</p>
       </div>
     );
@@ -53,7 +53,7 @@ function ProfilePage() {
 
   if (error) {
     return (
-      <div className="bg-white p-6 rounded-xl shadow-lg text-center text-red-500">
+      <div className="bg-white p-6 rounded-xl text-center text-red-500">
         <p>{error}</p>
       </div>
     );
@@ -65,7 +65,7 @@ function ProfilePage() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50 min-h-screen">
+    <div className="bg-[#F5F8FA] min-h-screen">
       <div className="container mx-auto p-4 lg:p-8">
         <ProfileHeader user={user} />
 
@@ -76,14 +76,26 @@ function ProfilePage() {
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content (Left Column) */}
           <div className="lg:col-span-2 space-y-8">
-            <ExperienceSection />
-            <EducationSection user={user} />
+            <div className="bg-white rounded-2xl p-8 border border-[#E3EAF3]">
+              <h2 className="text-2xl font-bold text-[#0077B5] mb-6">Experience</h2>
+              <ExperienceSection />
+            </div>
+            <div className="bg-white rounded-2xl p-8 border border-[#E3EAF3]">
+              <h2 className="text-2xl font-bold text-[#0077B5] mb-6">Education</h2>
+              <EducationSection user={user} />
+            </div>
           </div>
 
           {/* Sidebar (Right Column) */}
           <div className="lg:col-span-1 space-y-8">
-            <NetworkStatsSection user={user} />
-            <SkillsSection />
+            <div className="bg-white rounded-2xl p-8 border border-[#E3EAF3]">
+              <h2 className="text-2xl font-bold text-[#0077B5] mb-6">Network Stats</h2>
+              <NetworkStatsSection user={user} />
+            </div>
+            <div className="bg-white rounded-2xl p-8 border border-[#E3EAF3]">
+              <h2 className="text-2xl font-bold text-[#0077B5] mb-6">Skills</h2>
+              <SkillsSection />
+            </div>
           </div>
         </div>
       </div>
