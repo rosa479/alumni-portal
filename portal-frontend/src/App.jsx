@@ -22,6 +22,7 @@ import SinglePostPage from "./pages/SinglePostPage";
 import ContributionsPage from "./pages/ContributionsPage";
 import ContributionDetailPage from "./pages/ContributionDetailPage";
 import LandingPage from "./pages/LandingPage";
+import OAuthCallback from "./pages/OAuthCallback";
 
 function MainLayout() {
   return (
@@ -40,6 +41,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/callback" element={<OAuthCallback />} />
 
         {/* Routes WITH the main header */}
         <Route element={<MainLayout />}>

@@ -21,7 +21,11 @@ from .views import (
     ImageUploadView,
     PostLikeView,
     PostCommentListCreateView,
-    PostCommentDetailView
+    PostCommentDetailView,
+    GoogleOAuthView,
+    CheckUserView,
+    ActivateUserView,
+    GoogleOAuthLoginView
 )
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -33,6 +37,10 @@ urlpatterns = [
     path('auth/register/', RegisterView.as_view(), name='auth_register'),
     path('auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('auth/google/', GoogleOAuthView.as_view(), name='google_oauth'),
+    path('auth/google-login/', GoogleOAuthLoginView.as_view(), name='google_oauth_login'),
+    path('auth/check-user/', CheckUserView.as_view(), name='check_user'),
+    path('auth/activate-user/', ActivateUserView.as_view(), name='activate_user'),
     
     # Service: Profile
     path('profiles/me/', UserProfileView.as_view(), name='user_profile'),
