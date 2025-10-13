@@ -114,9 +114,9 @@ const FeaturedHalls = () => {
   }, []);
 
   return (
-    <section className="relative overflow-hidden">
+    <section className="relative overflow-hidden ">
       <AnimatedBackground />
-      <div className="relative z-10 container mx-auto px-4 pt-16 pb-12">
+      <div className="bg-[#E6F1F9] relative z-10 container mx-auto px-4 pt-16 pb-12">
         <motion.div
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}

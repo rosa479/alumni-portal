@@ -10,7 +10,6 @@ import {
   Award,
   Heart,
 } from "lucide-react";
-import heroImage from "./hero.jpg";
 import { CountUp } from "countup.js";
 import iitkgpDrone from "../assets/dist_iitkgpvideo1.webm";
 import AboutSection from "../components/HomeFeatures";
@@ -354,7 +353,7 @@ const FeaturesSection = () => {
   ];
 
   return (
-    <section className="py-20 bg-background">
+    <section className="py-20 bg-[#E6F1F9]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
@@ -481,7 +480,7 @@ const ImpactSection = () => {
   }, []);
 
   return (
-    <section className="py-20 bg-gradient-to-br from-primary/5 via-secondary/20 to-accent/5">
+    <section className="py-20 bg-[#F0F7FF] from-primary/5 via-secondary/20 to-accent/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
@@ -520,7 +519,7 @@ const ImpactSection = () => {
 
 const CTASection = () => {
   return (
-    <section className="py-20 bg-gradient-to-r from-primary via-primary to-accent relative overflow-hidden">
+    <section className="py-20 bg-[#F0F7FF] bg-gradient-to-r from-primary via-primary to-accent relative overflow-hidden">
       <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
         <h2 className="text-3xl md:text-5xl font-bold text-primary-foreground mb-6">
