@@ -127,7 +127,7 @@ function PostDashboard({
       </div>
         {/* 1. Title first */}
       <Link to={`/posts/${id}`} className="block cursor-pointer">
-        {title && <h3 className="text-xl font-semibold text-dark-text mb-4">{title}</h3>}
+        {title && <h3 className="text-md font-semibold text-dark-text mb-4">{title}</h3>}
         
         {/* 2. Image second */}
         {imageUrl && (

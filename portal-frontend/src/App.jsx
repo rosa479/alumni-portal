@@ -22,12 +22,20 @@ import SinglePostPage from "./pages/SinglePostPage";
 import ContributionsPage from "./pages/ContributionsPage";
 import ContributionDetailPage from "./pages/ContributionDetailPage";
 import LandingPage from "./pages/LandingPage";
+import MobileBottomNav from "./components/MobileBottomNav";
 
 function MainLayout() {
   return (
-    <div className="min-h-screen font-sans">
+    <div className="relative min-h-screen font-sans">
       <Header />
-      <Outlet />
+      
+      {/* 👇 UPDATE THE PADDING HERE */}
+      {/* Increase bottom padding to give the floating nav space */}
+      <main className="pb-28 md:pb-0"> 
+        <Outlet /> 
+      </main>
+
+      <MobileBottomNav />
     </div>
   );
 }
