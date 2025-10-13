@@ -3,7 +3,7 @@ import React from "react";
 import { Users } from "react-feather";
 import { Link } from "react-router-dom";
 
-// 🖼️ Import your community images
+// Import your community images
 import entrepreneurship from "./icons/enterpreneurship.png";
 import ai from "./icons/ai.png";
 import finance from "./icons/invest.png";
@@ -11,7 +11,7 @@ import research from "./icons/research.png";
 import place from "./icons/place.png";
 import graduate from "./icons/graduate.png";
 
-// 🧩 Map community keywords to their images
+// Map community keywords to their images
 const communityImages = {
   entrepreneurship: entrepreneurship,
   business: entrepreneurship,
