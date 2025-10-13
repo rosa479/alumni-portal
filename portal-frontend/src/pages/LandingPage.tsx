@@ -129,16 +129,11 @@ const HeroSection = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
-            <div className="inline-block">
-              <span className="bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold">
-                IIT Kharagpur Alumni Network
-              </span>
-            </div>
-            <h1 className="text-4xl md:text-6xl font-bold leading-tight">
+            <h1 className="text-4xl md:text-5xl font-bold leading-tight">
+              Welcome to the IIT Kharagpur Community
+            </h1>
+            <h1 className="text-4xl md:text-3xl font-bold leading-tight">
               Connect. Collaborate. 
-              <span className="block bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                Create Impact.
-              </span>
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed">
               Join thousands of IIT Kharagpur alumni worldwide. Network with fellow graduates, 
@@ -213,7 +208,7 @@ const FeaturesSection = () => {
 
   return (
     <section className="py-20 bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
             Everything You Need to Stay Connected
@@ -233,6 +228,7 @@ const FeaturesSection = () => {
           ))}
         </div>
       </div>
+
     </section>
   );
 };
@@ -354,6 +350,7 @@ function LandingPage() {
   return (
     <>
       <Navbar />
+      <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]"></div>
       <HeroSection />
       <FeaturesSection />
       <ImpactSection />
