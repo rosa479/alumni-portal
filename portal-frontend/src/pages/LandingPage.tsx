@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Users,
@@ -11,6 +11,7 @@ import {
   Heart,
 } from "lucide-react";
 import heroImage from "./hero.jpg";
+import { CountUp } from "countup.js";
 
 // Inline Button Component
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
