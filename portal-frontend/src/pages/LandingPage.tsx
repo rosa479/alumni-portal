@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import heroImage from "./hero.jpg";
 import { CountUp } from "countup.js";
+import iitkgpDrone from "../assets/dist_iitkgpvideo1.webm";
+import AboutSection from "../components/HomeFeatures";
 
 // Inline Button Component
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -89,7 +91,7 @@ Card.displayName = "Card";
 
 const Navbar = () => {
   return (
-    <header className="bg-background shadow-sm sticky top-5 z-50 backdrop-blur-xl rounded-full w-[95%] mx-auto">
+    <header className="bg-[#FFFFFF70] shadow-sm fixed top-5 z-50 backdrop-blur-xl rounded-full w-[95%] left-1/2 -translate-x-1/2">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Left Corner: Logo */}
@@ -137,7 +139,7 @@ const Navbar = () => {
 
           {/* Right End: Authentication - Hidden on mobile */}
           <div className="hidden md:block">
-            <div className="ml-4 flex items-center md:ml-6 gap-2 backdrop-blur-xl">
+            <div className="bg-[#FFFFFF0] ml-4 flex items-center md:ml-6 gap-2">
               <Button variant="outline" asChild>
                 <Link to="/login">Login</Link>
               </Button>
@@ -236,18 +238,38 @@ const HeroSection = () => {
   }, []); // The empty array ensures this effect runs only once on mount
 
   return (
-    <section className="relative bg-gradient-to-br from-secondary/30 via-background to-background overflow-hidden">
-      <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="space-y-8">
-            <h1 className="text-4xl md:text-5xl font-bold leading-tight">
+    <section className="w-dvw h-dvh relative overflow-hidden flex items-center">
+      {/* Video Background and Overlay */}
+      <div className="absolute top-0 left-0 w-full h-full -z-10">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover"
+        >
+          {/* --- IMPORTANT --- */}
+          {/* Replace this src with the path to your video file */}
+          <source src={iitkgpDrone} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        {/* This overlay improves text readability over the video */}
+        <div className="absolute inset-0 bg-black/30"></div>
+      </div>
+
+      {/* Content */}
+      <div className="relative max-w-7xl md:ml-40 px-4 sm:px-6 lg:px-8">
+        {/* The content now lives in a single, width-constrained container */}
+        <div className="max-w-3xl">
+          <div className="space-y-8 ">
+            {/* Text colors are updated for better contrast */}
+            <h1 className="text-4xl md:text-5xl font-bold leading-tight text-white">
               Welcome to the IIT Kharagpur Community
             </h1>
-            <h1 className="text-4xl md:text-3xl font-bold leading-tight">
+            <h1 className="text-4xl md:text-3xl font-bold leading-tight text-white">
               Connect. Collaborate.
             </h1>
-            <p className="text-lg text-muted-foreground leading-relaxed">
+            <p className="text-lg text-gray-300 leading-relaxed">
               Join thousands of IIT Kharagpur alumni worldwide. Network with
               fellow graduates, mentor the next generation, and unlock
               opportunities that shape the future.
@@ -262,46 +284,35 @@ const HeroSection = () => {
             </div>
             <div className="flex items-center gap-8 pt-4">
               <div>
-                {/* 3. Attach the refs to the DOM elements */}
                 <div
                   ref={membersRef}
-                  className="text-3xl font-bold text-primary"
+                  className="text-3xl font-bold text-gray-300"
                 >
                   50,000+
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  Alumni Members
-                </div>
+                <div className="text-sm text-gray-400">Alumni Members</div>
               </div>
               <div className="h-12 w-px bg-border"></div>
               <div>
                 <div
                   ref={countriesRef}
-                  className="text-3xl font-bold text-primary"
+                  className="text-3xl font-bold text-gray-300"
                 >
                   150+
                 </div>
-                <div className="text-sm text-muted-foreground">Countries</div>
+                <div className="text-sm text-gray-400">Countries</div>
               </div>
               <div className="h-12 w-px bg-border"></div>
               <div>
                 <div
                   ref={companiesRef}
-                  className="text-3xl font-bold text-primary"
+                  className="text-3xl font-bold text-gray-300"
                 >
                   2000+
                 </div>
-                <div className="text-sm text-muted-foreground">Companies</div>
+                <div className="text-sm text-gray-400">Companies</div>
               </div>
             </div>
-          </div>
-          <div className="relative">
-            <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-accent/20 rounded-3xl blur-3xl"></div>
-            <img
-              src={heroImage}
-              alt="IIT Kharagpur Alumni Network"
-              className="relative rounded-2xl shadow-2xl w-full h-auto"
-            />
           </div>
         </div>
       </div>
@@ -716,6 +727,7 @@ function LandingPage() {
       <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]"></div>
       <HeroSection />
       <FeaturesSection />
+      {/* <AboutSection /> */}
       <ImpactSection />
       <CTASection />
       <Footer />
