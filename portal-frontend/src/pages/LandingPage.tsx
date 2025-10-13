@@ -14,6 +14,7 @@ import heroImage from "./hero.jpg";
 import { CountUp } from "countup.js";
 import iitkgpDrone from "../assets/dist_iitkgpvideo1.webm";
 import AboutSection from "../components/HomeFeatures";
+import FeaturedHalls from "../components/LandingPage/FeaturedHalls";
 
 // Inline Button Component
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -729,6 +730,7 @@ function LandingPage() {
       <FeaturesSection />
       {/* <AboutSection /> */}
       <ImpactSection />
+      <FeaturedHalls />
       <CTASection />
       <Footer />
     </>
