@@ -21,7 +21,7 @@ function ContributionCard({ contribution }) {
    };
 
    return (
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+      <div className="bg-white rounded-xl overflow-hidden transition-shadow duration-300">
          {contribution.image_url && (
             <div className="h-48 overflow-hidden">
                <img
@@ -45,7 +45,6 @@ function ContributionCard({ contribution }) {
 
             <p className="text-light-text text-sm mb-4 line-clamp-3">{contribution.description}</p>
 
-            {/* Only show progress bar if there are meaningful amounts */}
             {contribution.target_amount && parseFloat(contribution.target_amount) > 0 && (
                <div className="mb-4">
                   <div className="flex justify-between text-sm text-light-text mb-2">
@@ -54,26 +53,25 @@ function ContributionCard({ contribution }) {
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                      <div
-                        className="bg-blue-800 h-2 rounded-full transition-all duration-500"
+                        className="bg-[#0077B5] h-2 rounded-full transition-all duration-500"
                         style={{ width: `${contribution.progress_percentage}%` }}
                      ></div>
                   </div>
                </div>
             )}
 
-            {/* Only show amounts if they exist and are greater than 0 */}
             {(contribution.target_amount && parseFloat(contribution.target_amount) > 0) || 
              (contribution.current_amount && parseFloat(contribution.current_amount) > 0) ? (
                <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
                   {contribution.target_amount && parseFloat(contribution.target_amount) > 0 && (
                      <div className="flex items-center text-light-text">
-                        <Target className="w-4 h-4 mr-2" />
+                        <Target className="w-4 h-4 mr-2 text-[#0077B5]" />
                         <span>Target: {formatCurrency(contribution.target_amount)}</span>
                      </div>
                   )}
                   {contribution.current_amount && parseFloat(contribution.current_amount) > 0 && (
                      <div className="flex items-center text-light-text">
-                        <TrendingUp className="w-4 h-4 mr-2" />
+                        <TrendingUp className="w-4 h-4 mr-2 text-[#0077B5]" />
                         <span>Raised: {formatCurrency(contribution.current_amount)}</span>
                      </div>
                   )}
@@ -81,23 +79,21 @@ function ContributionCard({ contribution }) {
             ) : null}
 
             <div className="flex items-center justify-between text-sm text-light-text mb-4">
-               {/* Only show contributors count if there are actual contributors */}
                {contribution.contribution_count > 0 ? (
                   <div className="flex items-center">
-                     <Users className="w-4 h-4 mr-2" />
+                     <Users className="w-4 h-4 mr-2 text-[#0077B5]" />
                      <span>{contribution.contribution_count} contributors</span>
                   </div>
                ) : (
                   <div></div>
                )}
                <div className="flex items-center">
-                  <Calendar className="w-4 h-4 mr-2" />
+                  <Calendar className="w-4 h-4 mr-2 text-[#0077B5]" />
                   <span>{formatDate(contribution.created_at)}</span>
                </div>
             </div>
 
             <div className="flex items-center justify-between">
-               {/* Only show "Created by" if there's actually a creator */}
                {contribution.created_by_name ? (
                   <div className="text-sm">
                      <span className="text-light-text">Created by </span>
@@ -108,7 +104,7 @@ function ContributionCard({ contribution }) {
                )}
                <Link
                   to={`/contributions/${contribution.id}`}
-                  className="bg-blue-800 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors duration-200 font-medium"
+                  className="bg-[#0077B5] text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors duration-200 font-medium"
                >
                   View Details
                </Link>
@@ -165,7 +161,7 @@ function ContributionsPage() {
             {/* Header Section */}
             <div className="text-center mb-12">
                <div className="flex justify-center mb-4">
-                  <CreditCard className="h-16 w-16 text-blue-800" />
+                  <CreditCard className="h-16 w-16 text-[#0077B5]" />
                </div>
                <h1 className="text-4xl font-bold text-dark-text mb-4">Contribution Programs</h1>
                <p className="text-lg text-light-text max-w-2xl mx-auto">
@@ -176,12 +172,12 @@ function ContributionsPage() {
 
             {/* Filter Tabs */}
             <div className="flex justify-center mb-8">
-               <div className="bg-gray-100 rounded-full p-1 shadow-sm">
+               <div className="bg-gray-100 rounded-full p-1">
                   <button
                      onClick={() => setFilter('all')}
                      className={`px-6 py-2 rounded-full font-medium transition-colors ${filter === 'all'
-                        ? 'bg-blue-800 text-white shadow-lg'
-                        : 'text-gray-600 hover:text-blue-800 hover:bg-white'
+                        ? 'bg-[#0077B5] text-white'
+                        : 'text-gray-600 hover:text-[#0077B5] hover:bg-white'
                         }`}
                   >
                      All Contributions
@@ -189,8 +185,8 @@ function ContributionsPage() {
                   <button
                      onClick={() => setFilter('ACTIVE')}
                      className={`px-6 py-2 rounded-full font-medium transition-colors ${filter === 'ACTIVE'
-                        ? 'bg-blue-800 text-white shadow-lg'
-                        : 'text-gray-600 hover:text-blue-800 hover:bg-white'
+                        ? 'bg-[#0077B5] text-white'
+                        : 'text-gray-600 hover:text-[#0077B5] hover:bg-white'
                         }`}
                   >
                      Active
@@ -198,8 +194,8 @@ function ContributionsPage() {
                   <button
                      onClick={() => setFilter('COMPLETED')}
                      className={`px-6 py-2 rounded-full font-medium transition-colors ${filter === 'COMPLETED'
-                        ? 'bg-blue-800 text-white shadow-lg'
-                        : 'text-gray-600 hover:text-blue-800 hover:bg-white'
+                        ? 'bg-[#0077B5] text-white'
+                        : 'text-gray-600 hover:text-[#0077B5] hover:bg-white'
                         }`}
                   >
                      Completed
@@ -209,10 +205,10 @@ function ContributionsPage() {
 
             {/* Statistics */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-               <div className="bg-white rounded-xl p-6 shadow-sm">
+               <div className="bg-white rounded-xl p-6">
                   <div className="flex items-center">
                      <div className="p-3 bg-blue-100 rounded-lg mr-4">
-                        <Target className="h-6 w-6 text-primary-blue" />
+                        <Target className="h-6 w-6 text-[#0077B5]" />
                      </div>
                      <div>
                         <p className="text-2xl font-bold text-dark-text">
@@ -223,7 +219,7 @@ function ContributionsPage() {
                   </div>
                </div>
 
-               <div className="bg-white rounded-xl p-6 shadow-sm">
+               <div className="bg-white rounded-xl p-6">
                   <div className="flex items-center">
                      <div className="p-3 bg-green-100 rounded-lg mr-4">
                         <TrendingUp className="h-6 w-6 text-green-600" />
@@ -237,7 +233,7 @@ function ContributionsPage() {
                   </div>
                </div>
 
-               <div className="bg-white rounded-xl p-6 shadow-sm">
+               <div className="bg-white rounded-xl p-6">
                   <div className="flex items-center">
                      <div className="p-3 bg-purple-100 rounded-lg mr-4">
                         <Users className="h-6 w-6 text-purple-600" />

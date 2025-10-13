@@ -120,7 +120,7 @@ function PostDashboard({
 
       {/* 1. Title, content, and image - all clickable */}
       <Link to={`/posts/${id}`} className="block cursor-pointer">
-        {title && <h3 className="text-xl font-semibold text-dark-text mb-4 mt-4">{title}</h3>}
+        {title && <h3 className="text-md font-semibold text-dark-text mb-4 mt-4">{title}</h3>}
         
         {/* Post content */}
         <div className="text-dark-text mb-4">
