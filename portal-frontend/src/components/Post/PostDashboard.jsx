@@ -92,7 +92,7 @@ function PostDashboard({
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-lg">
+    <div className="bg-white p-6 rounded-xl ">
     
     
       {/* 3. User info and tags */}

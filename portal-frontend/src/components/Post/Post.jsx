@@ -79,7 +79,7 @@ function Post({ id, authorName, authorAvatar, created_at, content, title, imageU
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-lg">
+    <div className="bg-white p-6 rounded-xl ">
          {/* 3. User info and tags */}
          <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">

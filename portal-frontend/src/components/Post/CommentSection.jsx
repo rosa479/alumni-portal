@@ -16,7 +16,7 @@ function CommentSection({ comments }) {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-lg mt-8">
+    <div className="bg-white p-6 rounded-xl mt-8">
       <h3 className="text-xl font-bold text-dark-text mb-6">
         {comments.length} Comments
       </h3>
