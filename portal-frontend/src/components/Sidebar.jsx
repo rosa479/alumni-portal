@@ -1,5 +1,5 @@
 // src/components/Sidebar.jsx
-import React, { useState } from "react";
+import React from "react";
 
 function Sidebar({
   profile_image,
@@ -7,20 +7,20 @@ function Sidebar({
   role,
   graduation_year,
   department,
-  unreadMessages = 5, // Add this prop for unread messages count
 }) {
-  // Track active menu item
-  const [active, setActive] = useState("feed");
-
-  const menu = [
-    { key: "feed", label: "My Feed", href: "#" },
-    { key: "profile", label: "My Profile", href: "/profile" },
-    { key: "messages", label: "Messages", href: "#" },
-    { key: "events", label: "Events", href: "#" },
+  const suggestions = [
+    { id: 1, name: 'Riya Mehta', dept: 'CSE • 2020', avatar: 'https://i.pravatar.cc/150?img=1' },
+    { id: 2, name: 'Arjun Verma', dept: 'EE • 2019', avatar: 'https://i.pravatar.cc/150?img=2' },
+    { id: 3, name: 'Neha Gupta', dept: 'ME • 2018', avatar: 'https://i.pravatar.cc/150?img=3' },
+    { id: 4, name: 'Riya Mehta', dept: 'CSE • 2020', avatar: 'https://i.pravatar.cc/150?img=1' },
+    { id: 5, name: 'Arjun Verma', dept: 'EE • 2019', avatar: 'https://i.pravatar.cc/150?img=2' },
+    { id: 6, name: 'Neha Gupta', dept: 'ME • 2018', avatar: 'https://i.pravatar.cc/150?img=3' },
+    { id: 7, name: 'Riya Mehta', dept: 'CSE • 2020', avatar: 'https://i.pravatar.cc/150?img=1' },
+    { id: 8, name: 'Arjun Verma', dept: 'EE • 2019', avatar: 'https://i.pravatar.cc/150?img=2' },
   ];
 
   return (
-    <aside className="hidden lg:block">
+    <aside className="hidden lg:block sticky top-27">
       <div className="bg-white p-6 rounded-xl text-center mb-6">
         <img
           src={profile_image}
@@ -33,26 +33,20 @@ function Sidebar({
           Class of {graduation_year}, {department}
         </p>
       </div>
+
       <div className="bg-white p-6 rounded-xl ">
-        <ul className="space-y-2">
-          {menu.map((item) => (
-            <li key={item.key} className="relative">
-              <a
-                href={item.href}
-                onClick={() => setActive(item.key)}
-                className={`block py-2 px-4 rounded-lg font-medium transition-colors ${
-                  active === item.key
-                    ? "bg-[#0077B5] text-white"
-                    : "bg-white text-gray-800 hover:bg-gray-100"
-                }`}
-              >
-                {item.label}
-                {item.key === "messages" && unreadMessages > 0 && (
-                  <span className="absolute top-2 right-4 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold rounded-full bg-orange-200 text-orange-700">
-                    {unreadMessages}
-                  </span>
-                )}
-              </a>
+        <h4 className="font-bold text-dark-text mb-4 pb-3 border-b border-gray-200">People you may know</h4>
+        <ul className="space-y-4">
+          {suggestions.map((p) => (
+            <li key={p.id} className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <img src={p.avatar} alt={p.name} className="w-9 h-9 rounded-full" />
+                <div>
+                  <p className="font-medium text-dark-text">{p.name}</p>
+                  <p className="text-xs text-light-text">{p.dept}</p>
+                </div>
+              </div>
+              <button className="text-xs font-semibold text-white bg-[#0077B5] border border-[#0077B5] rounded-full px-3 py-1 hover:bg-[#005983] hover:text-white transition-all">Connect</button>
             </li>
           ))}
         </ul>
