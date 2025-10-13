@@ -15,7 +15,7 @@ function NetworkStatsSection({ user }) {
       <h3 className="text-xl font-bold text-dark-text mb-4">Your Network</h3>
 
       <p className="text-gray-600 mb-6">
-        An overview of your contributions and connections within the alumni
+        An overview of your endowment and connections within the alumni
         network.
       </p>
 

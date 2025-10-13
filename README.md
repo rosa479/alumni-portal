@@ -201,13 +201,13 @@ Here are the primary API endpoints currently available.
 | `GET`  | `/api/communities/<uuid>/user-tags/`       | List user's assigned tags.          | User (Authenticated) |
 | `POST` | `/api/user-tags/`                          | Assign tag to user.                 | User (Authenticated) |
 
-### Contributions (formerly Scholarships)
+### Endowment (formerly Scholarships)
 | Method | Endpoint                                   | Description                         | Authorization        |
 | :----- | :----------------------------------------- | :---------------------------------- | :------------------- |
-| `GET`  | `/api/contributions/`                      | List all contributions.             | User (Authenticated) |
-| `GET`  | `/api/contributions/<uuid>/`               | Get contribution details.            | User (Authenticated) |
-| `POST` | `/api/contributions/`                      | Create a new contribution.           | User (Authenticated) |
-| `POST` | `/api/contributions/<uuid>/contribute/`    | Contribute to a fund.               | User (Authenticated) |
+| `GET`  | `/api/endowment/`                      | List all endowment.             | User (Authenticated) |
+| `GET`  | `/api/endowment/<uuid>/`               | Get contribution details.            | User (Authenticated) |
+| `POST` | `/api/endowment/`                      | Create a new contribution.           | User (Authenticated) |
+| `POST` | `/api/endowment/<uuid>/contribute/`    | Contribute to a fund.               | User (Authenticated) |
 
 ### Admin Endpoints
 | Method | Endpoint                                   | Description                         | Authorization        |
@@ -234,7 +234,7 @@ Here are the primary API endpoints currently available.
 
 ### 🚧 Work Remaining
 
-1. **Payment Gateway**: Integration for donations and contributions
+1. **Payment Gateway**: Integration for donations and endowment
 2. **Real-time Messaging**: Direct messaging between alumni
 3. **Profile Editing**: Frontend interface for profile updates
 4. **Admin Dashboard**: Enhanced admin panel with analytics
@@ -253,7 +253,7 @@ Here are the primary API endpoints currently available.
 
 ## Contributing
 
-We welcome contributions! Please see our contributing guidelines for more details.
+We welcome endowment! Please see our contributing guidelines for more details.
 
 ## License
 

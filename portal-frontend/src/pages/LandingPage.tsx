@@ -376,7 +376,7 @@ const ImpactSection = () => {
   const trendUpRef = useRef(null);
   const globeRef = useRef(null);
   const awardRef = useRef(null);
-  const contributionsRef = useRef(null);
+  const endowmentRef = useRef(null);
 
   const stats = [
     {
@@ -404,8 +404,8 @@ const ImpactSection = () => {
       icon: Heart,
       value: "₹50Cr+",
       label: "Giving Back",
-      description: "Contributions to alma mater",
-      ref: contributionsRef,
+      description: "Endowment to alma mater",
+      ref: endowmentRef,
     },
   ];
 
@@ -452,8 +452,8 @@ const ImpactSection = () => {
       }
     }
 
-    if (contributionsRef.current) {
-      const membersCountUp = new CountUp(contributionsRef.current, 50, {
+    if (endowmentRef.current) {
+      const membersCountUp = new CountUp(endowmentRef.current, 50, {
         duration: 3,
         prefix: "₹",
         suffix: "Cr+",

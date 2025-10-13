@@ -267,7 +267,7 @@ class ScholarshipListView(generics.ListCreateAPIView):
         
         # Calculate totals
         total_raised = sum(float(scholarship.current_amount) for scholarship in queryset)
-        total_contributors = sum(scholarship.contributions.count() for scholarship in queryset)
+        total_contributors = sum(scholarship.endowment.count() for scholarship in queryset)
         
         return Response({
             'results': serializer.data,
@@ -290,7 +290,7 @@ class ScholarshipDetailView(generics.RetrieveUpdateDestroyAPIView):
 class ScholarshipContributionCreateView(generics.CreateAPIView):
     """
     Create a contribution to a scholarship.
-    Corresponds to: POST /api/scholarships/{scholarship_id}/contributions/
+    Corresponds to: POST /api/scholarships/{scholarship_id}/endowment/
     """
     serializer_class = ScholarshipContributionSerializer
     permission_classes = [IsAuthenticated]
@@ -301,10 +301,10 @@ class ScholarshipContributionCreateView(generics.CreateAPIView):
         serializer.save(scholarship=scholarship)
 
 
-class ScholarshipContributionsListView(generics.ListAPIView):
+class ScholarshipEndowmentListView(generics.ListAPIView):
     """
-    List all contributions for a specific scholarship.
-    Corresponds to: GET /api/scholarships/{scholarship_id}/contributions/
+    List all endowment for a specific scholarship.
+    Corresponds to: GET /api/scholarships/{scholarship_id}/endowment/
     """
     serializer_class = ScholarshipContributionSerializer
     permission_classes = [IsAuthenticated]

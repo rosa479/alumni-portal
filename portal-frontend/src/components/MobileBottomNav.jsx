@@ -8,7 +8,7 @@ const navLinks = [
   { to: '/communities', icon: Users},
   { to: '/profile', icon: User},
   { to: '/donate', icon: Heart},
-  { to: '/contributions', icon: Award},
+  { to: '/endowment', icon: Award},
 ];
 
 function MobileBottomNav() {

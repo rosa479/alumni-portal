@@ -14,7 +14,7 @@ from .views import (
     ScholarshipListView,
     ScholarshipDetailView,
     ScholarshipContributionCreateView,
-    ScholarshipContributionsListView,
+    ScholarshipEndowmentListView,
     TagListCreateView,
     TagDetailView,
     UserTagListCreateView,
@@ -62,8 +62,8 @@ urlpatterns = [
     # Service: Scholarships
     path('scholarships/', ScholarshipListView.as_view(), name='scholarship_list'),
     path('scholarships/<uuid:pk>/', ScholarshipDetailView.as_view(), name='scholarship_detail'),
-    path('scholarships/<uuid:scholarship_id>/contributions/', ScholarshipContributionCreateView.as_view(), name='scholarship_contribution_create'),
-    path('scholarships/<uuid:scholarship_id>/contributions/list/', ScholarshipContributionsListView.as_view(), name='scholarship_contributions_list'),
+    path('scholarships/<uuid:scholarship_id>/endowment/', ScholarshipContributionCreateView.as_view(), name='scholarship_contribution_create'),
+    path('scholarships/<uuid:scholarship_id>/endowment/list/', ScholarshipEndowmentListView.as_view(), name='scholarship_endowment_list'),
 
     # Service: Tags
     path('communities/<uuid:community_id>/tags/', TagListCreateView.as_view(), name='tag_list_create'),

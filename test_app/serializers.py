@@ -243,7 +243,7 @@ class PostCommentSerializer(serializers.ModelSerializer):
 
 class ScholarshipContributionSerializer(serializers.ModelSerializer):
     """
-    Serializer for scholarship contributions.
+    Serializer for scholarship endowment.
     """
     contributor_name = serializers.CharField(source='contributor.alumni_profile.full_name', read_only=True)
     contributor_email = serializers.EmailField(source='contributor.email', read_only=True)
@@ -267,7 +267,7 @@ class ScholarshipSerializer(serializers.ModelSerializer):
     progress_percentage = serializers.ReadOnlyField()
     remaining_amount = serializers.ReadOnlyField()
     created_by_name = serializers.CharField(source='created_by.alumni_profile.full_name', read_only=True)
-    contributions = ScholarshipContributionSerializer(many=True, read_only=True)
+    endowment = ScholarshipContributionSerializer(many=True, read_only=True)
     contribution_count = serializers.SerializerMethodField()
     
     class Meta:
@@ -275,12 +275,12 @@ class ScholarshipSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'description', 'target_amount', 'current_amount', 
             'status', 'created_by', 'created_by_name', 'created_at', 'updated_at', 
-            'image_url', 'progress_percentage', 'remaining_amount', 'contributions', 'contribution_count'
+            'image_url', 'progress_percentage', 'remaining_amount', 'endowment', 'contribution_count'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at', 'current_amount']
     
     def get_contribution_count(self, obj):
-        return obj.contributions.count()
+        return obj.endowment.count()
 
 
 class ScholarshipListSerializer(serializers.ModelSerializer):
@@ -301,4 +301,4 @@ class ScholarshipListSerializer(serializers.ModelSerializer):
         ]
     
     def get_contribution_count(self, obj):
-        return obj.contributions.count()
+        return obj.endowment.count()
