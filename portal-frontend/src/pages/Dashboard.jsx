@@ -104,14 +104,7 @@ function Dashboard() {
           department={user.alumni_profile.department}
         />
         <section className="sm:col-span-3 space-y-6">
-          <div className="bg-white rounded-2xl p-6 border border-gray-100">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">
-              Welcome to IITKGP Connect
-            </h1>
-            <p className="text-gray-600">
-              Stay connected with your alma mater and fellow alumni
-            </p>
-          </div>
+          
           {posts.map((post) => (
             <PostDashboard
               key={post.id}
