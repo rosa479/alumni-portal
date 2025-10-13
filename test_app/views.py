@@ -158,6 +158,22 @@ class ScholarshipListView(generics.ListCreateAPIView):
     
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
+    
+    def list(self, request, *args, **kwargs):
+        """Override list to add total calculations"""
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        
+        # Calculate totals
+        total_raised = sum(float(scholarship.current_amount) for scholarship in queryset)
+        total_contributors = sum(scholarship.contributions.count() for scholarship in queryset)
+        
+        return Response({
+            'results': serializer.data,
+            'total_raised': total_raised,
+            'total_contributors': total_contributors,
+            'total_scholarships': queryset.count()
+        })
 
 
 class ScholarshipDetailView(generics.RetrieveUpdateDestroyAPIView):

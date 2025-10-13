@@ -1,14 +1,18 @@
 # Alum Portal | TSG
 
-_*Under Construction 🏗️*_
+_*IIT Kharagpur Alumni Portal - Connecting Alumni Worldwide*_
 
 ---
 
 ## Technology Stack
 
 - **Backend**: Django & Django REST Framework
+- **Frontend**: React with Vite, Tailwind CSS
 - **Database**: PostgreSQL
 - **Authentication**: JSON Web Tokens (JWT) via `djangorestframework-simplejwt`
+- **File Storage**: AWS S3 (configurable from env)
+- **Rich Text Editor**: @uiw/react-md-editor
+- **Icons**: react-feather
 - **Deployment (Planned)**: Docker, Amazon EKS (Kubernetes)
 
 ### Local Setup
@@ -47,7 +51,7 @@ _*Under Construction 🏗️*_
     cp example.env .env
     ```
 
-    Now, open the `.env` file and fill in the details for your database and a new Django secret key.
+    Now, open the `.env` file and fill in the details for your database, AWS S3, and a new Django secret key.
 
     ```ini
     SECRET_KEY=your-django-secret-key-goes-here
@@ -57,6 +61,15 @@ _*Under Construction 🏗️*_
     DB_PASSWORD=strongpassword
     DB_HOST=localhost
     DB_PORT=5432
+
+    # AWS S3 Configuration (Optional - falls back to local storage if not provided)
+    AWS_ACCESS_KEY_ID=your_aws_access_key_id
+    AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
+    AWS_STORAGE_BUCKET_NAME=your_s3_bucket_name
+    AWS_S3_REGION_NAME=us-east-1
+
+    # Base URL for the application
+    BASE_URL=http://localhost:8000
     ```
 
 5.  **Run Postgres docker container**
@@ -100,28 +113,105 @@ _*Under Construction 🏗️*_
 
     The API is now live at `http://127.0.0.1:8000/`.
 
-10. **Admin panel**
+10. **Run the Frontend Development Server:**
+    Open a new terminal and navigate to the frontend directory:
+
+    ```bash
+    cd portal-frontend
+    npm install
+    npm run dev
+    ```
+
+    The frontend is now live at `http://localhost:5173/`.
+
+11. **Admin panel**
     Django Admin panel is available on `http://localhost:8000/admin`, login using superuser credentials.
 
 ---
+
+## Features
+
+### 🎯 Core Features
+- **User Authentication**: JWT-based login/register system
+- **Profile Management**: Complete alumni profiles with verification
+- **Community System**: Join communities, create posts, interact with alumni
+- **Rich Content**: Markdown editor for posts, image uploads via AWS S3
+- **Social Interactions**: Like posts, comment system, smart sharing
+- **Tag System**: Community-specific tags for better organization
+- **Responsive Design**: Mobile-first design with Tailwind CSS
+
+### 📱 Frontend Features
+- **Modern UI**: Clean, professional design with IIT Kharagpur branding
+- **Interactive Posts**: Like, comment, and share functionality
+- **Smart Sharing**: Web Share API for mobile, clipboard for desktop
+- **Rich Text Editor**: Markdown support for posts and comments
+- **Image Upload**: Drag-and-drop interface with S3 integration
+- **Responsive Layout**: Works seamlessly on all devices
+
+### 🔧 Backend Features
+- **RESTful API**: Complete CRUD operations for all resources
+- **File Storage**: AWS S3 integration with fallback to local storage
+- **Authentication**: Secure JWT token system with refresh tokens
+- **Database Seeding**: Sample data generation for development
+- **Admin Panel**: Full Django admin interface
 
 ## API Endpoints
 
 Here are the primary API endpoints currently available.
 
+### Authentication
 | Method | Endpoint                                   | Description                         | Authorization        |
 | :----- | :----------------------------------------- | :---------------------------------- | :------------------- |
 | `POST` | `/api/auth/register/`                      | Register a new user.                | Public               |
 | `POST` | `/api/auth/login/`                         | Log in and receive JWTs.            | Public               |
+
+### User Management
+| Method | Endpoint                                   | Description                         | Authorization        |
+| :----- | :----------------------------------------- | :---------------------------------- | :------------------- |
 | `GET`  | `/api/profiles/me/`                        | Get the current user's profile.     | User (Authenticated) |
 | `PUT`  | `/api/profiles/me/`                        | Update the current user's profile.  | User (Authenticated) |
+
+### Communities
+| Method | Endpoint                                   | Description                         | Authorization        |
+| :----- | :----------------------------------------- | :---------------------------------- | :------------------- |
 | `GET`  | `/api/communities/`                        | List all communities.               | User (Authenticated) |
-| `POST` | `/api/posts/`                              | Create a new post (pending).        | User (Authenticated) |
+| `GET`  | `/api/communities/<uuid>/`                 | Get specific community details.     | User (Authenticated) |
 | `GET`  | `/api/communities/<uuid>/posts/`           | List approved posts in a community. | User (Authenticated) |
-| `GET`  | `/api/scholarships/`                       | List all scholarships.              | User (Authenticated) |
-| `GET`  | `/api/scholarships/<uuid>/`                | Get scholarship details.            | User (Authenticated) |
-| `POST` | `/api/scholarships/`                       | Create a new scholarship.           | User (Authenticated) |
-| `POST` | `/api/scholarships/<uuid>/contribute/`     | Contribute to a scholarship.        | User (Authenticated) |
+
+### Posts & Interactions
+| Method | Endpoint                                   | Description                         | Authorization        |
+| :----- | :----------------------------------------- | :---------------------------------- | :------------------- |
+| `GET`  | `/api/posts/`                              | List all posts.                     | User (Authenticated) |
+| `POST` | `/api/posts/`                              | Create a new post.                  | User (Authenticated) |
+| `POST` | `/api/posts/<uuid>/like/`                  | Like a post.                        | User (Authenticated) |
+| `DELETE` | `/api/posts/<uuid>/like/`                 | Unlike a post.                      | User (Authenticated) |
+| `GET`  | `/api/posts/<uuid>/comments/`              | List post comments.                 | User (Authenticated) |
+| `POST` | `/api/posts/<uuid>/comments/`              | Create a comment.                   | User (Authenticated) |
+
+### File Management
+| Method | Endpoint                                   | Description                         | Authorization        |
+| :----- | :----------------------------------------- | :---------------------------------- | :------------------- |
+| `POST` | `/api/upload-image/`                       | Upload image to S3.                 | User (Authenticated) |
+
+### Tags System
+| Method | Endpoint                                   | Description                         | Authorization        |
+| :----- | :----------------------------------------- | :---------------------------------- | :------------------- |
+| `GET`  | `/api/communities/<uuid>/tags/`            | List community tags.                | User (Authenticated) |
+| `POST` | `/api/communities/<uuid>/tags/`            | Create a tag.                       | User (Authenticated) |
+| `GET`  | `/api/communities/<uuid>/user-tags/`       | List user's assigned tags.          | User (Authenticated) |
+| `POST` | `/api/user-tags/`                          | Assign tag to user.                 | User (Authenticated) |
+
+### Contributions (formerly Scholarships)
+| Method | Endpoint                                   | Description                         | Authorization        |
+| :----- | :----------------------------------------- | :---------------------------------- | :------------------- |
+| `GET`  | `/api/contributions/`                      | List all contributions.             | User (Authenticated) |
+| `GET`  | `/api/contributions/<uuid>/`               | Get contribution details.            | User (Authenticated) |
+| `POST` | `/api/contributions/`                      | Create a new contribution.           | User (Authenticated) |
+| `POST` | `/api/contributions/<uuid>/contribute/`    | Contribute to a fund.               | User (Authenticated) |
+
+### Admin Endpoints
+| Method | Endpoint                                   | Description                         | Authorization        |
+| :----- | :----------------------------------------- | :---------------------------------- | :------------------- |
 | `GET`  | `/api/admin/verifications/`                | List users pending verification.    | Admin                |
 | `POST` | `/api/admin/verifications/<uuid>/approve/` | Approve a user's verification.      | Admin                |
 | `GET`  | `/api/admin/posts/pending/`                | List posts pending moderation.      | Admin                |
@@ -130,15 +220,41 @@ Here are the primary API endpoints currently available.
 
 ---
 
-## Work Remaning:
+## Recent Updates
 
-1. The Posts section don't have comments setup yet
-2. Scholarships section needs to be api integrated
-3. payment gateway
-4. fund-raising system
-5. messaging system (not yet decided upon)
-6. profile editing is not enabled form the frontend
-7. admin flow for doing stuff in admin panel
-8. credit_points logic (backend)
+### ✅ Completed Features
+- **Social Media Functionality**: Like, comment, and share posts
+- **Rich Text Editor**: Markdown support for posts and comments
+- **Image Upload**: AWS S3 integration with drag-and-drop interface
+- **Tag System**: Community-specific tags with user assignment
+- **Smart Sharing**: Web Share API for mobile, clipboard for desktop
+- **Responsive Design**: Mobile-first design with IIT Kharagpur branding
+- **API Integration**: Complete frontend-backend integration
+- **Database Seeding**: Sample data generation for development
 
-Lastly, some bug fixing and testing itertations are left as well.
+### 🚧 Work Remaining
+
+1. **Payment Gateway**: Integration for donations and contributions
+2. **Real-time Messaging**: Direct messaging between alumni
+3. **Profile Editing**: Frontend interface for profile updates
+4. **Admin Dashboard**: Enhanced admin panel with analytics
+5. **Credit Points System**: Gamification and reward system
+6. **Email Notifications**: Automated email system for updates
+7. **Search Functionality**: Advanced search across posts and users
+8. **Mobile App**: React Native mobile application
+
+### 🐛 Known Issues
+- Some UI components need final polish
+- Performance optimization for large datasets
+- Cross-browser compatibility testing
+- Mobile responsiveness fine-tuning
+
+---
+
+## Contributing
+
+We welcome contributions! Please see our contributing guidelines for more details.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

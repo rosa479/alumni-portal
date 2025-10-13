@@ -21,18 +21,11 @@ The contribution provides comprehensive financial support covering tuition fees,
    current_amount: 250000,
    progress_percentage: 50,
    remaining_amount: 250000,
-   created_by_name: 'Dr. Rajesh Kumar',
-   created_by_title: 'Professor, Computer Science Department',
    created_at: '2024-01-15T10:00:00Z',
    image_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=400&fit=crop',
    contribution_count: 15,
    status: 'ACTIVE',
    deadline: '2024-12-31T23:59:59Z',
-   beneficiaries: [
-      { name: 'Priya Sharma', year: '2024', amount: 50000, status: 'Awarded' },
-      { name: 'Arjun Patel', year: '2024', amount: 45000, status: 'Awarded' },
-      { name: 'Sneha Reddy', year: '2024', amount: 40000, status: 'Awarded' }
-   ],
    contributors: [
       { name: 'Dr. Rajesh Kumar', amount: 50000, is_anonymous: false, created_at: '2024-01-20T10:00:00Z', message: 'Happy to support the next generation!' },
       { name: 'Priya Sharma', amount: 30000, is_anonymous: false, created_at: '2024-01-22T14:30:00Z', message: 'Great initiative!' },
@@ -316,32 +309,6 @@ function ContributionDetailPage() {
                      </div>
                   </div>
 
-                  {/* Beneficiaries */}
-                  <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
-                     <h3 className="text-xl sm:text-2xl font-bold text-dark-text mb-6">Recent Beneficiaries</h3>
-                     <div className="space-y-3 sm:space-y-4">
-                        {contribution.beneficiaries.map((beneficiary, index) => (
-                           <div key={index} className="flex items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-lg">
-                              <div className="flex items-center flex-1 min-w-0">
-                                 <div className="w-10 h-10 bg-blue-800 rounded-full flex items-center justify-center text-white font-bold mr-3 sm:mr-4 flex-shrink-0">
-                                    {beneficiary.name.charAt(0)}
-                                 </div>
-                                 <div className="min-w-0 flex-1">
-                                    <p className="font-semibold text-dark-text text-sm sm:text-base truncate">{beneficiary.name}</p>
-                                    <p className="text-xs sm:text-sm text-light-text">Class of {beneficiary.year}</p>
-                                 </div>
-                              </div>
-                              <div className="text-right flex-shrink-0 ml-2">
-                                 <p className="font-bold text-blue-800 text-sm sm:text-base">{formatCurrency(beneficiary.amount)}</p>
-                                 <div className="flex items-center text-green-600">
-                                    <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                                    <span className="text-xs sm:text-sm">{beneficiary.status}</span>
-                                 </div>
-                              </div>
-                           </div>
-                        ))}
-                     </div>
-                  </div>
                </div>
 
                {/* Sidebar */}
@@ -446,12 +413,6 @@ function ContributionDetailPage() {
                         <span>Share</span>
                      </button>
 
-                     {/* Creator Info */}
-                     <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
-                        <p className="text-xs sm:text-sm text-light-text mb-2">Created by</p>
-                        <p className="font-semibold text-dark-text text-sm sm:text-base">{contribution.created_by_name}</p>
-                        <p className="text-xs sm:text-sm text-light-text">{contribution.created_by_title}</p>
-                     </div>
                   </div>
                </div>
             </div>

@@ -138,7 +138,7 @@ function DonationPage() {
               </div>
             </div>
 
-            <div className=" rounded-xl p-6 shadow-xl ">
+            <div className="bg-white rounded-xl p-6 shadow-xl ">
               <h4 className="text-xl font-bold mb-4 flex items-center">
                 <Heart className="w-5 h-5 mr-2" />
                 IIT Kharagpur Impact

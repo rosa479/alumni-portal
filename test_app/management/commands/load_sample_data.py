@@ -192,36 +192,70 @@ class Command(BaseCommand):
                     )
                     self.stdout.write(f'Assigned tag {tag.name} to {member.email} in {community.name}')
 
-        # Create sample posts
+        # Create sample posts with titles and images
         posts_data = [
             {
                 'author': created_users[0],
                 'community': created_communities[0],  # Entrepreneurship Hub
+                'title': 'Series A Funding Success! 🚀',
                 'content': 'Just closed our Series A funding! Huge thanks to the KGP network for the early support and mentorship. Looking forward to hiring more KGPians!',
+                'image_url': 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&h=600&fit=crop',
                 'status': Post.Status.APPROVED
             },
             {
                 'author': created_users[1],
                 'community': created_communities[0],  # Entrepreneurship Hub
+                'title': 'Looking for Co-founder - EdTech Startup',
                 'content': 'Looking for a co-founder with a strong tech background for a new EdTech startup. DM me if you\'re interested in revolutionizing education!',
+                'image_url': 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop',
                 'status': Post.Status.APPROVED
             },
             {
                 'author': created_users[2],
                 'community': created_communities[1],  # AI & Machine Learning
+                'title': 'New Research Paper Published - Transformer Models in NLP',
                 'content': 'Just published a new paper on transformer models in NLP. Happy to share the pre-print with anyone interested in the research.',
+                'image_url': 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800&h=600&fit=crop',
                 'status': Post.Status.APPROVED
             },
             {
                 'author': created_users[3],
                 'community': created_communities[2],  # Bay Area Alumni
+                'title': 'Bay Area Alumni Meetup - This Saturday!',
                 'content': 'Bay Area alumni meetup this Saturday at 3 PM in Palo Alto. Great networking opportunity and some exciting announcements!',
+                'image_url': 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&h=600&fit=crop',
                 'status': Post.Status.APPROVED
             },
             {
                 'author': created_users[1],
                 'community': created_communities[3],  # Finance & Investing
+                'title': 'Market Insights: Fintech Sector Growth',
                 'content': 'Market insights: The fintech sector is showing strong growth. What are your thoughts on the current investment climate?',
+                'image_url': 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&h=600&fit=crop',
+                'status': Post.Status.APPROVED
+            },
+            {
+                'author': created_users[0],
+                'community': created_communities[4],  # Research & Academia
+                'title': 'IIT Kharagpur Research Collaboration Opportunity',
+                'content': 'Exciting opportunity for research collaboration between IIT Kharagpur and international universities. Looking for PhD students and postdocs interested in interdisciplinary research.',
+                'image_url': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop',
+                'status': Post.Status.APPROVED
+            },
+            {
+                'author': created_users[2],
+                'community': created_communities[1],  # AI & Machine Learning
+                'title': 'Machine Learning Workshop at IIT KGP',
+                'content': 'Conducting a hands-on machine learning workshop for students and alumni. Topics include deep learning, computer vision, and natural language processing.',
+                'image_url': 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=600&fit=crop',
+                'status': Post.Status.APPROVED
+            },
+            {
+                'author': created_users[3],
+                'community': created_communities[5],  # KGP '18 Batch
+                'title': 'KGP 2018 Batch Reunion - Save the Date!',
+                'content': 'Mark your calendars! Our batch reunion is scheduled for December 2024. Planning committee is working hard to make it memorable. Stay tuned for updates!',
+                'image_url': 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&h=600&fit=crop',
                 'status': Post.Status.APPROVED
             }
         ]
@@ -230,43 +264,143 @@ class Command(BaseCommand):
             post = Post.objects.create(**post_data)
             self.stdout.write(f'Created post: {post.content[:50]}...')
 
-        # Create sample scholarships
+        # Create real IIT Kharagpur awards and scholarships
         scholarships_data = [
             {
-                'title': 'Merit Scholarship for Computer Science',
-                'description': 'Supporting outstanding students in Computer Science and Engineering with financial assistance for their academic journey.',
-                'target_amount': Decimal('500000.00'),
-                'current_amount': Decimal('250000.00'),
+                'title': 'Wg. Cdr. K R Krishnamurthy Memorial Endowment Award',
+                'description': 'Memorial endowment award established in honor of Wg. Cdr. K R Krishnamurthy. Notice for the award will be published shortly by the Institute Academic Section.',
+                'target_amount': Decimal('1000000.00'),
+                'current_amount': Decimal('0.00'),
                 'status': Scholarship.Status.ACTIVE,
-                'created_by': created_users[2],  # Dr. Rajesh Kumar
                 'image_url': 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop'
             },
             {
-                'title': 'Women in Engineering Scholarship',
-                'description': 'Encouraging and supporting female students pursuing engineering degrees at IIT Kharagpur.',
-                'target_amount': Decimal('300000.00'),
-                'current_amount': Decimal('180000.00'),
+                'title': 'Gajria PhD Thesis Award',
+                'description': 'Award for outstanding PhD thesis work. The MoU has been submitted for inclusion in the Senate and Board of Governors (BoG) Report.',
+                'target_amount': Decimal('500000.00'),
+                'current_amount': Decimal('0.00'),
                 'status': Scholarship.Status.ACTIVE,
-                'created_by': created_users[1],  # Priya Sharma
-                'image_url': 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop'
-            },
-            {
-                'title': 'Research Excellence Fellowship',
-                'description': 'Supporting graduate students conducting cutting-edge research in various engineering disciplines.',
-                'target_amount': Decimal('750000.00'),
-                'current_amount': Decimal('450000.00'),
-                'status': Scholarship.Status.ACTIVE,
-                'created_by': created_users[2],  # Dr. Rajesh Kumar
                 'image_url': 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&h=300&fit=crop'
             },
             {
-                'title': 'Startup Innovation Grant',
-                'description': 'Supporting student entrepreneurs with innovative ideas and business plans.',
+                'title': 'Gajria Chair Professorship',
+                'description': 'Conferred to Prof. Nilmoni Sarkar, Dept. of Chemistry, for 3 years. A plaque was presented during Foundation Day.',
+                'target_amount': Decimal('2000000.00'),
+                'current_amount': Decimal('0.00'),
+                'status': Scholarship.Status.ACTIVE,
+                'image_url': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop'
+            },
+            {
+                'title': 'Gajria Faculty Excellence Award',
+                'description': 'Conferred to Prof. Santanu Panda, Dept. of Chemistry, for 3 years. A plaque was presented during Foundation Day.',
+                'target_amount': Decimal('1000000.00'),
+                'current_amount': Decimal('0.00'),
+                'status': Scholarship.Status.ACTIVE,
+                'image_url': 'https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=400&h=300&fit=crop'
+            },
+            {
+                'title': 'Markose Thomas Memorial Award',
+                'description': 'Committee selected two papers for the 2023 Award. Supporting research excellence in computer science and AI.',
+                'target_amount': Decimal('500000.00'),
+                'current_amount': Decimal('3024115.00'),
+                'status': Scholarship.Status.ACTIVE,
+                'image_url': 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop'
+            },
+            {
+                'title': 'Dr. Suprabhat Ray Memorial Fellowship Fund',
+                'description': 'Memorial fellowship fund for enhancing experimental facilities. The Chemistry Department has initiated the procurement process for two double-beam UV-Vis spectrophotometers.',
+                'target_amount': Decimal('1000000.00'),
+                'current_amount': Decimal('468832.00'),
+                'status': Scholarship.Status.ACTIVE,
+                'image_url': 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&h=300&fit=crop'
+            },
+            {
+                'title': 'Prof Mandakini Majumdar Student Excellence Award',
+                'description': 'Award for student excellence. Awardee for AY 2024–25: Chandrans Singh (Roll No- 22CS30017).',
+                'target_amount': Decimal('500000.00'),
+                'current_amount': Decimal('2015390.00'),
+                'status': Scholarship.Status.ACTIVE,
+                'image_url': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop'
+            },
+            {
+                'title': 'Mrs. Sagarika Mukherjee Memorial Award',
+                'description': 'Memorial award in honor of Mrs. Sagarika Mukherjee. No suitable candidate found for current year. New advertisement for 2025–26 to be published in Feb 2026.',
+                'target_amount': Decimal('1000000.00'),
+                'current_amount': Decimal('7345624.00'),
+                'status': Scholarship.Status.ACTIVE,
+                'image_url': 'https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=400&h=300&fit=crop'
+            },
+            {
+                'title': 'Sidhanta - Jagan Akella Geochemistry Award',
+                'description': 'Award for excellence in geochemistry research. Awaiting update from the Academic Section.',
+                'target_amount': Decimal('500000.00'),
+                'current_amount': Decimal('2509223.00'),
+                'status': Scholarship.Status.ACTIVE,
+                'image_url': 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop'
+            },
+            {
+                'title': 'Aruna & Ram Gopal Khandelia Award',
+                'description': 'Award for academic excellence. Final selection completed; result to be announced shortly. Application for 2025 already published.',
+                'target_amount': Decimal('1000000.00'),
+                'current_amount': Decimal('7847600.00'),
+                'status': Scholarship.Status.ACTIVE,
+                'image_url': 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&h=300&fit=crop'
+            },
+            {
+                'title': 'Vinod Gupta Leadership Scholarship',
+                'description': 'Leadership scholarship for outstanding students. No suitable candidate found for current year. New advertisement for 2025–26 to be published in Feb 2026.',
+                'target_amount': Decimal('500000.00'),
+                'current_amount': Decimal('2811779.00'),
+                'status': Scholarship.Status.ACTIVE,
+                'image_url': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop'
+            },
+            {
+                'title': 'Brundabana Sahu Student Award',
+                'description': 'Student award for academic excellence. Awardee for AY 2024–25: Mr Debasish Panda (Roll No - 24EC10010). Amendment MoU finalized; in process for final signing.',
+                'target_amount': Decimal('500000.00'),
+                'current_amount': Decimal('325291.00'),
+                'status': Scholarship.Status.ACTIVE,
+                'image_url': 'https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=400&h=300&fit=crop'
+            },
+            {
+                'title': 'Ritesh Ranjan Memorial Scholarship',
+                'description': 'Memorial scholarship in honor of Ritesh Ranjan. The notification inviting applications for the 2024–2025 session was published on 17th March 2025. No suitable candidate has been found.',
                 'target_amount': Decimal('200000.00'),
-                'current_amount': Decimal('200000.00'),
-                'status': Scholarship.Status.COMPLETED,
-                'created_by': created_users[3],  # Sneha Reddy
-                'image_url': 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=400&h=300&fit=crop'
+                'current_amount': Decimal('87385.00'),
+                'status': Scholarship.Status.ACTIVE,
+                'image_url': 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop'
+            },
+            {
+                'title': 'Richard D Souza Sports Scholarship',
+                'description': 'Sports scholarship for outstanding athletes. Awardee for AY 2024–25: Ms Jangili Poojitha (Roll No- 21CE31015). The new advertisement for 2025-26 is in process.',
+                'target_amount': Decimal('500000.00'),
+                'current_amount': Decimal('0.00'),
+                'status': Scholarship.Status.ACTIVE,
+                'image_url': 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&h=300&fit=crop'
+            },
+            {
+                'title': 'Learn-Earn-Return Scholarship',
+                'description': 'Scholarship program for deserving students. Spring Semester 2024–25 and Autumn Semester 2025–26 awardees have been selected.',
+                'target_amount': Decimal('2000000.00'),
+                'current_amount': Decimal('12381072.00'),
+                'status': Scholarship.Status.ACTIVE,
+                'image_url': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop'
+            },
+            {
+                'title': 'Arupratan Gupta Memorial Endowed Scholarship',
+                'description': 'Memorial endowed scholarship in honor of Arupratan Gupta. Awardee for AY 2024–25: Annapureddy Vikhram Reddy (Roll No- 23EC10010). New advertisement for 2025–26 to be published in Feb 2026.',
+                'target_amount': Decimal('500000.00'),
+                'current_amount': Decimal('0.00'),
+                'status': Scholarship.Status.ACTIVE,
+                'image_url': 'https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=400&h=300&fit=crop'
+            },
+            {
+                'title': 'Late Ned Mohan Chair Professorship',
+                'description': 'Chair professorship in honor of Late Ned Mohan. The MoU has been submitted for inclusion in the Senate and Board of Governors (BoG) Report.',
+                'target_amount': Decimal('3000000.00'),
+                'current_amount': Decimal('0.00'),
+                'status': Scholarship.Status.ACTIVE,
+                'image_url': 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop'
             }
         ]
 

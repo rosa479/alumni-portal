@@ -1,52 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CreditCard, Users, Calendar, Target, TrendingUp } from 'react-feather';
-
-// Mock data for now - will be replaced with API calls
-const mockContributions = [
-   {
-      id: '1',
-      title: 'Merit Contribution for Computer Science',
-      description: 'Supporting outstanding students in Computer Science and Engineering with financial assistance for their academic journey.',
-      target_amount: 500000,
-      current_amount: 250000,
-      progress_percentage: 50,
-      remaining_amount: 250000,
-      created_by_name: 'Dr. Rajesh Kumar',
-      created_at: '2024-01-15T10:00:00Z',
-      image_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop',
-      contribution_count: 15,
-      status: 'ACTIVE'
-   },
-   {
-      id: '2',
-      title: 'Women in Engineering Contribution',
-      description: 'Encouraging and supporting female students pursuing engineering degrees at IIT Kharagpur.',
-      target_amount: 300000,
-      current_amount: 180000,
-      progress_percentage: 60,
-      remaining_amount: 120000,
-      created_by_name: 'Prof. Priya Sharma',
-      created_at: '2024-02-01T14:30:00Z',
-      image_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop',
-      contribution_count: 8,
-      status: 'ACTIVE'
-   },
-   {
-      id: '3',
-      title: 'Research Excellence Contribution',
-      description: 'Supporting graduate students conducting cutting-edge research in various engineering disciplines.',
-      target_amount: 750000,
-      current_amount: 450000,
-      progress_percentage: 60,
-      remaining_amount: 300000,
-      created_by_name: 'Dr. Amit Verma',
-      created_at: '2024-01-20T09:15:00Z',
-      image_url: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&h=300&fit=crop',
-      contribution_count: 22,
-      status: 'ACTIVE'
-   }
-];
+import apiClient from '../interceptor';
 
 function ContributionCard({ contribution }) {
    const formatDate = (dateString) => {
@@ -90,35 +45,51 @@ function ContributionCard({ contribution }) {
 
             <p className="text-light-text text-sm mb-4 line-clamp-3">{contribution.description}</p>
 
-            <div className="mb-4">
-               <div className="flex justify-between text-sm text-light-text mb-2">
-                  <span>Progress</span>
-                  <span>{contribution.progress_percentage.toFixed(1)}%</span>
+            {/* Only show progress bar if there are meaningful amounts */}
+            {contribution.target_amount && parseFloat(contribution.target_amount) > 0 && (
+               <div className="mb-4">
+                  <div className="flex justify-between text-sm text-light-text mb-2">
+                     <span>Progress</span>
+                     <span>{contribution.progress_percentage.toFixed(1)}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                     <div
+                        className="bg-blue-800 h-2 rounded-full transition-all duration-500"
+                        style={{ width: `${contribution.progress_percentage}%` }}
+                     ></div>
+                  </div>
                </div>
-               <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div
-                     className="bg-blue-800 h-2 rounded-full transition-all duration-500"
-                     style={{ width: `${contribution.progress_percentage}%` }}
-                  ></div>
-               </div>
-            </div>
+            )}
 
-            <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-               <div className="flex items-center text-light-text">
-                  <Target className="w-4 h-4 mr-2" />
-                  <span>Target: {formatCurrency(contribution.target_amount)}</span>
+            {/* Only show amounts if they exist and are greater than 0 */}
+            {(contribution.target_amount && parseFloat(contribution.target_amount) > 0) || 
+             (contribution.current_amount && parseFloat(contribution.current_amount) > 0) ? (
+               <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+                  {contribution.target_amount && parseFloat(contribution.target_amount) > 0 && (
+                     <div className="flex items-center text-light-text">
+                        <Target className="w-4 h-4 mr-2" />
+                        <span>Target: {formatCurrency(contribution.target_amount)}</span>
+                     </div>
+                  )}
+                  {contribution.current_amount && parseFloat(contribution.current_amount) > 0 && (
+                     <div className="flex items-center text-light-text">
+                        <TrendingUp className="w-4 h-4 mr-2" />
+                        <span>Raised: {formatCurrency(contribution.current_amount)}</span>
+                     </div>
+                  )}
                </div>
-               <div className="flex items-center text-light-text">
-                  <TrendingUp className="w-4 h-4 mr-2" />
-                  <span>Raised: {formatCurrency(contribution.current_amount)}</span>
-               </div>
-            </div>
+            ) : null}
 
             <div className="flex items-center justify-between text-sm text-light-text mb-4">
-               <div className="flex items-center">
-                  <Users className="w-4 h-4 mr-2" />
-                  <span>{contribution.contribution_count} contributors</span>
-               </div>
+               {/* Only show contributors count if there are actual contributors */}
+               {contribution.contribution_count > 0 ? (
+                  <div className="flex items-center">
+                     <Users className="w-4 h-4 mr-2" />
+                     <span>{contribution.contribution_count} contributors</span>
+                  </div>
+               ) : (
+                  <div></div>
+               )}
                <div className="flex items-center">
                   <Calendar className="w-4 h-4 mr-2" />
                   <span>{formatDate(contribution.created_at)}</span>
@@ -126,10 +97,15 @@ function ContributionCard({ contribution }) {
             </div>
 
             <div className="flex items-center justify-between">
-               <div className="text-sm">
-                  <span className="text-light-text">Created by </span>
-                  <span className="font-semibold text-dark-text">{contribution.created_by_name}</span>
-               </div>
+               {/* Only show "Created by" if there's actually a creator */}
+               {contribution.created_by_name ? (
+                  <div className="text-sm">
+                     <span className="text-light-text">Created by </span>
+                     <span className="font-semibold text-dark-text">{contribution.created_by_name}</span>
+                  </div>
+               ) : (
+                  <div></div>
+               )}
                <Link
                   to={`/contributions/${contribution.id}`}
                   className="bg-blue-800 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors duration-200 font-medium"
@@ -146,13 +122,34 @@ function ContributionsPage() {
    const [contributions, setContributions] = useState([]);
    const [loading, setLoading] = useState(true);
    const [filter, setFilter] = useState('all');
+   const [totals, setTotals] = useState({
+      total_raised: 0,
+      total_contributors: 0,
+      total_scholarships: 0
+   });
 
    useEffect(() => {
-      // Simulate API call
-      setTimeout(() => {
-         setContributions(mockContributions);
-         setLoading(false);
-      }, 1000);
+      const fetchContributions = async () => {
+         try {
+            setLoading(true);
+            const response = await apiClient.get('/scholarships/');
+            setContributions(response.data.results || response.data);
+            setTotals({
+               total_raised: response.data.total_raised || 0,
+               total_contributors: response.data.total_contributors || 0,
+               total_scholarships: response.data.total_scholarships || 0
+            });
+         } catch (error) {
+            console.error('Error fetching contributions:', error);
+            // Fallback to empty array on error
+            setContributions([]);
+            setTotals({ total_raised: 0, total_contributors: 0, total_scholarships: 0 });
+         } finally {
+            setLoading(false);
+         }
+      };
+
+      fetchContributions();
    }, []);
 
    const filteredContributions = contributions.filter(contribution => {
@@ -219,7 +216,7 @@ function ContributionsPage() {
                      </div>
                      <div>
                         <p className="text-2xl font-bold text-dark-text">
-                           {contributions.length}
+                           {totals.total_scholarships}
                         </p>
                         <p className="text-light-text">Total Contributions</p>
                      </div>
@@ -233,7 +230,7 @@ function ContributionsPage() {
                      </div>
                      <div>
                         <p className="text-2xl font-bold text-dark-text">
-                           ₹{contributions.reduce((sum, s) => sum + s.current_amount, 0).toLocaleString()}
+                           ₹{totals.total_raised.toLocaleString('en-IN')}
                         </p>
                         <p className="text-light-text">Total Raised</p>
                      </div>
@@ -247,7 +244,7 @@ function ContributionsPage() {
                      </div>
                      <div>
                         <p className="text-2xl font-bold text-dark-text">
-                           {contributions.reduce((sum, s) => sum + s.contribution_count, 0)}
+                           {totals.total_contributors}
                         </p>
                         <p className="text-light-text">Total Contributors</p>
                      </div>
