@@ -66,6 +66,38 @@ function Dashboard() {
     fetchDashboardData();
   }, []); // The empty dependency array ensures this effect runs only once.
 
+  // Handle like/unlike post
+  const handleLike = async (postId) => {
+    try {
+      // Find the post in the current posts array
+      const post = posts.find((p) => p.id === postId);
+
+      if (post.is_liked) {
+        // Unlike the post
+        await apiClient.delete(`/posts/${postId}/like/`);
+      } else {
+        // Like the post
+        await apiClient.post(`/posts/${postId}/like/`);
+      }
+
+      // Update the posts state to reflect the like/unlike
+      setPosts((prevPosts) =>
+        prevPosts.map((p) =>
+          p.id === postId
+            ? {
+                ...p,
+                is_liked: !p.is_liked,
+                likes_count: p.is_liked ? p.likes_count - 1 : p.likes_count + 1,
+              }
+            : p
+        )
+      );
+    } catch (err) {
+      console.error("Failed to like/unlike post:", err);
+      // Optionally show an error message to the user
+    }
+  };
+
   // --- A single, consolidated block for render logic ---
 
   if (loading) {
@@ -104,22 +136,22 @@ function Dashboard() {
           department={user.alumni_profile.department}
         />
         <section className="sm:col-span-3 space-y-6">
-          
           {posts.map((post) => (
             <PostDashboard
               key={post.id}
               id={post.id}
               authorName={post.author_name}
-              authorAvatar={post.author_profile_picture}
+              authorId={post.author_id || post.author}
               created_at={post.created_at}
               content={post.content}
-              title={post.title}
+              title={post.title || ""}
               imageUrl={post.image_url}
-              tags={post.tags}
-              community={post.community_name}
+              tags={post.tags || []}
               likesCount={post.likes_count}
               commentsCount={post.comments_count}
               isLiked={post.is_liked}
+              community={post.community_name || ""}
+              authorAvatar={post.author_profile_picture || ""}
             />
           ))}
         </section>

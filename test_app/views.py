@@ -49,6 +49,19 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
         # This method returns the object that the view will display.
         # We override it to always return the currently authenticated user.
         return self.request.user
+
+
+class PublicUserProfileView(generics.RetrieveAPIView):
+    """
+    API view for retrieving any user's public profile by their ID.
+    Corresponds to: GET /profiles/{userId}/
+    """
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id'
+    
+    def get_queryset(self):
+        return User.objects.filter(status=User.Status.VERIFIED)
         
 class AdminVerificationListView(generics.ListAPIView):
     """
@@ -108,7 +121,7 @@ class CommunityDetailView(generics.RetrieveAPIView):
 
 class PostListCreateView(generics.ListCreateAPIView):
     """
-    Lists latest posts or creates a new post.
+    Lists latest posts or creates a new post with recommendations based on user similarity.
     Corresponds to: GET /api/posts/, POST /api/posts/
     """
     serializer_class = PostSerializer
@@ -116,13 +129,94 @@ class PostListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         """
-        This method defines the list of items to be returned.
-        We filter it to get the 10 most recent posts.
+        Returns posts ordered by relevance to the current user.
+        Prioritizes posts from users with similar graduation year and department.
         """
-        # 1. order_by('-created_at') sorts posts from newest to oldest.
-        # 2. [:10] slices the result to get only the first 10 items.
-        # 3. We filter by APPROVED status to ensure only approved posts are shown.
-        return Post.objects.filter(status=Post.Status.APPROVED).order_by('-created_at')[:10]
+        current_user = self.request.user
+        
+        # Get user's profile information for similarity matching
+        try:
+            user_profile = current_user.alumni_profile
+            user_graduation_year = user_profile.graduation_year
+            user_department = user_profile.department
+        except:
+            # If user doesn't have a profile, return recent posts
+            return Post.objects.filter(status=Post.Status.APPROVED).order_by('-created_at')[:20]
+        
+        # Get all approved posts (limit to recent posts for performance)
+        from django.utils import timezone
+        from datetime import timedelta
+        
+        # Only consider posts from the last 30 days for better performance
+        recent_date = timezone.now() - timedelta(days=30)
+        posts = Post.objects.filter(
+            status=Post.Status.APPROVED,
+            created_at__gte=recent_date
+        ).select_related(
+            'author__alumni_profile', 'community'
+        ).exclude(author=current_user).order_by('-created_at')  # Don't show user's own posts
+        
+        # If no recent posts, get latest 50 posts regardless of date
+        if not posts.exists():
+            posts = Post.objects.filter(status=Post.Status.APPROVED).select_related(
+                'author__alumni_profile', 'community'
+            ).exclude(author=current_user).order_by('-created_at')[:50]
+        
+        # Calculate similarity scores and sort posts
+        posts_with_scores = []
+        
+        for post in posts:
+            similarity_score = self._calculate_user_similarity(
+                current_user, post.author, user_graduation_year, user_department
+            )
+            posts_with_scores.append((post, similarity_score))
+        
+        # Sort by similarity score (highest first), then by recency
+        posts_with_scores.sort(key=lambda x: (x[1], x[0].created_at), reverse=True)
+        
+        # Return the top 20 posts
+        recommended_posts = [post for post, score in posts_with_scores[:20]]
+        
+        return recommended_posts
+
+    def _calculate_user_similarity(self, current_user, post_author, user_graduation_year, user_department):
+        """
+        Calculate similarity score between current user and post author.
+        Higher score means more similar users.
+        """
+        try:
+            author_profile = post_author.alumni_profile
+            author_graduation_year = author_profile.graduation_year
+            author_department = author_profile.department
+        except:
+            return 0  # No profile means no similarity
+        
+        similarity_score = 0
+        
+        # Department similarity (highest weight - 50 points)
+        if user_department == author_department:
+            similarity_score += 50
+        
+        # Graduation year proximity (40 points max)
+        year_difference = abs(user_graduation_year - author_graduation_year)
+        if year_difference == 0:
+            similarity_score += 40  # Same year
+        elif year_difference == 1:
+            similarity_score += 30  # 1 year difference
+        elif year_difference == 2:
+            similarity_score += 20  # 2 years difference
+        elif year_difference <= 5:
+            similarity_score += 10  # Within 5 years
+        
+        # Bonus for same department AND close graduation year
+        if (user_department == author_department and year_difference <= 2):
+            similarity_score += 20  # Bonus for being very similar
+        
+        # Small recency boost (10 points max for recent posts)
+        # This is handled in the main queryset sorting, so we'll skip individual post recency here
+        # to keep the similarity score focused on user attributes
+        
+        return similarity_score
 
 class CommunityPostListView(generics.ListAPIView):
     """

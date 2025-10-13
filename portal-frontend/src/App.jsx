@@ -15,6 +15,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import Dashboard from "./pages/Dashboard";
 import ProfilePage from "./pages/ProfilePage";
+import UserProfilePage from "./pages/UserProfilePage";
 import CommunitiesPage from "./pages/CommunitiesPage";
 import DonationPage from "./pages/DonationPage";
 import CommunityDetailPage from "./pages/CommunityDetailPage";
@@ -50,6 +51,7 @@ function App() {
             {/* All routes nested inside here are now protected */}
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/users/:userId" element={<UserProfilePage />} />
             <Route path="/communities" element={<CommunitiesPage />} />
             <Route
               path="/communities/:communityId"

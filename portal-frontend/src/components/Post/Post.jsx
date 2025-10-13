@@ -7,7 +7,7 @@ import ReactMarkdown from 'react-markdown';
 import apiClient from '../../interceptor';
 
 // Add `id` as a prop
-function Post({ id, authorName, authorAvatar, created_at, content, title, imageUrl, tags = [], likesCount = 0, commentsCount = 0, isLiked = false }) {
+function Post({ id, authorName, authorAvatar, created_at, content, title, imageUrl, tags = [], likesCount = 0, commentsCount = 0, isLiked = false, authorId }) {
   // To get the "ago" suffix, add the { addSuffix: true } option
   const parsedDate = new Date(created_at);
   const validDate = isValid(parsedDate)
@@ -89,7 +89,9 @@ function Post({ id, authorName, authorAvatar, created_at, content, title, imageU
             className="w-10 h-10 rounded-full"
           />
           <div>
-            <span className="font-semibold text-dark-text text-sm">{authorName}</span>
+            <Link to={authorId ? `/users/${authorId}` : '#'} className="font-semibold text-dark-text text-sm hover:underline">
+              {authorName}
+            </Link>
             <p className="text-xs text-light-text">
               {timeAgo}
             </p>

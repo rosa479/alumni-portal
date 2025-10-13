@@ -4,6 +4,7 @@ from django.urls import path
 from .views import (
     RegisterView,
     UserProfileView,
+    PublicUserProfileView,
     AdminVerificationListView,
     AdminApproveVerificationView,
     CommunityListView,
@@ -36,6 +37,7 @@ urlpatterns = [
     
     # Service: Profile
     path('profiles/me/', UserProfileView.as_view(), name='user_profile'),
+    path('profiles/<uuid:id>/', PublicUserProfileView.as_view(), name='public_user_profile'),
 
     # Service: Admin
     path('admin/verifications/', AdminVerificationListView.as_view(), name='admin_verification_list'),

@@ -1,6 +1,7 @@
 // src/features/posts/SinglePostPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+
 import Post from '../components/Post/Post';
 import CommentSection from '../components/Post/CommentSection';
 import apiClient from '../interceptor';
@@ -8,32 +9,70 @@ import apiClient from '../interceptor';
 function SinglePostPage() {
   const { postId } = useParams();
   const [post, setPost] = useState(null);
+  const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [commentLoading, setCommentLoading] = useState(false);
 
+  // Fetch post details (same as before)
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        // For now, we'll fetch all posts and find the one with matching ID
-        // In a real app, you'd have a specific endpoint like /api/posts/{id}/
         const response = await apiClient.get('/posts/');
-        const foundPost = response.data.find(p => p.id === postId);
-        
+        // Compare IDs as strings for reliability
+        const foundPost = response.data.find(p => String(p.id) === String(postId));
         if (foundPost) {
           setPost(foundPost);
         } else {
           setError('Post not found');
         }
       } catch (err) {
-        console.error('Failed to fetch post:', err);
         setError('Failed to load post');
       } finally {
         setLoading(false);
       }
     };
-
     fetchPost();
   }, [postId]);
+
+  // Fetch comments for this post
+  const fetchComments = async () => {
+    setCommentLoading(true);
+    try {
+      const res = await apiClient.get(`/posts/${postId}/comments/`);
+      // Map backend fields to frontend CommentSection format
+      setComments(
+        res.data.map(c => ({
+          id: c.id,
+          authorName: c.user_name || c.user || 'Unknown',
+          authorAvatar: c.user_profile_picture || 'https://i.pravatar.cc/150?u=' + c.user,
+          text: c.content,
+          time: new Date(c.created_at).toLocaleString(),
+          authorId: c.user_id || c.user || null,
+        }))
+      );
+    } catch (err) {
+      // Optionally handle error
+    } finally {
+      setCommentLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (postId) fetchComments();
+    // eslint-disable-next-line
+  }, [postId]);
+
+  // Handler to submit a new comment
+  const handleAddComment = async (content) => {
+    try {
+      await apiClient.post(`/posts/${postId}/comments/`, { content });
+      fetchComments(); // Refresh comments
+      return true;
+    } catch (err) {
+      return false;
+    }
+  };
 
   if (loading) {
     return (
@@ -71,8 +110,13 @@ function SinglePostPage() {
               title={post.title}
               imageUrl={post.image_url}
               tags={post.tags}
+              authorId={post.author_id || post.author}
             />
-            <CommentSection comments={[]} />
+            <CommentSection
+              comments={comments}
+              onAddComment={handleAddComment}
+              loading={commentLoading}
+            />
           </main>
 
           {/* Right sidebar */}

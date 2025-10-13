@@ -103,6 +103,7 @@ class PostSerializer(serializers.ModelSerializer):
     Serializer for reading posts. Includes read-only author details.
     """
     # Use a simple string representation for the author for readability
+    author_id = serializers.UUIDField(source='author.id', read_only=True)
     author_email = serializers.EmailField(source='author.email', read_only=True)
     author_profile_picture = serializers.URLField(source='author.alumni_profile.profile_picture_url', read_only=True)
     author_name = serializers.CharField(source='author.alumni_profile.full_name', read_only=True)
@@ -114,7 +115,7 @@ class PostSerializer(serializers.ModelSerializer):
             
     class Meta:
         model = Post
-        fields = ['id', 'community', 'community_name', 'title', 'content', 'image_url', 'tags', 'status', 'created_at', 'author_email', 'author_profile_picture', 'author_name', 'likes_count', 'comments_count', 'is_liked']
+        fields = ['id', 'community', 'community_name', 'title', 'content', 'image_url', 'tags', 'status', 'created_at', 'author_id', 'author_email', 'author_profile_picture', 'author_name', 'likes_count', 'comments_count', 'is_liked']
         read_only_fields = ['status', 'author_email']
     
     def get_tags(self, obj):
@@ -223,19 +224,20 @@ class PostCommentSerializer(serializers.ModelSerializer):
     """
     Serializer for post comments
     """
+    user_id = serializers.UUIDField(source='user.id', read_only=True)
     user_email = serializers.CharField(source='user.email', read_only=True)
     user_name = serializers.SerializerMethodField()
-    user_avatar = serializers.SerializerMethodField()
+    user_profile_picture = serializers.SerializerMethodField()
     
     class Meta:
         model = PostComment
-        fields = ['id', 'user', 'user_email', 'user_name', 'user_avatar', 'content', 'created_at', 'updated_at']
+        fields = ['id', 'user', 'user_id', 'user_email', 'user_name', 'user_profile_picture', 'content', 'created_at', 'updated_at']
         read_only_fields = ['user', 'created_at', 'updated_at']
     
     def get_user_name(self, obj):
         return obj.user.alumni_profile.full_name if hasattr(obj.user, 'alumni_profile') else obj.user.email
     
-    def get_user_avatar(self, obj):
+    def get_user_profile_picture(self, obj):
         return obj.user.alumni_profile.profile_picture_url if hasattr(obj.user, 'alumni_profile') else None
 
 

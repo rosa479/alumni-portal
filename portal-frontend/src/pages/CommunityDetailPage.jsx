@@ -2,56 +2,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import CommunityHeader from "../components/CommunityHeader";
-import CreatePost from "../components/CreatePost"; // We can reuse this
+import CreatePost from "../components/CreatePost"; // already imported
 import Post from "../components/Post/Post"; // and this!
 import apiClient from "../interceptor";
-
-// // Let's create a more detailed mock database
-// const communitiesDBMock = {
-//   1: {
-//     id: 1,
-//     name: "Entrepreneurship Hub",
-//     description:
-//       "Connect with founders, investors, and mentors in the KGP network.",
-//     members: 1250,
-//     posts: [
-//       {
-//         id: 101,
-//         authorName: "Rohan Shah",
-//         authorAvatar: "https://i.pravatar.cc/150?u=rohan",
-//         meta: "2h ago",
-//         content:
-//           "Just closed our Series A funding! Huge thanks to the KGP network for the early support.",
-//       },
-//       {
-//         id: 102,
-//         authorName: "Priya Mehta",
-//         authorAvatar: "https://i.pravatar.cc/150?u=priya",
-//         meta: "1d ago",
-//         content:
-//           "Looking for a co-founder with a strong tech background for a new EdTech startup. DM me!",
-//       },
-//     ],
-//   },
-//   2: {
-//     id: 2,
-//     name: "AI & Machine Learning",
-//     description:
-//       "Discussions on the latest trends, research, and career opportunities in AI/ML.",
-//     members: 2800,
-//     posts: [
-//       {
-//         id: 201,
-//         authorName: "Dr. Vikram Singh",
-//         authorAvatar: "https://i.pravatar.cc/150?u=vikram",
-//         meta: "8h ago",
-//         content:
-//           "Just published a new paper on transformer models in NLP. Happy to share the pre-print with anyone interested.",
-//       },
-//     ],
-//   },
-//   // Add other communities here...
-// };
 
 function CommunityDetailPage() {
   const { communityId } = useParams(); // Get the ID from the URL, e.g., "1"
@@ -62,6 +15,8 @@ function CommunityDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
+  const [showCreatePost, setShowCreatePost] = useState(false);
+  const [quickTitle, setQuickTitle] = useState("");
 
   // 2. useEffect hook to fetch data when the component mounts.
   useEffect(() => {
@@ -148,11 +103,45 @@ function CommunityDetailPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           <main className="lg:col-span-2 space-y-6">
-            {/* Note: In a real app, you'd want a more specific CreatePost component */}
-            <CreatePost 
-              avatar={userProfile?.alumni_profile?.profile_picture_url || "https://i.pravatar.cc/150?u=user"} 
-              communities={[community]} 
-            />
+            {/* Quick Post Bar or CreatePost Form */}
+            {!showCreatePost ? (
+              <div className="bg-white rounded-2xl shadow flex items-center p-4 mb-4">
+                <img
+                  src={userProfile?.alumni_profile?.profile_picture_url || "https://i.pravatar.cc/150?u=user"}
+                  alt="Profile"
+                  className="w-12 h-12 rounded-full object-cover mr-4"
+                />
+                <input
+                  type="text"
+                  className="flex-1 bg-gray-100 rounded-full px-4 py-2 outline-none"
+                  placeholder={`What's your post about?`}
+                  value={quickTitle}
+                  onChange={(e) => setQuickTitle(e.target.value)}
+                  readOnly
+                  style={{ cursor: "pointer" }}
+                  onFocus={() => setShowCreatePost(true)}
+                />
+                <button
+                  className="ml-4 px-5 py-2 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition"
+                  onClick={() => setShowCreatePost(true)}
+                >
+                  Create Post
+                </button>
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl shadow p-4 mb-4">
+                <CreatePost
+                  avatar={userProfile?.alumni_profile?.profile_picture_url || "https://i.pravatar.cc/150?u=user"}
+                  communities={[community]}
+                  initialTitle={quickTitle}
+                  onClose={() => {
+                    setShowCreatePost(false);
+                    setQuickTitle("");
+                  }}
+                />
+              </div>
+            )}
+
             <div className="space-y-6">
               {community.latest_posts.map((post) => (
                 <Post
