@@ -45,12 +45,7 @@ function Dashboard() {
             apiClient.get("/communities/"),
           ]);
 
-        // 4. Log the received data.
-        console.log("Received Profile Data:", profileResponse.data);
-        console.log("Received Posts Data:", postsResponse.data);
-        console.log("Received Community Data:", communityResponse.data);
-
-        // 5. Update the state for both user and posts.
+        // Update the state
         setUser(profileResponse.data);
         setPosts(postsResponse.data);
         setCommunity(communityResponse.data);
