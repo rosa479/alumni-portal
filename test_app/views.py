@@ -26,13 +26,20 @@ class RegisterView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
-        # We can return some basic user info upon successful registration
+        # Generate JWT tokens for the new user
+        from rest_framework_simplejwt.tokens import RefreshToken
+        refresh = RefreshToken.for_user(user)
+        access = refresh.access_token
+
+        # Return user info and tokens for automatic login
         user_data = UserSerializer(user).data
         
         return Response(
             {
                 "user": user_data,
-                "message": "User created successfully. Please log in.",
+                "access": str(access),
+                "refresh": str(refresh),
+                "message": "User created successfully.",
             },
             status=status.HTTP_201_CREATED
         )
@@ -390,3 +397,180 @@ class PostCommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     
     def get_queryset(self):
         return PostComment.objects.filter(user=self.request.user)
+
+
+# OAuth Views
+class GoogleOAuthView(APIView):
+    """
+    Handle Google OAuth authentication
+    """
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        try:
+            code = request.data.get('code')
+            redirect_uri = request.data.get('redirect_uri')
+            
+            if not code:
+                return Response({'error': 'Authorization code is required'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Exchange code for access token
+            import requests
+            from django.conf import settings
+            
+            token_url = 'https://oauth2.googleapis.com/token'
+            token_data = {
+                'client_id': settings.GOOGLE_OAUTH_CLIENT_ID,
+                'client_secret': settings.GOOGLE_OAUTH_CLIENT_SECRET,
+                'code': code,
+                'grant_type': 'authorization_code',
+                'redirect_uri': redirect_uri
+            }
+            
+            token_response = requests.post(token_url, data=token_data)
+            token_response.raise_for_status()
+            token_info = token_response.json()
+            
+            # Get user info from Google
+            user_info_url = f"https://www.googleapis.com/oauth2/v2/userinfo?access_token={token_info['access_token']}"
+            user_response = requests.get(user_info_url)
+            user_response.raise_for_status()
+            google_profile = user_response.json()
+            
+            email = google_profile.get('email')
+            if not email:
+                return Response({'error': 'Email not provided by Google'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Check if user exists
+            try:
+                user = User.objects.get(email=email)
+                if user.is_active:
+                    # User exists and is active - generate tokens
+                    from rest_framework_simplejwt.tokens import RefreshToken
+                    refresh = RefreshToken.for_user(user)
+                    access = refresh.access_token
+                    
+                    return Response({
+                        'user_exists': True,
+                        'user': UserSerializer(user).data,
+                        'access': str(access),
+                        'refresh': str(refresh)
+                    })
+                else:
+                    # User exists but not active
+                    return Response({
+                        'user_exists': True,
+                        'user': UserSerializer(user).data,
+                        'google_profile': google_profile
+                    })
+            except User.DoesNotExist:
+                # User doesn't exist
+                return Response({
+                    'user_exists': False,
+                    'google_profile': google_profile
+                })
+                
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class CheckUserView(APIView):
+    """
+    Check if user exists by email
+    """
+    permission_classes = [AllowAny]
+    
+    def get(self, request):
+        email = request.query_params.get('email')
+        if not email:
+            return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            user = User.objects.get(email=email)
+            return Response({
+                'exists': True,
+                'is_active': user.is_active,
+                'user': UserSerializer(user).data
+            })
+        except User.DoesNotExist:
+            return Response({'exists': False})
+
+
+class ActivateUserView(APIView):
+    """
+    Activate existing user account
+    """
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        try:
+            email = request.data.get('email')
+            if not email:
+                return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            user = User.objects.get(email=email)
+            
+            # Update user data
+            user.full_name = request.data.get('full_name', user.full_name)
+            user.roll_number = request.data.get('roll_number', user.roll_number)
+            user.graduation_year = request.data.get('graduation_year', user.graduation_year)
+            user.department = request.data.get('department', user.department)
+            user.is_active = True
+            user.save()
+            
+            # Update alumni profile if exists
+            if hasattr(user, 'alumni_profile'):
+                profile = user.alumni_profile
+                profile.full_name = request.data.get('full_name', profile.full_name)
+                profile.graduation_year = request.data.get('graduation_year', profile.graduation_year)
+                profile.department = request.data.get('department', profile.department)
+                profile.save()
+            
+            # Generate tokens
+            from rest_framework_simplejwt.tokens import RefreshToken
+            refresh = RefreshToken.for_user(user)
+            access = refresh.access_token
+            
+            return Response({
+                'user': UserSerializer(user).data,
+                'access': str(access),
+                'refresh': str(refresh)
+            })
+            
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class GoogleOAuthLoginView(APIView):
+    """
+    Simple OAuth login - just generate tokens for existing user
+    """
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        try:
+            email = request.data.get('email')
+            if not email:
+                return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Check if user exists and is active
+            try:
+                user = User.objects.get(email=email, is_active=True)
+            except User.DoesNotExist:
+                return Response({'error': 'User not found or not active'}, status=status.HTTP_404_NOT_FOUND)
+            
+            # Generate tokens
+            from rest_framework_simplejwt.tokens import RefreshToken
+            refresh = RefreshToken.for_user(user)
+            access = refresh.access_token
+            
+            return Response({
+                'user': UserSerializer(user).data,
+                'access': str(access),
+                'refresh': str(refresh)
+            })
+            
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
