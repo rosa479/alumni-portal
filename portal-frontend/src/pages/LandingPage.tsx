@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { CountUp } from "countup.js";
 import iitkgpDrone from "../assets/dist_iitkgpvideo1.webm";
-import AboutSection from "../components/HomeFeatures";
+import AboutSection from "../components/LandingPage/HomeFeatures";
 import FeaturedHalls from "../components/LandingPage/FeaturedHalls";
 
 // Inline Button Component
@@ -314,68 +314,6 @@ const HeroSection = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const FeaturesSection = () => {
-  const features = [
-    {
-      icon: Users,
-      title: "Alumni Directory",
-      description:
-        "Connect with over 50,000 alumni across the globe. Find classmates, colleagues, and industry leaders.",
-      color: "text-primary",
-    },
-    {
-      icon: Calendar,
-      title: "Events & Reunions",
-      description:
-        "Stay updated on alumni gatherings, workshops, webinars, and annual reunions happening worldwide.",
-      color: "text-accent",
-    },
-    {
-      icon: Briefcase,
-      title: "Career Hub",
-      description:
-        "Discover job opportunities, post openings, and advance your career with exclusive alumni connections.",
-      color: "text-primary",
-    },
-    {
-      icon: GraduationCap,
-      title: "Mentorship Program",
-      description:
-        "Guide students and young alumni, or seek mentorship from experienced professionals in your field.",
-      color: "text-accent",
-    },
-  ];
-
-  return (
-    <section className="py-20 bg-[#E6F1F9]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">
-            Everything You Need to Stay Connected
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            AlumnIIT provides a comprehensive platform designed to strengthen
-            the bonds of our global alumni community
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {features.map((feature, index) => (
-            <Card
-              key={index}
-              className="p-6 hover:shadow-[var(--shadow-glow)] transition-shadow duration-300 border-border bg-gradient-to-br from-card to-secondary/10"
-            >
-              <feature.icon className={`h-12 w-12 ${feature.color} mb-4`} />
-              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-              <p className="text-muted-foreground">{feature.description}</p>
-            </Card>
-          ))}
         </div>
       </div>
     </section>
@@ -726,8 +664,7 @@ function LandingPage() {
       <Navbar />
       <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]"></div>
       <HeroSection />
-      <FeaturesSection />
-      {/* <AboutSection /> */}
+      <AboutSection />
       <ImpactSection />
       <FeaturedHalls />
       <CTASection />
