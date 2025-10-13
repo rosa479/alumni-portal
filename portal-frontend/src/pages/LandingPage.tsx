@@ -372,32 +372,101 @@ const FeaturesSection = () => {
 };
 
 const ImpactSection = () => {
+  // 1. Create refs for each element you want to animate
+  const trendUpRef = useRef(null);
+  const globeRef = useRef(null);
+  const awardRef = useRef(null);
+  const contributionsRef = useRef(null);
+
   const stats = [
     {
       icon: TrendingUp,
       value: "95%",
       label: "Career Advancement",
       description: "Alumni report career growth through network",
+      ref: trendUpRef,
     },
     {
       icon: Globe,
       value: "150+",
       label: "Global Chapters",
       description: "Active alumni chapters worldwide",
+      ref: globeRef,
     },
     {
       icon: Award,
       value: "5000+",
       label: "Success Stories",
       description: "Alumni achievements celebrated",
+      ref: awardRef,
     },
     {
       icon: Heart,
       value: "₹50Cr+",
       label: "Giving Back",
       description: "Contributions to alma mater",
+      ref: contributionsRef,
     },
   ];
+
+  useEffect(() => {
+    if (trendUpRef.current) {
+      const membersCountUp = new CountUp(trendUpRef.current, 95, {
+        duration: 3,
+        suffix: "%",
+        enableScrollSpy: true,
+        scrollSpyDelay: 200,
+      });
+      if (!membersCountUp.error) {
+        membersCountUp.start();
+      } else {
+        console.error(membersCountUp.error);
+      }
+    }
+
+    if (globeRef.current) {
+      const countriesCountUp = new CountUp(globeRef.current, 150, {
+        duration: 3,
+        suffix: "+",
+        enableScrollSpy: true,
+        scrollSpyDelay: 200,
+      });
+      if (!countriesCountUp.error) {
+        countriesCountUp.start();
+      } else {
+        console.error(countriesCountUp.error);
+      }
+    }
+
+    if (awardRef.current) {
+      const companiesCountUp = new CountUp(awardRef.current, 5000, {
+        duration: 3,
+        suffix: "+",
+        enableScrollSpy: true,
+        scrollSpyDelay: 200,
+      });
+      if (!companiesCountUp.error) {
+        companiesCountUp.start();
+      } else {
+        console.error(companiesCountUp.error);
+      }
+    }
+
+    if (contributionsRef.current) {
+      const membersCountUp = new CountUp(contributionsRef.current, 50, {
+        duration: 3,
+        prefix: "₹",
+        suffix: "Cr+",
+        enableScrollSpy: true,
+        scrollSpyDelay: 200,
+      });
+      if (!membersCountUp.error) {
+        membersCountUp.start();
+      } else {
+        console.error(membersCountUp.error);
+      }
+    }
+  }, []);
 
   return (
     <section className="py-20 bg-gradient-to-br from-primary/5 via-secondary/20 to-accent/5">
@@ -419,7 +488,10 @@ const ImpactSection = () => {
               className="text-center p-6 rounded-xl bg-card border border-border hover:border-primary/50 transition-colors"
             >
               <stat.icon className="h-10 w-10 text-primary mx-auto mb-4" />
-              <div className="text-4xl font-bold text-primary mb-2">
+              <div
+                ref={stat.ref}
+                className="text-4xl font-bold text-primary mb-2"
+              >
                 {stat.value}
               </div>
               <div className="text-lg font-semibold mb-1">{stat.label}</div>
