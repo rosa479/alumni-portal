@@ -1,47 +1,142 @@
 // src/features/posts/SinglePostPage.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import Post from '../components/Post/Post'; // Use the refactored Post component
+import Post from '../components/Post/Post';
 import CommentSection from '../components/Post/CommentSection';
-
-// Mock database for posts and their comments
-const postsDB = {
-  101: {
-    id: 101, authorName: 'Rohan Shah', authorAvatar: 'https://i.pravatar.cc/150?u=rohan', meta: 'posted in Entrepreneurship Hub • 2h ago', content: 'Just closed our Series A funding! Huge thanks to the KGP network for the early support.',
-    comments: [
-      { id: 1, authorName: 'Ankit Sharma', authorAvatar: 'https://i.pravatar.cc/150?u=a042581f4e29026704e', text: 'This is amazing news, Rohan! Congratulations!', time: '1h ago' },
-      { id: 2, authorName: 'Priya Mehta', authorAvatar: 'https://i.pravatar.cc/150?u=priya', text: 'Well deserved. Your hard work paid off.', time: '45m ago' }
-    ]
-  },
-  201: {
-    id: 201, authorName: 'Dr. Vikram Singh', authorAvatar: 'https://i.pravatar.cc/150?u=vikram', meta: 'posted in AI & Machine Learning • 8h ago', content: 'Just published a new paper on transformer models in NLP. Happy to share the pre-print with anyone interested.',
-    comments: [
-       { id: 1, authorName: 'Jane Doe', authorAvatar: 'https://i.pravatar.cc/150?u=a042581f4e29026704d', text: 'Fantastic work, Dr. Singh! Looking forward to reading it.', time: '6h ago' }
-    ]
-  }
-};
+import apiClient from '../interceptor';
 
 function SinglePostPage() {
   const { postId } = useParams();
-  const post = postsDB[postId];
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  if (!post) {
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        // For now, we'll fetch all posts and find the one with matching ID
+        // In a real app, you'd have a specific endpoint like /api/posts/{id}/
+        const response = await apiClient.get('/posts/');
+        const foundPost = response.data.find(p => p.id === postId);
+        
+        if (foundPost) {
+          setPost(foundPost);
+        } else {
+          setError('Post not found');
+        }
+      } catch (err) {
+        console.error('Failed to fetch post:', err);
+        setError('Failed to load post');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPost();
+  }, [postId]);
+
+  if (loading) {
     return (
       <div className="container mx-auto p-8 text-center">
-        <h1 className="text-2xl font-bold">Post not found.</h1>
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded mb-4"></div>
+          <div className="h-4 bg-gray-200 rounded mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !post) {
+    return (
+      <div className="container mx-auto p-8 text-center">
+        <h1 className="text-2xl font-bold text-gray-800 mb-4">Post not found</h1>
+        <p className="text-gray-600">The post you're looking for doesn't exist or has been removed.</p>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-4 lg:p-8 max-w-4xl">
-      <Post 
-        authorName={post.authorName} 
-        authorAvatar={post.authorAvatar} 
-        meta={post.meta} 
-        content={post.content} 
-      />
-      <CommentSection comments={post.comments} />
+    <div className="bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50 min-h-screen">
+      <div className="container mx-auto p-4 lg:p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main content */}
+          <main className="lg:col-span-2 space-y-6">
+            <Post 
+              id={post.id}
+              authorName={post.author_name} 
+              authorAvatar={post.author_profile_picture} 
+              created_at={post.created_at}
+              content={post.content}
+              title={post.title}
+              imageUrl={post.image_url}
+              tags={post.tags}
+            />
+            <CommentSection comments={[]} />
+          </main>
+
+          {/* Right sidebar */}
+          <aside className="lg:col-span-1 space-y-6">
+            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+              <h4 className="text-xl font-bold text-gray-800 mb-4">
+                Post Details
+              </h4>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Community</span>
+                  <span className="font-bold text-blue-800">
+                    {post.community_name}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Author</span>
+                  <span className="font-bold text-blue-800">
+                    {post.author_name}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Posted</span>
+                  <span className="font-bold text-blue-800">
+                    {new Date(post.created_at).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Tags section */}
+            {post.tags && post.tags.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                <h4 className="text-xl font-bold text-gray-800 mb-4">
+                  Tags
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {post.tags.map((tag, index) => (
+                    <span 
+                      key={index}
+                      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+                    >
+                      {tag.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Related posts or community info */}
+            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+              <h4 className="text-xl font-bold text-gray-800 mb-4">
+                Community Rules
+              </h4>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li>• Be respectful and constructive</li>
+                <li>• Stay on topic</li>
+                <li>• No spam or self-promotion</li>
+                <li>• Help others when you can</li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </div>
     </div>
   );
 }

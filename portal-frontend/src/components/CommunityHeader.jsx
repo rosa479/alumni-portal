@@ -14,12 +14,12 @@ function CommunityHeader({ community }) {
         <div className="flex items-center gap-2 text-dark-text">
           <Users size={16} />
           <span className="font-semibold">
-            {community.members.length} Members
+            {community.members_count} Members
           </span>
         </div>
         <div className="flex items-center gap-2 text-dark-text">
           <Rss size={16} />
-          <span className="font-semibold">{community.posts.length} Posts</span>
+          <span className="font-semibold">{community.posts_count} Posts</span>
         </div>
         <button className="ml-auto bg-primary-blue text-white font-semibold py-2 px-5 rounded-full hover:bg-opacity-90 transition-all">
           Join Community

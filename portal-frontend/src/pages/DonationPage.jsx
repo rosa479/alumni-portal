@@ -45,7 +45,7 @@ function DonationPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Donation Form */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-3xl shadow-2xl p-10 border border-gray-100">
+            <div className="bg-white rounded-3xl shadow-xl p-10 border border-gray-100">
               <h3 className="text-3xl font-bold text-gray-800 mb-8 text-center">Make a Donation to IIT Kharagpur</h3>
 
               <form onSubmit={handleSubmit} className="space-y-8">
@@ -99,7 +99,8 @@ function DonationPage() {
 
                 {/* Submit Button */}
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={() => alert('Coming Soon!')}
                   className="w-full bg-orange-600 text-white font-bold py-4 px-6 rounded-full text-lg hover:bg-orange-700 transition-all transform hover:-translate-y-0.5 shadow-lg"
                 >
                   Proceed to Donate
@@ -110,7 +111,7 @@ function DonationPage() {
 
           {/* Sidebar Info */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+            <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
               <h4 className="text-xl font-bold text-dark-text mb-4">How Your Donation Helps</h4>
               <div className="space-y-4">
                 <div className="flex items-start">
@@ -137,7 +138,7 @@ function DonationPage() {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-orange-600 text-white rounded-2xl p-6 shadow-2xl border border-orange-500/20">
+            <div className=" rounded-xl p-6 shadow-xl ">
               <h4 className="text-xl font-bold mb-4 flex items-center">
                 <Heart className="w-5 h-5 mr-2" />
                 IIT Kharagpur Impact

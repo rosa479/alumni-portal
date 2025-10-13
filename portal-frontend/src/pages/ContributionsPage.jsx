@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 import { CreditCard, Users, Calendar, Target, TrendingUp } from 'react-feather';
 
 // Mock data for now - will be replaced with API calls
-const mockScholarships = [
+const mockContributions = [
    {
       id: '1',
-      title: 'Merit Scholarship for Computer Science',
+      title: 'Merit Contribution for Computer Science',
       description: 'Supporting outstanding students in Computer Science and Engineering with financial assistance for their academic journey.',
       target_amount: 500000,
       current_amount: 250000,
@@ -20,7 +20,7 @@ const mockScholarships = [
    },
    {
       id: '2',
-      title: 'Women in Engineering Scholarship',
+      title: 'Women in Engineering Contribution',
       description: 'Encouraging and supporting female students pursuing engineering degrees at IIT Kharagpur.',
       target_amount: 300000,
       current_amount: 180000,
@@ -34,7 +34,7 @@ const mockScholarships = [
    },
    {
       id: '3',
-      title: 'Research Excellence Fellowship',
+      title: 'Research Excellence Contribution',
       description: 'Supporting graduate students conducting cutting-edge research in various engineering disciplines.',
       target_amount: 750000,
       current_amount: 450000,
@@ -48,7 +48,7 @@ const mockScholarships = [
    }
 ];
 
-function ScholarshipCard({ scholarship }) {
+function ContributionCard({ contribution }) {
    const formatDate = (dateString) => {
       return new Date(dateString).toLocaleDateString('en-US', {
          year: 'numeric',
@@ -67,11 +67,11 @@ function ScholarshipCard({ scholarship }) {
 
    return (
       <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-         {scholarship.image_url && (
+         {contribution.image_url && (
             <div className="h-48 overflow-hidden">
                <img
-                  src={scholarship.image_url}
-                  alt={scholarship.title}
+                  src={contribution.image_url}
+                  alt={contribution.title}
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                />
             </div>
@@ -79,26 +79,26 @@ function ScholarshipCard({ scholarship }) {
 
          <div className="p-6">
             <div className="flex items-start justify-between mb-4">
-               <h3 className="text-xl font-bold text-dark-text line-clamp-2">{scholarship.title}</h3>
-               <span className={`px-3 py-1 rounded-full text-xs font-semibold ${scholarship.status === 'ACTIVE'
+               <h3 className="text-xl font-bold text-dark-text line-clamp-2">{contribution.title}</h3>
+               <span className={`px-3 py-1 rounded-full text-xs font-semibold ${contribution.status === 'ACTIVE'
                   ? 'bg-green-100 text-green-800'
                   : 'bg-gray-100 text-gray-800'
                   }`}>
-                  {scholarship.status}
+                  {contribution.status}
                </span>
             </div>
 
-            <p className="text-light-text text-sm mb-4 line-clamp-3">{scholarship.description}</p>
+            <p className="text-light-text text-sm mb-4 line-clamp-3">{contribution.description}</p>
 
             <div className="mb-4">
                <div className="flex justify-between text-sm text-light-text mb-2">
                   <span>Progress</span>
-                  <span>{scholarship.progress_percentage.toFixed(1)}%</span>
+                  <span>{contribution.progress_percentage.toFixed(1)}%</span>
                </div>
                <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
                      className="bg-blue-800 h-2 rounded-full transition-all duration-500"
-                     style={{ width: `${scholarship.progress_percentage}%` }}
+                     style={{ width: `${contribution.progress_percentage}%` }}
                   ></div>
                </div>
             </div>
@@ -106,32 +106,32 @@ function ScholarshipCard({ scholarship }) {
             <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
                <div className="flex items-center text-light-text">
                   <Target className="w-4 h-4 mr-2" />
-                  <span>Target: {formatCurrency(scholarship.target_amount)}</span>
+                  <span>Target: {formatCurrency(contribution.target_amount)}</span>
                </div>
                <div className="flex items-center text-light-text">
                   <TrendingUp className="w-4 h-4 mr-2" />
-                  <span>Raised: {formatCurrency(scholarship.current_amount)}</span>
+                  <span>Raised: {formatCurrency(contribution.current_amount)}</span>
                </div>
             </div>
 
             <div className="flex items-center justify-between text-sm text-light-text mb-4">
                <div className="flex items-center">
                   <Users className="w-4 h-4 mr-2" />
-                  <span>{scholarship.contribution_count} contributors</span>
+                  <span>{contribution.contribution_count} contributors</span>
                </div>
                <div className="flex items-center">
                   <Calendar className="w-4 h-4 mr-2" />
-                  <span>{formatDate(scholarship.created_at)}</span>
+                  <span>{formatDate(contribution.created_at)}</span>
                </div>
             </div>
 
             <div className="flex items-center justify-between">
                <div className="text-sm">
                   <span className="text-light-text">Created by </span>
-                  <span className="font-semibold text-dark-text">{scholarship.created_by_name}</span>
+                  <span className="font-semibold text-dark-text">{contribution.created_by_name}</span>
                </div>
                <Link
-                  to={`/scholarships/${scholarship.id}`}
+                  to={`/contributions/${contribution.id}`}
                   className="bg-blue-800 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors duration-200 font-medium"
                >
                   View Details
@@ -142,22 +142,22 @@ function ScholarshipCard({ scholarship }) {
    );
 }
 
-function ScholarshipsPage() {
-   const [scholarships, setScholarships] = useState([]);
+function ContributionsPage() {
+   const [contributions, setContributions] = useState([]);
    const [loading, setLoading] = useState(true);
    const [filter, setFilter] = useState('all');
 
    useEffect(() => {
       // Simulate API call
       setTimeout(() => {
-         setScholarships(mockScholarships);
+         setContributions(mockContributions);
          setLoading(false);
       }, 1000);
    }, []);
 
-   const filteredScholarships = scholarships.filter(scholarship => {
+   const filteredContributions = contributions.filter(contribution => {
       if (filter === 'all') return true;
-      return scholarship.status === filter;
+      return contribution.status === filter;
    });
 
    // Remove the full page loader - we'll show individual card loaders instead
@@ -170,7 +170,7 @@ function ScholarshipsPage() {
                <div className="flex justify-center mb-4">
                   <CreditCard className="h-16 w-16 text-blue-800" />
                </div>
-               <h1 className="text-4xl font-bold text-dark-text mb-4">Scholarship Programs</h1>
+               <h1 className="text-4xl font-bold text-dark-text mb-4">Contribution Programs</h1>
                <p className="text-lg text-light-text max-w-2xl mx-auto">
                   Support the next generation of innovators and leaders. Your contributions help students
                   achieve their academic dreams at IIT Kharagpur.
@@ -187,7 +187,7 @@ function ScholarshipsPage() {
                         : 'text-gray-600 hover:text-blue-800 hover:bg-white'
                         }`}
                   >
-                     All Scholarships
+                     All Contributions
                   </button>
                   <button
                      onClick={() => setFilter('ACTIVE')}
@@ -219,9 +219,9 @@ function ScholarshipsPage() {
                      </div>
                      <div>
                         <p className="text-2xl font-bold text-dark-text">
-                           {scholarships.length}
+                           {contributions.length}
                         </p>
-                        <p className="text-light-text">Total Scholarships</p>
+                        <p className="text-light-text">Total Contributions</p>
                      </div>
                   </div>
                </div>
@@ -233,7 +233,7 @@ function ScholarshipsPage() {
                      </div>
                      <div>
                         <p className="text-2xl font-bold text-dark-text">
-                           ₹{scholarships.reduce((sum, s) => sum + s.current_amount, 0).toLocaleString()}
+                           ₹{contributions.reduce((sum, s) => sum + s.current_amount, 0).toLocaleString()}
                         </p>
                         <p className="text-light-text">Total Raised</p>
                      </div>
@@ -247,7 +247,7 @@ function ScholarshipsPage() {
                      </div>
                      <div>
                         <p className="text-2xl font-bold text-dark-text">
-                           {scholarships.reduce((sum, s) => sum + s.contribution_count, 0)}
+                           {contributions.reduce((sum, s) => sum + s.contribution_count, 0)}
                         </p>
                         <p className="text-light-text">Total Contributors</p>
                      </div>
@@ -255,7 +255,7 @@ function ScholarshipsPage() {
                </div>
             </div>
 
-            {/* Scholarships Grid */}
+            {/* Contributions Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                {loading ? (
                   // Show loading cards
@@ -275,16 +275,16 @@ function ScholarshipsPage() {
                      </div>
                   ))
                ) : (
-                  filteredScholarships.map(scholarship => (
-                     <ScholarshipCard key={scholarship.id} scholarship={scholarship} />
+                  filteredContributions.map(contribution => (
+                     <ContributionCard key={contribution.id} contribution={contribution} />
                   ))
                )}
             </div>
 
-            {!loading && filteredScholarships.length === 0 && (
+            {!loading && filteredContributions.length === 0 && (
                <div className="text-center py-12">
                   <CreditCard className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-500 mb-2">No scholarships found</h3>
+                  <h3 className="text-xl font-semibold text-gray-500 mb-2">No contributions found</h3>
                   <p className="text-gray-400">Try adjusting your filter or check back later.</p>
                </div>
             )}
@@ -293,4 +293,4 @@ function ScholarshipsPage() {
    );
 }
 
-export default ScholarshipsPage;
+export default ContributionsPage;

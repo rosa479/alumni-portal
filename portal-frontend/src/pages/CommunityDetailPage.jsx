@@ -61,19 +61,24 @@ function CommunityDetailPage() {
   const [communityBackend, setCommunityBackend] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
 
   // 2. useEffect hook to fetch data when the component mounts.
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchData = async () => {
       try {
-        // 3. Send a GET request using the configured apiClient.
-        const response = await apiClient.get("/api/communities/");
+        // Fetch community details
+        const communityResponse = await apiClient.get(`/communities/${communityId}/`);
+        console.log("Received CommunityBackend Data:", communityResponse.data);
+        setCommunityBackend([communityResponse.data]);
 
-        // 4. Print the received object to the console, as requested.
-        console.log("Received CommunityBackend Data:", response.data);
-
-        // 5. Update the communityBackend state with the data from the API response.
-        setCommunityBackend(response.data);
+        // Fetch user profile for avatar
+        try {
+          const userResponse = await apiClient.get('/profiles/me/');
+          setUserProfile(userResponse.data);
+        } catch (userErr) {
+          console.log("Could not fetch user profile, using default avatar");
+        }
       } catch (err) {
         console.error("Failed to fetch communityBackend profile:", err);
         setError("Could not load communityBackend information.");
@@ -83,8 +88,8 @@ function CommunityDetailPage() {
       }
     };
 
-    fetchUserProfile();
-  }, []); // The empty dependency array ensures this effect runs only once.
+    fetchData();
+  }, [communityId]); // Include communityId in dependency array
 
   // --- Render logic based on the state ---
 
@@ -144,9 +149,12 @@ function CommunityDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           <main className="lg:col-span-2 space-y-6">
             {/* Note: In a real app, you'd want a more specific CreatePost component */}
-            <CreatePost />
+            <CreatePost 
+              avatar={userProfile?.alumni_profile?.profile_picture_url || "https://i.pravatar.cc/150?u=user"} 
+              communities={[community]} 
+            />
             <div className="space-y-6">
-              {community.posts.map((post) => (
+              {community.latest_posts.map((post) => (
                 <Post
                   key={post.id}
                   id={post.id}
@@ -154,6 +162,9 @@ function CommunityDetailPage() {
                   created_at={post.created_at}
                   authorAvatar={post.author_profile_picture}
                   content={post.content}
+                  title={post.title}
+                  imageUrl={post.image_url}
+                  tags={post.tags}
                 />
               ))}
             </div>
@@ -173,13 +184,13 @@ function CommunityDetailPage() {
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Members</span>
                   <span className="font-bold text-blue-800">
-                    {community.members.length}
+                    {community.members_count}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Posts</span>
                   <span className="font-bold text-blue-800">
-                    {community.posts.length}
+                    {community.posts_count}
                   </span>
                 </div>
               </div>

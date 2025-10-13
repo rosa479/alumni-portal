@@ -19,8 +19,8 @@ import CommunitiesPage from "./pages/CommunitiesPage";
 import DonationPage from "./pages/DonationPage";
 import CommunityDetailPage from "./pages/CommunityDetailPage";
 import SinglePostPage from "./pages/SinglePostPage";
-import ScholarshipsPage from "./pages/ScholarshipsPage";
-import ScholarshipDetailPage from "./pages/ScholarshipDetailPage";
+import ContributionsPage from "./pages/ContributionsPage";
+import ContributionDetailPage from "./pages/ContributionDetailPage";
 
 function MainLayout() {
   return (
@@ -55,10 +55,10 @@ function App() {
             />
             <Route path="/posts/:postId" element={<SinglePostPage />} />
             <Route path="/donate" element={<DonationPage />} />
-            <Route path="/scholarships" element={<ScholarshipsPage />} />
+            <Route path="/contributions" element={<ContributionsPage />} />
             <Route
-              path="/scholarships/:scholarshipId"
-              element={<ScholarshipDetailPage />}
+              path="/contributions/:contributionId"
+              element={<ContributionDetailPage />}
             />
 
             {/* Fallback route for authenticated users */}

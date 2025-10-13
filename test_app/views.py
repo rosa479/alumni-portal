@@ -3,8 +3,14 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from .serializers import RegisterSerializer, UserSerializer, UserProfileSerializer, CommunitySerializer, PostSerializer, ScholarshipSerializer, ScholarshipListSerializer, ScholarshipContributionSerializer
-from .models import User, Community, Post, Scholarship, ScholarshipContribution
+from rest_framework.views import APIView
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from test_app.storage import MediaStorage
+import uuid
+import os
+from .serializers import RegisterSerializer, UserSerializer, UserProfileSerializer, CommunitySerializer, CommunityDetailSerializer, PostSerializer, ScholarshipSerializer, ScholarshipListSerializer, ScholarshipContributionSerializer, TagSerializer, UserTagSerializer, PostLikeSerializer, PostCommentSerializer
+from .models import User, Community, Post, Scholarship, ScholarshipContribution, Tag, UserTag, PostLike, PostComment
 from .permissions import IsAdminUser
 
 class RegisterView(generics.CreateAPIView):
@@ -81,12 +87,23 @@ class AdminApproveVerificationView(generics.GenericAPIView):
     
 class CommunityListView(generics.ListAPIView):
     """
-    Lists all available communities.
+    Lists all available communities with counts only.
     Corresponds to: GET /api/communities/
     """
     queryset = Community.objects.all()
     serializer_class = CommunitySerializer
     permission_classes = [IsAuthenticated]
+
+
+class CommunityDetailView(generics.RetrieveAPIView):
+    """
+    Retrieve a specific community with latest posts.
+    Corresponds to: GET /api/communities/{id}/
+    """
+    queryset = Community.objects.all()
+    serializer_class = CommunityDetailSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id'
 
 
 class PostListCreateView(generics.ListCreateAPIView):
@@ -180,3 +197,180 @@ class ScholarshipContributionsListView(generics.ListAPIView):
         return ScholarshipContribution.objects.filter(
             scholarship_id=scholarship_id
         ).order_by('-created_at')
+
+
+class TagListCreateView(generics.ListCreateAPIView):
+    """
+    List all tags for a community or create a new tag.
+    Corresponds to: GET /api/communities/{community_id}/tags/, POST /api/communities/{community_id}/tags/
+    """
+    serializer_class = TagSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        community_id = self.kwargs['community_id']
+        return Tag.objects.filter(community_id=community_id, is_active=True)
+    
+    def perform_create(self, serializer):
+        community_id = self.kwargs['community_id']
+        community = Community.objects.get(id=community_id)
+        serializer.save(community=community, created_by=self.request.user)
+
+
+class TagDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update or delete a tag.
+    Corresponds to: GET /api/tags/{id}/, PUT /api/tags/{id}/, DELETE /api/tags/{id}/
+    """
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class UserTagListCreateView(generics.ListCreateAPIView):
+    """
+    List user tags or assign tags to users.
+    Corresponds to: GET /api/user-tags/, POST /api/user-tags/
+    """
+    serializer_class = UserTagSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return UserTag.objects.filter(user=self.request.user, is_active=True)
+    
+    def perform_create(self, serializer):
+        serializer.save(assigned_by=self.request.user)
+
+
+class CommunityUserTagsView(generics.ListAPIView):
+    """
+    List all user tags for a specific community.
+    Corresponds to: GET /api/communities/{community_id}/user-tags/
+    """
+    serializer_class = UserTagSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        community_id = self.kwargs['community_id']
+        return UserTag.objects.filter(
+            tag__community_id=community_id,
+            user=self.request.user,
+            is_active=True
+        )
+
+
+class ImageUploadView(APIView):
+    """
+    Handle image uploads to S3.
+    Corresponds to: POST /api/upload-image/
+    """
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        try:
+            if 'image' not in request.FILES:
+                return Response({'error': 'No image file provided'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            image_file = request.FILES['image']
+            
+            # Generate unique filename
+            file_extension = os.path.splitext(image_file.name)[1]
+            unique_filename = f"{uuid.uuid4()}{file_extension}"
+            
+            # Use S3 storage directly
+            s3_storage = MediaStorage()
+            file_path = f"uploads/{unique_filename}"
+            saved_path = s3_storage.save(file_path, ContentFile(image_file.read()))
+            
+            # Get the public URL
+            image_url = s3_storage.url(saved_path)
+            
+            return Response({
+                'image_url': image_url,
+                'message': 'Image uploaded successfully'
+            }, status=status.HTTP_201_CREATED)
+            
+        except Exception as e:
+            return Response({
+                'error': f'Failed to upload image: {str(e)}'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class PostLikeView(APIView):
+    """
+    Handle post likes - like/unlike a post
+    """
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, post_id):
+        try:
+            post = Post.objects.get(id=post_id)
+            like, created = PostLike.objects.get_or_create(
+                post=post,
+                user=request.user
+            )
+            
+            if created:
+                return Response({
+                    'message': 'Post liked successfully',
+                    'liked': True,
+                    'likes_count': post.likes.count()
+                }, status=status.HTTP_201_CREATED)
+            else:
+                return Response({
+                    'message': 'Post already liked',
+                    'liked': True,
+                    'likes_count': post.likes.count()
+                }, status=status.HTTP_200_OK)
+                
+        except Post.DoesNotExist:
+            return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    def delete(self, request, post_id):
+        try:
+            post = Post.objects.get(id=post_id)
+            like = PostLike.objects.get(post=post, user=request.user)
+            like.delete()
+            
+            return Response({
+                'message': 'Post unliked successfully',
+                'liked': False,
+                'likes_count': post.likes.count()
+            }, status=status.HTTP_200_OK)
+            
+        except Post.DoesNotExist:
+            return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
+        except PostLike.DoesNotExist:
+            return Response({'error': 'Like not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class PostCommentListCreateView(generics.ListCreateAPIView):
+    """
+    List and create comments for a post
+    """
+    serializer_class = PostCommentSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        post_id = self.kwargs['post_id']
+        return PostComment.objects.filter(post_id=post_id).order_by('-created_at')
+    
+    def perform_create(self, serializer):
+        post_id = self.kwargs['post_id']
+        post = Post.objects.get(id=post_id)
+        serializer.save(user=self.request.user, post=post)
+
+
+class PostCommentDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update, or delete a specific comment
+    """
+    serializer_class = PostCommentSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return PostComment.objects.filter(user=self.request.user)

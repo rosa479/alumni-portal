@@ -1,8 +1,20 @@
 // src/features/posts/components/CommentSection.jsx
-import React from "react";
+import React, { useState } from "react";
+import MDEditor from '@uiw/react-md-editor';
 import Comment from "./Comment";
 
 function CommentSection({ comments }) {
+  const [commentContent, setCommentContent] = useState("");
+
+  const handleSubmitComment = (e) => {
+    e.preventDefault();
+    if (commentContent.trim()) {
+      // TODO: Implement comment submission
+      console.log("Comment:", commentContent);
+      setCommentContent("");
+    }
+  };
+
   return (
     <div className="bg-white p-6 rounded-xl shadow-lg mt-8">
       <h3 className="text-xl font-bold text-dark-text mb-6">
@@ -10,23 +22,40 @@ function CommentSection({ comments }) {
       </h3>
 
       {/* Add a Comment Form */}
-      <div className="flex items-start gap-4 mb-8">
-        <img
-          src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-          alt="My Profile"
-          className="w-10 h-10 rounded-full"
-        />
-        <div className="flex-1">
-          <textarea
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-blue focus:outline-none transition"
-            placeholder="Add your comment..."
-            rows="2"
-          ></textarea>
-          <button className="bg-primary-blue text-white font-semibold py-2 px-5 rounded-full hover:bg-opacity-90 transition-all mt-2">
-            Post Comment
-          </button>
+      <form onSubmit={handleSubmitComment}>
+        <div className="flex items-start gap-4 mb-8">
+          <img
+            src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+            alt="My Profile"
+            className="w-10 h-10 rounded-full"
+          />
+          <div className="flex-1">
+            <div className="mb-3">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Add a comment
+              </label>
+              <div data-color-mode="light">
+                <MDEditor
+                  value={commentContent}
+                  onChange={(val) => setCommentContent(val || '')}
+                  placeholder="Share your thoughts..."
+                  preview="edit"
+                  hideToolbar={false}
+                  visibleDragBar={false}
+                  height={150}
+                />
+              </div>
+            </div>
+            <button 
+              type="submit"
+              className="bg-blue-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-blue-700 transition-all"
+              disabled={!commentContent.trim()}
+            >
+              Post Comment
+            </button>
+          </div>
         </div>
-      </div>
+      </form>
 
       {/* List of Comments */}
       <div className="space-y-6">

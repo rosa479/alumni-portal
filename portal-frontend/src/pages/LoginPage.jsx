@@ -20,7 +20,7 @@ function LoginPage() {
     try {
       // 4. USE `apiClient` INSTEAD OF THE RAW `axios`
       const response = await apiClient.post(
-        "/api/auth/login/", // The base URL is already in apiClient
+        "/auth/login/", // The base URL is already in apiClient
         {
           // NOTE: Your previous code used 'username', but your form uses 'email'.
           // Make sure your backend expects 'email' or change this key to 'username'.

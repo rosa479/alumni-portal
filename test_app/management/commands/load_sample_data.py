@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
-from test_app.models import AlumniProfile, Community, Post, Scholarship, ScholarshipContribution
+from test_app.models import AlumniProfile, Community, Post, Scholarship, ScholarshipContribution, Tag, UserTag
 from decimal import Decimal
 import uuid
 
@@ -22,6 +22,8 @@ class Command(BaseCommand):
             ScholarshipContribution.objects.all().delete()
             Scholarship.objects.all().delete()
             Post.objects.all().delete()
+            UserTag.objects.all().delete()
+            Tag.objects.all().delete()
             Community.objects.all().delete()
             AlumniProfile.objects.all().delete()
             User.objects.filter(is_superuser=False).delete()
@@ -146,6 +148,49 @@ class Command(BaseCommand):
                 community.members.add(created_users[1])
             created_communities.append(community)
             self.stdout.write(f'Created community: {community.name}')
+
+        # Create sample tags for each community
+        self.stdout.write('Creating sample tags...')
+        for community in created_communities:
+            # Create different tags for different communities
+            if 'Entrepreneurship' in community.name:
+                tag_names = ['Founder', 'Investor', 'Mentor', 'Startup Enthusiast', 'Business Development']
+            elif 'AI' in community.name:
+                tag_names = ['ML Engineer', 'Data Scientist', 'AI Researcher', 'Deep Learning Expert', 'NLP Specialist']
+            elif 'Bay Area' in community.name:
+                tag_names = ['Software Engineer', 'Product Manager', 'Tech Lead', 'Senior Developer', 'Architect']
+            elif 'Finance' in community.name:
+                tag_names = ['Investment Banker', 'Private Equity', 'Venture Capital', 'Financial Analyst', 'Portfolio Manager']
+            elif 'Research' in community.name:
+                tag_names = ['Professor', 'Research Scientist', 'PhD Student', 'Postdoc', 'Academic']
+            else:  # KGP '18 Batch
+                tag_names = ['Hall President', 'General Secretary', 'Cultural Secretary', 'Sports Secretary', 'Class Representative']
+            
+            for tag_name in tag_names:
+                tag = Tag.objects.create(
+                    name=tag_name,
+                    description=f'{tag_name} role in {community.name}',
+                    community=community,
+                    created_by=community.created_by
+                )
+                self.stdout.write(f'Created tag: {tag_name} in {community.name}')
+
+        # Assign some tags to users
+        self.stdout.write('Assigning tags to users...')
+        for community in created_communities:
+            community_tags = Tag.objects.filter(community=community)
+            community_members = community.members.all()
+            
+            # Assign 1-2 random tags to each member
+            for member in community_members:
+                assigned_tags = community_tags.order_by('?')[:2]
+                for tag in assigned_tags:
+                    UserTag.objects.create(
+                        user=member,
+                        tag=tag,
+                        assigned_by=community.created_by
+                    )
+                    self.stdout.write(f'Assigned tag {tag.name} to {member.email} in {community.name}')
 
         # Create sample posts
         posts_data = [

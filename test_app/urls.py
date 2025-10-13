@@ -7,12 +7,21 @@ from .views import (
     AdminVerificationListView,
     AdminApproveVerificationView,
     CommunityListView,
+    CommunityDetailView,
     PostListCreateView,
     CommunityPostListView,
     ScholarshipListView,
     ScholarshipDetailView,
     ScholarshipContributionCreateView,
-    ScholarshipContributionsListView
+    ScholarshipContributionsListView,
+    TagListCreateView,
+    TagDetailView,
+    UserTagListCreateView,
+    CommunityUserTagsView,
+    ImageUploadView,
+    PostLikeView,
+    PostCommentListCreateView,
+    PostCommentDetailView
 )
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -34,6 +43,7 @@ urlpatterns = [
 
     # Service: Community & Posts
     path('communities/', CommunityListView.as_view(), name='community_list'),
+    path('communities/<uuid:id>/', CommunityDetailView.as_view(), name='community_detail'),
     path('posts/', PostListCreateView.as_view(), name='post_create'),
     path('communities/<uuid:community_id>/posts/', CommunityPostListView.as_view(), name='community_post_list'),
 
@@ -42,5 +52,19 @@ urlpatterns = [
     path('scholarships/<uuid:pk>/', ScholarshipDetailView.as_view(), name='scholarship_detail'),
     path('scholarships/<uuid:scholarship_id>/contributions/', ScholarshipContributionCreateView.as_view(), name='scholarship_contribution_create'),
     path('scholarships/<uuid:scholarship_id>/contributions/list/', ScholarshipContributionsListView.as_view(), name='scholarship_contributions_list'),
+
+    # Service: Tags
+    path('communities/<uuid:community_id>/tags/', TagListCreateView.as_view(), name='tag_list_create'),
+    path('tags/<uuid:pk>/', TagDetailView.as_view(), name='tag_detail'),
+    path('user-tags/', UserTagListCreateView.as_view(), name='user_tag_list_create'),
+    path('communities/<uuid:community_id>/user-tags/', CommunityUserTagsView.as_view(), name='community_user_tags'),
+
+    # Service: File Upload
+    path('upload-image/', ImageUploadView.as_view(), name='image_upload'),
+    
+    # Post interactions
+    path('posts/<uuid:post_id>/like/', PostLikeView.as_view(), name='post_like'),
+    path('posts/<uuid:post_id>/comments/', PostCommentListCreateView.as_view(), name='post_comments'),
+    path('comments/<uuid:pk>/', PostCommentDetailView.as_view(), name='comment_detail'),
 
 ]

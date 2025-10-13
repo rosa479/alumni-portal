@@ -39,7 +39,7 @@ function RegisterPage() {
     try {
       console.log("Submitting registration data:", userData);
       // 5. Send the POST request using your apiClient
-      const response = await apiClient.post("/api/auth/register/", userData);
+      const response = await apiClient.post("/auth/register/", userData);
       console.log("registration response:", response.data);
 
       // 6. On success, navigate to the login page

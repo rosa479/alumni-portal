@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'storages',
     'test_app',
 ]
 
@@ -134,6 +135,40 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'test_app.User'
+
+# AWS S3 Configuration
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'us-east-1')
+
+# Check if S3 credentials are provided
+USE_S3 = all([
+    AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY,
+    AWS_STORAGE_BUCKET_NAME
+])
+
+if USE_S3:
+    AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+    AWS_DEFAULT_ACL = None  # Disable ACL for newer S3 buckets
+    AWS_S3_OBJECT_PARAMETERS = {
+        'CacheControl': 'max-age=86400',
+    }
+    AWS_LOCATION = 'media'
+    DEFAULT_FILE_STORAGE = 'test_app.storage.MediaStorage'
+    
+    # Additional S3 settings for proper configuration
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_S3_VERIFY = True
+    
+    print(f"S3 Configuration: Using bucket {AWS_STORAGE_BUCKET_NAME} in region {AWS_S3_REGION_NAME}")
+else:
+    print("S3 Configuration: Using local storage (S3 credentials not provided)")
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
+# Base URL for constructing full URLs
+BASE_URL = os.getenv('BASE_URL', 'http://localhost:8000')
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),

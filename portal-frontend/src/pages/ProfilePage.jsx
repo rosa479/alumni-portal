@@ -22,7 +22,7 @@ function ProfilePage() {
     const fetchUserProfile = async () => {
       try {
         // 3. Send a GET request using the configured apiClient.
-        const response = await apiClient.get("/api/profiles/me/");
+        const response = await apiClient.get("/profiles/me/");
 
         // 4. Print the received object to the console, as requested.
         console.log("Received Profile Data:", response.data);

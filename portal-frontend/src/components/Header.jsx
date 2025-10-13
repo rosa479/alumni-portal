@@ -55,10 +55,10 @@ function Header() {
             Donate
           </Link>
           <Link
-            to="/scholarships"
+            to="/contributions"
             className="text-gray-800 font-medium hover:text-orange-600 transition-colors"
           >
-            Scholarships
+            Contributions
           </Link>
 
           {/* 1. Desktop Logout Button Added */}
@@ -117,11 +117,11 @@ function Header() {
               Donate
             </Link>
             <Link
-              to="/scholarships"
+              to="/contributions"
               onClick={closeMobileMenu}
               className="block py-3 px-4 text-gray-800 font-medium hover:text-orange-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
             >
-              Scholarships
+              Contributions
             </Link>
 
             {/* 2. Mobile Logout Button Added */}

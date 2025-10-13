@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import PostDashboard from "../components/Post/PostDashboard";
-import CreatePost from "../components/CreatePost";
 import Sidebar from "../components/Sidebar";
 import Rightbar from "../components/Rightbar";
 import apiClient from "../interceptor";
@@ -12,7 +11,7 @@ const postsData = [
     id: 1,
     authorName: "Ankit Sharma",
     authorAvatar: "https://i.pravatar.cc/150?u=a042581f4e29026704e",
-    meta: 'posted in <a href="#" class="text-primary-blue hover:underline">Campus Events</a> • 2h ago',
+    meta: '<a href="#" class="text-primary-blue hover:underline">Campus Events</a> • 2h ago',
     content:
       "So excited for the upcoming Alumni Meetup 2025 on campus! Who's planning to be there? It would be great to reconnect with old friends and make new connections. Let's make it a memorable one! 🎉",
   },
@@ -20,7 +19,7 @@ const postsData = [
     id: 2,
     authorName: "Priya Singh",
     authorAvatar: "https://i.pravatar.cc/150?u=a042581f4e29026704f",
-    meta: 'posted in <a href="#" class="text-primary-blue hover:underline">Tech Careers</a> • 5h ago',
+    meta: '<a href="#" class="text-primary-blue hover:underline">Tech Careers</a> • 5h ago',
     content:
       "My team at Google is hiring Senior SDEs for our Bangalore office. The role involves working on large-scale distributed systems. KGP alumni referrals are highly encouraged. Feel free to DM me for details!",
   },
@@ -41,9 +40,9 @@ function Dashboard() {
         // 3. Use Promise.all to run both API calls in parallel for better performance.
         const [profileResponse, postsResponse, communityResponse] =
           await Promise.all([
-            apiClient.get("/api/profiles/me/"),
-            apiClient.get("/api/posts/"),
-            apiClient.get("/api/communities/"),
+            apiClient.get("/profiles/me/"),
+            apiClient.get("/posts/"),
+            apiClient.get("/communities/"),
           ]);
 
         // 4. Log the received data.
@@ -113,18 +112,21 @@ function Dashboard() {
               Stay connected with your alma mater and fellow alumni
             </p>
           </div>
-          <CreatePost
-            avatar={user.alumni_profile.profile_picture_url}
-            communities={community}
-          />
           {posts.map((post) => (
             <PostDashboard
               key={post.id}
+              id={post.id}
               authorName={post.author_name}
               authorAvatar={post.author_profile_picture}
               created_at={post.created_at}
               content={post.content}
+              title={post.title}
+              imageUrl={post.image_url}
+              tags={post.tags}
               community={post.community_name}
+              likesCount={post.likes_count}
+              commentsCount={post.comments_count}
+              isLiked={post.is_liked}
             />
           ))}
         </section>

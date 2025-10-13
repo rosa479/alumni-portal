@@ -2,7 +2,7 @@
 
 from django.db import transaction
 from rest_framework import serializers
-from .models import User, AlumniProfile, Community, Post, Scholarship, ScholarshipContribution
+from .models import User, AlumniProfile, Community, Post, Scholarship, ScholarshipContribution, Tag, UserTag, PostLike, PostComment
 
 class AlumniProfileSerializer(serializers.ModelSerializer):
     """
@@ -107,11 +107,31 @@ class PostSerializer(serializers.ModelSerializer):
     author_profile_picture = serializers.URLField(source='author.alumni_profile.profile_picture_url', read_only=True)
     author_name = serializers.CharField(source='author.alumni_profile.full_name', read_only=True)
     community_name = serializers.CharField(source='community.name', read_only=True)
+    tags = serializers.SerializerMethodField()
+    likes_count = serializers.SerializerMethodField()
+    comments_count = serializers.SerializerMethodField()
+    is_liked = serializers.SerializerMethodField()
             
     class Meta:
         model = Post
-        fields = ['id', 'community', 'community_name', 'content', 'status', 'created_at', 'author_email', 'author_profile_picture', 'author_name']
+        fields = ['id', 'community', 'community_name', 'title', 'content', 'image_url', 'tags', 'status', 'created_at', 'author_email', 'author_profile_picture', 'author_name', 'likes_count', 'comments_count', 'is_liked']
         read_only_fields = ['status', 'author_email']
+    
+    def get_tags(self, obj):
+        from .models import Tag
+        return TagSerializer(obj.tags.all(), many=True).data
+    
+    def get_likes_count(self, obj):
+        return obj.likes.count()
+    
+    def get_comments_count(self, obj):
+        return obj.comments.count()
+    
+    def get_is_liked(self, obj):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
+            return obj.likes.filter(user=request.user).exists()
+        return False
 
     def create(self, validated_data):
         # Automatically set the author to the currently logged-in user
@@ -121,13 +141,102 @@ class PostSerializer(serializers.ModelSerializer):
 
 class CommunitySerializer(serializers.ModelSerializer):
     """
-    Serializer for listing communities.
+    Serializer for listing communities with counts only.
     """
-    members = UserPublicSerializer(many=True, read_only=True)
-    posts = PostSerializer(many=True, read_only=True)
+    members_count = serializers.SerializerMethodField()
+    posts_count = serializers.SerializerMethodField()
+    
     class Meta:
         model = Community
-        fields = ['id', 'name', 'description', 'members', 'posts']
+        fields = ['id', 'name', 'description', 'members_count', 'posts_count']
+    
+    def get_members_count(self, obj):
+        return obj.members.count()
+    
+    def get_posts_count(self, obj):
+        return obj.posts.filter(status=Post.Status.APPROVED).count()
+
+
+class CommunityDetailSerializer(serializers.ModelSerializer):
+    """
+    Serializer for community detail view with latest posts.
+    """
+    members_count = serializers.SerializerMethodField()
+    posts_count = serializers.SerializerMethodField()
+    latest_posts = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Community
+        fields = ['id', 'name', 'description', 'members_count', 'posts_count', 'latest_posts']
+    
+    def get_members_count(self, obj):
+        return obj.members.count()
+    
+    def get_posts_count(self, obj):
+        return obj.posts.filter(status=Post.Status.APPROVED).count()
+    
+    def get_latest_posts(self, obj):
+        latest_posts = obj.posts.filter(status=Post.Status.APPROVED).order_by('-created_at')[:10]
+        return PostSerializer(latest_posts, many=True).data
+
+
+class TagSerializer(serializers.ModelSerializer):
+    """
+    Serializer for tags
+    """
+    class Meta:
+        model = Tag
+        fields = ['id', 'name', 'description', 'community', 'created_by', 'created_at', 'is_active']
+        read_only_fields = ['created_by', 'created_at']
+
+
+class UserTagSerializer(serializers.ModelSerializer):
+    """
+    Serializer for user-tag mappings
+    """
+    tag_name = serializers.CharField(source='tag.name', read_only=True)
+    tag_description = serializers.CharField(source='tag.description', read_only=True)
+    
+    class Meta:
+        model = UserTag
+        fields = ['id', 'user', 'tag_name', 'tag_description', 'assigned_by', 'assigned_at', 'is_active']
+        read_only_fields = ['assigned_by', 'assigned_at']
+
+
+class PostLikeSerializer(serializers.ModelSerializer):
+    """
+    Serializer for post likes
+    """
+    user_email = serializers.CharField(source='user.email', read_only=True)
+    user_name = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = PostLike
+        fields = ['id', 'user', 'user_email', 'user_name', 'created_at']
+        read_only_fields = ['user', 'created_at']
+    
+    def get_user_name(self, obj):
+        return obj.user.alumni_profile.full_name if hasattr(obj.user, 'alumni_profile') else obj.user.email
+
+
+class PostCommentSerializer(serializers.ModelSerializer):
+    """
+    Serializer for post comments
+    """
+    user_email = serializers.CharField(source='user.email', read_only=True)
+    user_name = serializers.SerializerMethodField()
+    user_avatar = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = PostComment
+        fields = ['id', 'user', 'user_email', 'user_name', 'user_avatar', 'content', 'created_at', 'updated_at']
+        read_only_fields = ['user', 'created_at', 'updated_at']
+    
+    def get_user_name(self, obj):
+        return obj.user.alumni_profile.full_name if hasattr(obj.user, 'alumni_profile') else obj.user.email
+    
+    def get_user_avatar(self, obj):
+        return obj.user.alumni_profile.profile_picture_url if hasattr(obj.user, 'alumni_profile') else None
 
 
 class ScholarshipContributionSerializer(serializers.ModelSerializer):
