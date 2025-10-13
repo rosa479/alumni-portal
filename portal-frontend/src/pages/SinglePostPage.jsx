@@ -14,25 +14,29 @@ function SinglePostPage() {
   const [error, setError] = useState(null);
   const [commentLoading, setCommentLoading] = useState(false);
 
-  // Fetch post details (same as before)
+  // Fetch specific post details
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await apiClient.get('/posts/');
-        // Compare IDs as strings for reliability
-        const foundPost = response.data.find(p => String(p.id) === String(postId));
-        if (foundPost) {
-          setPost(foundPost);
-        } else {
-          setError('Post not found');
-        }
+        setLoading(true);
+        const response = await apiClient.get(`/posts/${postId}/`);
+        setPost(response.data);
+        setError(null);
       } catch (err) {
-        setError('Failed to load post');
+        console.error('Error fetching post:', err);
+        if (err.response?.status === 404) {
+          setError('Post not found');
+        } else {
+          setError('Failed to load post');
+        }
       } finally {
         setLoading(false);
       }
     };
-    fetchPost();
+
+    if (postId) {
+      fetchPost();
+    }
   }, [postId]);
 
   // Fetch comments for this post
@@ -40,7 +44,6 @@ function SinglePostPage() {
     setCommentLoading(true);
     try {
       const res = await apiClient.get(`/posts/${postId}/comments/`);
-      // Map backend fields to frontend CommentSection format
       setComments(
         res.data.map(c => ({
           id: c.id,
@@ -52,16 +55,17 @@ function SinglePostPage() {
         }))
       );
     } catch (err) {
-      // Optionally handle error
+      console.error('Error fetching comments:', err);
     } finally {
       setCommentLoading(false);
     }
   };
 
   useEffect(() => {
-    if (postId) fetchComments();
-    // eslint-disable-next-line
-  }, [postId]);
+    if (postId && post) {
+      fetchComments();
+    }
+  }, [postId, post]);
 
   // Handler to submit a new comment
   const handleAddComment = async (content) => {
@@ -70,17 +74,20 @@ function SinglePostPage() {
       fetchComments(); // Refresh comments
       return true;
     } catch (err) {
+      console.error('Error adding comment:', err);
       return false;
     }
   };
 
   if (loading) {
     return (
-      <div className="container mx-auto p-8 text-center">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded mb-4"></div>
-          <div className="h-4 bg-gray-200 rounded mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded"></div>
+      <div className="bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50 min-h-screen">
+        <div className="container mx-auto p-8 text-center">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded"></div>
+          </div>
         </div>
       </div>
     );
@@ -88,9 +95,21 @@ function SinglePostPage() {
 
   if (error || !post) {
     return (
-      <div className="container mx-auto p-8 text-center">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">Post not found</h1>
-        <p className="text-gray-600">The post you're looking for doesn't exist or has been removed.</p>
+      <div className="bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50 min-h-screen">
+        <div className="container mx-auto p-8 text-center">
+          <div className="bg-white rounded-3xl shadow-2xl p-12 border border-gray-100">
+            <h1 className="text-4xl font-bold text-gray-800 mb-4">Post Not Found</h1>
+            <p className="text-lg text-gray-600 mb-8">
+              {error || "The post you're looking for doesn't exist or has been removed."}
+            </p>
+            <a
+              href="/dashboard"
+              className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors font-medium"
+            >
+              Back to Dashboard
+            </a>
+          </div>
+        </div>
       </div>
     );
   }
@@ -111,6 +130,9 @@ function SinglePostPage() {
               imageUrl={post.image_url}
               tags={post.tags}
               authorId={post.author_id || post.author}
+              likesCount={post.likes_count}
+              commentsCount={post.comments_count}
+              isLiked={post.is_liked}
             />
             <CommentSection
               comments={comments}
@@ -159,14 +181,14 @@ function SinglePostPage() {
                       key={index}
                       className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
                     >
-                      {tag.name}
+                      {tag.name || tag}
                     </span>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Related posts or community info */}
+            {/* Community rules */}
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
               <h4 className="text-xl font-bold text-gray-800 mb-4">
                 Community Rules

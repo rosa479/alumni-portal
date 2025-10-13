@@ -22,7 +22,8 @@ from .views import (
     ImageUploadView,
     PostLikeView,
     PostCommentListCreateView,
-    PostCommentDetailView
+    PostCommentDetailView,
+    PostDetailView,  # Import the PostDetailView
 )
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -47,6 +48,7 @@ urlpatterns = [
     path('communities/', CommunityListView.as_view(), name='community_list'),
     path('communities/<uuid:id>/', CommunityDetailView.as_view(), name='community_detail'),
     path('posts/', PostListCreateView.as_view(), name='post_create'),
+    path('posts/<uuid:id>/', PostDetailView.as_view(), name='post_detail'),  # Add this line
     path('communities/<uuid:community_id>/posts/', CommunityPostListView.as_view(), name='community_post_list'),
 
     # Service: Scholarships

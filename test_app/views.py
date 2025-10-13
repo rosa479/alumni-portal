@@ -484,3 +484,13 @@ class PostCommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     
     def get_queryset(self):
         return PostComment.objects.filter(user=self.request.user)
+
+class PostDetailView(generics.RetrieveAPIView):
+    """
+    Retrieve a specific post by its ID.
+    Corresponds to: GET /api/posts/{id}/
+    """
+    queryset = Post.objects.filter(status=Post.Status.APPROVED)
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id'
