@@ -87,7 +87,7 @@ function CommunitiesPage() {
 
   if (loading) {
     return (
-      <div className="bg-white p-6 rounded-xl shadow-lg text-center">
+      <div className="bg-white p-6 rounded-xl text-center">
         <p>Loading Profile...</p>
       </div>
     );
@@ -95,7 +95,7 @@ function CommunitiesPage() {
 
   if (error) {
     return (
-      <div className="bg-white p-6 rounded-xl shadow-lg text-center text-red-500">
+      <div className="bg-white p-6 rounded-xl text-center text-red-500">
         <p>{error}</p>
       </div>
     );
@@ -114,15 +114,15 @@ function CommunitiesPage() {
   );
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50 min-h-screen">
+    <div className="bg-[#F5F8FA] min-h-screen">
       <div className="container mx-auto p-4 lg:p-8">
         {/* Page Header and Search */}
         <div className="mb-12">
-          <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-gray-100">
-            <h1 className="text-5xl font-bold text-gray-800 mb-4">
+          <div className="bg-white rounded-3xl p-8 mb-8 border border-gray-100">
+            <h1 className="text-5xl font-bold text-[#0077B5] mb-4">
               Discover Communities
             </h1>
-            <p className="text-xl text-gray-600 mb-8">
+            <p className="text-xl text-gray-700 mb-8">
               Find and join groups that match your interests and professional
               goals.
             </p>
@@ -132,10 +132,10 @@ function CommunitiesPage() {
                 placeholder="Search for communities..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full p-4 pl-12 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-800/20 focus:border-blue-800 focus:outline-none text-lg"
+                className="w-full p-4 pl-12 border-2 border-[#0077B5]/30 rounded-2xl focus:ring-4 focus:ring-[#0077B5]/20 focus:border-[#0077B5] focus:outline-none text-lg bg-[#F5F8FA]"
               />
               <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-[#0077B5]/60"
                 size={24}
               />
             </div>
@@ -145,7 +145,7 @@ function CommunitiesPage() {
         {/* Search Results Info */}
         {searchTerm && (
           <div className="mb-8">
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-[#0077B5]">
               {filteredCommunities.length} community
               {filteredCommunities.length !== 1 ? "ies" : ""} found for "
               {searchTerm}"
@@ -167,9 +167,9 @@ function CommunitiesPage() {
             ))
           ) : (
             <div className="col-span-full text-center py-12">
-              <div className="bg-white rounded-2xl shadow-lg p-12 border border-gray-100">
-                <Search className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-2xl font-semibold text-gray-500 mb-2">
+              <div className="bg-white rounded-2xl p-12 border border-gray-100">
+                <Search className="h-16 w-16 text-[#0077B5]/30 mx-auto mb-4" />
+                <h3 className="text-2xl font-semibold text-[#0077B5] mb-2">
                   No communities found
                 </h3>
                 <p className="text-gray-400 mb-6">
@@ -177,7 +177,7 @@ function CommunitiesPage() {
                 </p>
                 <button
                   onClick={() => setSearchTerm("")}
-                  className="bg-blue-800 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors font-medium"
+                  className="bg-[#0077B5] text-white px-6 py-3 rounded-xl hover:bg-[#005983] transition-colors font-medium"
                 >
                   Clear Search
                 </button>

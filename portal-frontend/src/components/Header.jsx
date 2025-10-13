@@ -24,8 +24,8 @@ function Header() {
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center p-4">
-        <Link to="/" className="text-xl font-bold text-blue-800">
-          IITKGP Connect
+        <Link to="/" className="text-3xl font-bold text-[#0077B5]">
+          AlumIIT
         </Link>
 
         {/* Desktop Navigation */}
