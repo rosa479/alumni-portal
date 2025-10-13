@@ -20,7 +20,7 @@ import CommunitiesPage from "./pages/CommunitiesPage";
 import DonationPage from "./pages/DonationPage";
 import CommunityDetailPage from "./pages/CommunityDetailPage";
 import SinglePostPage from "./pages/SinglePostPage";
-import ContributionsPage from "./pages/ContributionsPage";
+import EndowmentPage from "./pages/EndowmentPage";
 import ContributionDetailPage from "./pages/ContributionDetailPage";
 import LandingPage from "./pages/LandingPage";
 import MobileBottomNav from "./components/MobileBottomNav";
@@ -69,9 +69,9 @@ function App() {
             />
             <Route path="/posts/:postId" element={<SinglePostPage />} />
             <Route path="/donate" element={<DonationPage />} />
-            <Route path="/contributions" element={<ContributionsPage />} />
+            <Route path="/endowment" element={<EndowmentPage />} />
             <Route
-              path="/contributions/:contributionId"
+              path="/endowment/:contributionId"
               element={<ContributionDetailPage />}
             />
 

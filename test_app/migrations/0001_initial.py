@@ -96,8 +96,8 @@ class Migration(migrations.Migration):
                 ('is_anonymous', models.BooleanField(default=False)),
                 ('message', models.TextField(blank=True, null=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('contributor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='scholarship_contributions', to=settings.AUTH_USER_MODEL)),
-                ('scholarship', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='contributions', to='test_app.scholarship')),
+                ('contributor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='scholarship_endowment', to=settings.AUTH_USER_MODEL)),
+                ('scholarship', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='endowment', to='test_app.scholarship')),
             ],
         ),
     ]

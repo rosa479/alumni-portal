@@ -103,7 +103,7 @@ function ContributionCard({ contribution }) {
                   <div></div>
                )}
                <Link
-                  to={`/contributions/${contribution.id}`}
+                  to={`/endowment/${contribution.id}`}
                   className="bg-[#0077B5] text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors duration-200 font-medium"
                >
                   View Details
@@ -114,8 +114,8 @@ function ContributionCard({ contribution }) {
    );
 }
 
-function ContributionsPage() {
-   const [contributions, setContributions] = useState([]);
+function EndowmentPage() {
+   const [endowment, setEndowment] = useState([]);
    const [loading, setLoading] = useState(true);
    const [filter, setFilter] = useState('all');
    const [totals, setTotals] = useState({
@@ -125,30 +125,30 @@ function ContributionsPage() {
    });
 
    useEffect(() => {
-      const fetchContributions = async () => {
+      const fetchEndowment = async () => {
          try {
             setLoading(true);
             const response = await apiClient.get('/scholarships/');
-            setContributions(response.data.results || response.data);
+            setEndowment(response.data.results || response.data);
             setTotals({
                total_raised: response.data.total_raised || 0,
                total_contributors: response.data.total_contributors || 0,
                total_scholarships: response.data.total_scholarships || 0
             });
          } catch (error) {
-            console.error('Error fetching contributions:', error);
+            console.error('Error fetching endowment:', error);
             // Fallback to empty array on error
-            setContributions([]);
+            setEndowment([]);
             setTotals({ total_raised: 0, total_contributors: 0, total_scholarships: 0 });
          } finally {
             setLoading(false);
          }
       };
 
-      fetchContributions();
+      fetchEndowment();
    }, []);
 
-   const filteredContributions = contributions.filter(contribution => {
+   const filteredEndowment = endowment.filter(contribution => {
       if (filter === 'all') return true;
       return contribution.status === filter;
    });
@@ -165,7 +165,7 @@ function ContributionsPage() {
                </div>
                <h1 className="text-4xl font-bold text-dark-text mb-4">Contribution Programs</h1>
                <p className="text-lg text-light-text max-w-2xl mx-auto">
-                  Support the next generation of innovators and leaders. Your contributions help students
+                  Support the next generation of innovators and leaders. Your endowment help students
                   achieve their academic dreams at IIT Kharagpur.
                </p>
             </div>
@@ -180,7 +180,7 @@ function ContributionsPage() {
                         : 'text-gray-600 hover:text-[#0077B5] hover:bg-white'
                         }`}
                   >
-                     All Contributions
+                     All Endowment
                   </button>
                   <button
                      onClick={() => setFilter('ACTIVE')}
@@ -214,7 +214,7 @@ function ContributionsPage() {
                         <p className="text-2xl font-bold text-dark-text">
                            {totals.total_scholarships}
                         </p>
-                        <p className="text-light-text">Total Contributions</p>
+                        <p className="text-light-text">Total Endowment</p>
                      </div>
                   </div>
                </div>
@@ -248,7 +248,7 @@ function ContributionsPage() {
                </div>
             </div>
 
-            {/* Contributions Grid */}
+            {/* Endowment Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                {loading ? (
                   // Show loading cards
@@ -268,16 +268,16 @@ function ContributionsPage() {
                      </div>
                   ))
                ) : (
-                  filteredContributions.map(contribution => (
+                  filteredEndowment.map(contribution => (
                      <ContributionCard key={contribution.id} contribution={contribution} />
                   ))
                )}
             </div>
 
-            {!loading && filteredContributions.length === 0 && (
+            {!loading && filteredEndowment.length === 0 && (
                <div className="text-center py-12">
                   <CreditCard className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-500 mb-2">No contributions found</h3>
+                  <h3 className="text-xl font-semibold text-gray-500 mb-2">No endowment found</h3>
                   <p className="text-gray-400">Try adjusting your filter or check back later.</p>
                </div>
             )}
@@ -286,4 +286,4 @@ function ContributionsPage() {
    );
 }
 
-export default ContributionsPage;
+export default EndowmentPage;

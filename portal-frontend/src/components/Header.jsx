@@ -33,8 +33,8 @@ function Header() {
           <Link to="/donate" className="text-gray-800 font-medium hover:text-orange-600 transition-colors">
             Donate
           </Link>
-          <Link to="/contributions" className="text-gray-800 font-medium hover:text-orange-600 transition-colors">
-            Contributions
+          <Link to="/endowment" className="text-gray-800 font-medium hover:text-orange-600 transition-colors">
+            Endowment
           </Link>
 
           <button

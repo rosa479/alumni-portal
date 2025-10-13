@@ -1,54 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Heart, Users, Calendar, Target, TrendingUp, ArrowLeft, Share2, Clock, CheckCircle, X, User as UserIcon, Copy, Check } from 'react-feather';
-
-// Mock data - in real app, this would come from API
-const mockContribution = {
-   id: '1',
-   title: 'Merit Contribution for Computer Science',
-   description: 'Supporting outstanding students in Computer Science and Engineering with financial assistance for their academic journey. This contribution aims to recognize and support students who demonstrate exceptional academic performance and potential in the field of computer science.',
-   long_description: `The Merit Scholarship for Computer Science is designed to support exceptional students pursuing their studies in Computer Science and Engineering at IIT Kharagpur. This contribution recognizes students who have demonstrated outstanding academic performance, innovative thinking, and a strong commitment to advancing the field of computer science.
-
-Eligibility Criteria:
-• Must be enrolled in Computer Science and Engineering program
-• Minimum CGPA of 8.5/10.0
-• Demonstrated financial need
-• Active participation in coding competitions or research projects
-• Strong recommendation from faculty advisor
-
-The contribution provides comprehensive financial support covering tuition fees, accommodation, and additional expenses, allowing students to focus entirely on their studies and research without financial constraints.`,
-   target_amount: 500000,
-   current_amount: 250000,
-   progress_percentage: 50,
-   remaining_amount: 250000,
-   created_at: '2024-01-15T10:00:00Z',
-   image_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=400&fit=crop',
-   contribution_count: 15,
-   status: 'ACTIVE',
-   deadline: '2024-12-31T23:59:59Z',
-   contributors: [
-      { name: 'Dr. Rajesh Kumar', amount: 50000, is_anonymous: false, created_at: '2024-01-20T10:00:00Z', message: 'Happy to support the next generation!' },
-      { name: 'Priya Sharma', amount: 30000, is_anonymous: false, created_at: '2024-01-22T14:30:00Z', message: 'Great initiative!' },
-      { name: 'Anonymous', amount: 25000, is_anonymous: true, created_at: '2024-01-25T09:15:00Z', message: '' },
-      { name: 'John Doe', amount: 20000, is_anonymous: false, created_at: '2024-01-28T16:45:00Z', message: 'Keep up the good work!' },
-      { name: 'Sneha Reddy', amount: 15000, is_anonymous: false, created_at: '2024-02-01T11:20:00Z', message: 'Supporting education!' },
-      { name: 'Anonymous', amount: 12000, is_anonymous: true, created_at: '2024-02-03T13:10:00Z', message: '' },
-      { name: 'Arjun Patel', amount: 10000, is_anonymous: false, created_at: '2024-02-05T15:30:00Z', message: 'Proud to contribute!' },
-      { name: 'Meera Singh', amount: 8000, is_anonymous: false, created_at: '2024-02-08T10:45:00Z', message: 'Every bit counts!' },
-      { name: 'Anonymous', amount: 7000, is_anonymous: true, created_at: '2024-02-10T12:00:00Z', message: '' },
-      { name: 'Vikram Joshi', amount: 6000, is_anonymous: false, created_at: '2024-02-12T14:15:00Z', message: 'Supporting our students!' },
-      { name: 'Anonymous', amount: 5000, is_anonymous: true, created_at: '2024-02-15T16:30:00Z', message: '' },
-      { name: 'Ravi Kumar', amount: 4000, is_anonymous: false, created_at: '2024-02-18T09:45:00Z', message: 'Great cause!' },
-      { name: 'Anonymous', amount: 3000, is_anonymous: true, created_at: '2024-02-20T11:20:00Z', message: '' },
-      { name: 'Sunita Agarwal', amount: 2000, is_anonymous: false, created_at: '2024-02-22T13:40:00Z', message: 'Happy to help!' },
-      { name: 'Anonymous', amount: 1000, is_anonymous: true, created_at: '2024-02-25T15:50:00Z', message: '' }
-   ]
-};
+import apiClient from '../interceptor';
 
 function ContributionDetailPage() {
    const { contributionId } = useParams();
    const [contribution, setContribution] = useState(null);
+   const [contributors, setContributors] = useState([]);
    const [loading, setLoading] = useState(true);
+   const [error, setError] = useState(null);
    const [donationAmount, setDonationAmount] = useState(1000);
    const [showDonationForm, setShowDonationForm] = useState(false);
    const [showContributorsModal, setShowContributorsModal] = useState(false);
@@ -56,11 +16,65 @@ function ContributionDetailPage() {
    const [copied, setCopied] = useState(false);
 
    useEffect(() => {
-      // Simulate API call
-      setTimeout(() => {
-         setContribution(mockContribution);
-         setLoading(false);
-      }, 1000);
+      const fetchContributionDetails = async () => {
+         try {
+            setLoading(true);
+            setError(null);
+            
+            // Fetch scholarship details
+            const scholarshipResponse = await apiClient.get(`/scholarships/${contributionId}/`);
+            const scholarshipData = scholarshipResponse.data;
+            
+            // Fetch contributors list
+            const contributorsResponse = await apiClient.get(`/scholarships/${contributionId}/endowment/list/`);
+            const contributorsData = contributorsResponse.data;
+            
+            // Transform the data to match component expectations
+            const transformedContribution = {
+               id: scholarshipData.id,
+               title: scholarshipData.title,
+               description: scholarshipData.description,
+               long_description: scholarshipData.description, // You might want to add a separate field for this
+               target_amount: parseFloat(scholarshipData.target_amount),
+               current_amount: parseFloat(scholarshipData.current_amount),
+               progress_percentage: scholarshipData.progress_percentage,
+               remaining_amount: scholarshipData.remaining_amount,
+               created_at: scholarshipData.created_at,
+               updated_at: scholarshipData.updated_at,
+               image_url: scholarshipData.image_url || 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=400&fit=crop',
+               contribution_count: contributorsData.length,
+               status: scholarshipData.status,
+               deadline: scholarshipData.updated_at, // You might want to add a deadline field to the model
+               created_by_name: scholarshipData.created_by_name || 'Anonymous'
+            };
+            
+            // Transform contributors data
+            const transformedContributors = contributorsData.map(contributor => ({
+               name: contributor.is_anonymous ? 'Anonymous' : (contributor.contributor_name || 'Anonymous'),
+               amount: parseFloat(contributor.amount),
+               is_anonymous: contributor.is_anonymous,
+               created_at: contributor.created_at,
+               message: contributor.message || ''
+            }));
+            
+            setContribution(transformedContribution);
+            setContributors(transformedContributors);
+            
+         } catch (err) {
+            console.error('Error fetching contribution details:', err);
+            if (err.response?.status === 404) {
+               setError('Contribution not found');
+            } else {
+               setError('Failed to load contribution details');
+            }
+         } finally {
+            setLoading(false);
+         }
+      };
+
+      if (contributionId) {
+         fetchContributionDetails();
+      }
    }, [contributionId]);
 
    const formatDate = (dateString) => {
@@ -93,13 +107,30 @@ function ContributionDetailPage() {
       return ((amount / totalAmount) * 100).toFixed(1);
    };
 
-   const handleDonate = () => {
-      alert(`Thank you for your donation of ${formatCurrency(donationAmount)} to ${contribution.title}!`);
-      setShowDonationForm(false);
+   const handleDonate = async () => {
+      try {
+         const contributionData = {
+            amount: donationAmount,
+            is_anonymous: false,
+            message: ''
+         };
+         
+         await apiClient.post(`/scholarships/${contributionId}/endowment/`, contributionData);
+         
+         alert(`Thank you for your donation of ${formatCurrency(donationAmount)} to ${contribution.title}!`);
+         setShowDonationForm(false);
+         
+         // Refresh the page data
+         window.location.reload();
+         
+      } catch (error) {
+         console.error('Error making donation:', error);
+         alert('Failed to process donation. Please try again.');
+      }
    };
 
    const generateShareText = () => {
-      const contributionUrl = `${window.location.origin}/contributions/${contribution.id}`;
+      const contributionUrl = `${window.location.origin}/endowment/${contribution.id}`;
       return `🎓 ${contribution.title}\n\n${contribution.description}\n\n💰 Target: ${formatCurrency(contribution.target_amount)}\n📈 Progress: ${contribution.progress_percentage.toFixed(1)}%\n\nHelp support this contribution: ${contributionUrl}\n\n#IITKGP #Scholarship #Education`;
    };
 
@@ -110,7 +141,6 @@ function ContributionDetailPage() {
          setTimeout(() => setCopied(false), 2000);
       } catch (err) {
          console.error('Failed to copy: ', err);
-         // Fallback for older browsers
          const textArea = document.createElement('textarea');
          textArea.value = generateShareText();
          document.body.appendChild(textArea);
@@ -129,14 +159,14 @@ function ContributionDetailPage() {
    };
 
    const shareOnTwitter = () => {
-      const shareText = `🎓 ${contribution.title} - Help support this contribution at IIT Kharagpur! ${window.location.origin}/contributions/${contribution.id}`;
+      const shareText = `🎓 ${contribution.title} - Help support this contribution at IIT Kharagpur! ${window.location.origin}/endowment/${contribution.id}`;
       const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
       window.open(twitterUrl, '_blank');
    };
 
    const shareOnLinkedIn = () => {
       const shareText = `🎓 ${contribution.title} - Help support this contribution at IIT Kharagpur!`;
-      const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin + '/contributions/' + contribution.id)}&title=${encodeURIComponent(shareText)}`;
+      const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin + '/endowment/' + contribution.id)}&title=${encodeURIComponent(shareText)}`;
       window.open(linkedinUrl, '_blank');
    };
 
@@ -144,86 +174,24 @@ function ContributionDetailPage() {
       return (
          <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50 py-4 sm:py-8">
             <div className="container mx-auto px-4 max-w-6xl">
-               {/* Back Button Skeleton */}
+               {/* Loading skeleton - same as before */}
                <div className="mb-6">
                   <div className="h-6 w-32 bg-gray-200 rounded animate-pulse"></div>
                </div>
-
                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  {/* Main Content Skeleton */}
                   <div className="lg:col-span-2 space-y-8">
-                     {/* Hero Image Skeleton */}
                      <div className="h-80 bg-gray-200 rounded-2xl animate-pulse"></div>
-
-                     {/* Scholarship Info Skeleton */}
                      <div className="bg-white rounded-2xl shadow-lg p-8">
-                        <div className="flex items-start justify-between mb-6">
-                           <div className="flex-1">
-                              <div className="h-8 bg-gray-200 rounded mb-2 animate-pulse"></div>
-                              <div className="h-6 bg-gray-200 rounded w-3/4 animate-pulse"></div>
-                           </div>
-                           <div className="h-8 w-20 bg-gray-200 rounded-full animate-pulse"></div>
-                        </div>
-                        <div className="space-y-3 mb-6">
-                           <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-                           <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-                           <div className="h-4 bg-gray-200 rounded w-2/3 animate-pulse"></div>
-                        </div>
-                        <div className="space-y-4">
-                           <div className="h-6 bg-gray-200 rounded w-1/3 animate-pulse"></div>
-                           <div className="space-y-2">
-                              <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-                              <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-                              <div className="h-4 bg-gray-200 rounded w-4/5 animate-pulse"></div>
-                              <div className="h-4 bg-gray-200 rounded w-3/5 animate-pulse"></div>
-                           </div>
-                        </div>
-                     </div>
-
-                     {/* Beneficiaries Skeleton */}
-                     <div className="bg-white rounded-2xl shadow-lg p-8">
-                        <div className="h-8 bg-gray-200 rounded w-1/3 mb-6 animate-pulse"></div>
-                        <div className="space-y-4">
-                           {[1, 2, 3].map((i) => (
-                              <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                                 <div className="flex items-center">
-                                    <div className="w-10 h-10 bg-gray-200 rounded-full mr-4 animate-pulse"></div>
-                                    <div>
-                                       <div className="h-4 bg-gray-200 rounded w-24 mb-2 animate-pulse"></div>
-                                       <div className="h-3 bg-gray-200 rounded w-16 animate-pulse"></div>
-                                    </div>
-                                 </div>
-                                 <div className="text-right">
-                                    <div className="h-4 bg-gray-200 rounded w-16 mb-2 animate-pulse"></div>
-                                    <div className="h-3 bg-gray-200 rounded w-12 animate-pulse"></div>
-                                 </div>
-                              </div>
-                           ))}
-                        </div>
+                        <div className="h-8 bg-gray-200 rounded mb-4 animate-pulse"></div>
+                        <div className="h-4 bg-gray-200 rounded mb-2 animate-pulse"></div>
+                        <div className="h-4 bg-gray-200 rounded mb-4 animate-pulse"></div>
                      </div>
                   </div>
-
-                  {/* Sidebar Skeleton */}
                   <div className="lg:col-span-1">
                      <div className="bg-white rounded-2xl shadow-lg p-6">
-                        <div className="h-6 bg-gray-200 rounded w-1/2 mb-4 animate-pulse"></div>
-                        <div className="space-y-4">
-                           <div className="h-3 bg-gray-200 rounded animate-pulse"></div>
-                           <div className="h-3 bg-gray-200 rounded w-3/4 animate-pulse"></div>
-                           <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse"></div>
-                        </div>
-                        <div className="mt-6 space-y-3">
-                           <div className="flex justify-between">
-                              <div className="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
-                              <div className="h-4 bg-gray-200 rounded w-12 animate-pulse"></div>
-                           </div>
-                           <div className="flex justify-between">
-                              <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
-                              <div className="h-4 bg-gray-200 rounded w-14 animate-pulse"></div>
-                           </div>
-                        </div>
-                        <div className="mt-6 h-12 bg-gray-200 rounded-xl animate-pulse"></div>
-                        <div className="mt-4 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+                        <div className="h-6 bg-gray-200 rounded mb-4 animate-pulse"></div>
+                        <div className="h-3 bg-gray-200 rounded mb-4 animate-pulse"></div>
+                        <div className="h-12 bg-gray-200 rounded animate-pulse"></div>
                      </div>
                   </div>
                </div>
@@ -232,14 +200,22 @@ function ContributionDetailPage() {
       );
    }
 
-   if (!contribution) {
+   if (error || !contribution) {
       return (
          <div className="min-h-screen bg-light-bg py-8">
             <div className="container mx-auto px-4">
                <div className="text-center">
-                  <h1 className="text-2xl font-bold text-dark-text mb-4">Contribution not found</h1>
-                  <Link to="/contributions" className="text-primary-blue hover:underline">
-                     ← Back to Contributions
+                  <h1 className="text-2xl font-bold text-dark-text mb-4">
+                     {error || "Contribution not found"}
+                  </h1>
+                  <p className="text-gray-600 mb-6">
+                     The contribution you're looking for doesn't exist or has been removed.
+                  </p>
+                  <Link 
+                     to="/endowment" 
+                     className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors font-medium"
+                  >
+                     ← Back to Endowment
                   </Link>
                </div>
             </div>
@@ -253,11 +229,11 @@ function ContributionDetailPage() {
             {/* Back Button */}
             <div className="mb-6">
                <Link
-                  to="/contributions"
+                  to="/endowment"
                   className="inline-flex items-center text-primary-blue hover:text-blue-600 transition-colors"
                >
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Contributions
+                  Back to Endowment
                </Link>
             </div>
 
@@ -283,16 +259,19 @@ function ContributionDetailPage() {
                                  <Calendar className="w-4 h-4 mr-2" />
                                  <span className="text-sm sm:text-base">Created {formatDate(contribution.created_at)}</span>
                               </div>
-                              <div className="flex items-center">
-                                 <Clock className="w-4 h-4 mr-2" />
-                                 <span className="text-sm sm:text-base">Deadline: {formatDate(contribution.deadline)}</span>
-                              </div>
+                              {contribution.created_by_name && (
+                                 <div className="flex items-center">
+                                    <UserIcon className="w-4 h-4 mr-2" />
+                                    <span className="text-sm sm:text-base">by {contribution.created_by_name}</span>
+                                 </div>
+                              )}
                            </div>
                         </div>
-                        <span className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-semibold self-start sm:self-auto ${contribution.status === 'ACTIVE'
-                           ? 'bg-green-100 text-green-800'
-                           : 'bg-gray-100 text-gray-800'
-                           }`}>
+                        <span className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-semibold self-start sm:self-auto ${
+                           contribution.status === 'ACTIVE'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-gray-100 text-gray-800'
+                        }`}>
                            {contribution.status}
                         </span>
                      </div>
@@ -301,14 +280,15 @@ function ContributionDetailPage() {
                         {contribution.description}
                      </p>
 
-                     <div className="prose max-w-none">
-                        <h3 className="text-lg sm:text-xl font-bold text-dark-text mb-4">About This Contribution</h3>
-                        <div className="text-sm sm:text-base text-light-text leading-relaxed whitespace-pre-line">
-                           {contribution.long_description}
+                     {contribution.long_description && contribution.long_description !== contribution.description && (
+                        <div className="prose max-w-none">
+                           <h3 className="text-lg sm:text-xl font-bold text-dark-text mb-4">About This Contribution</h3>
+                           <div className="text-sm sm:text-base text-light-text leading-relaxed whitespace-pre-line">
+                              {contribution.long_description}
+                           </div>
                         </div>
-                     </div>
+                     )}
                   </div>
-
                </div>
 
                {/* Sidebar */}
@@ -325,7 +305,7 @@ function ContributionDetailPage() {
                            <div className="w-full bg-gray-200 rounded-full h-2 sm:h-3">
                               <div
                                  className="bg-blue-800 h-2 sm:h-3 rounded-full transition-all duration-500"
-                                 style={{ width: `${contribution.progress_percentage}%` }}
+                                 style={{ width: `${Math.min(100, contribution.progress_percentage)}%` }}
                               ></div>
                            </div>
                         </div>
@@ -349,12 +329,16 @@ function ContributionDetailPage() {
                               <Users className="w-4 h-4 mr-2" />
                               <span className="text-sm sm:text-base">Contributors</span>
                            </div>
-                           <button
-                              onClick={() => setShowContributorsModal(true)}
-                              className="font-bold text-blue-800 hover:text-orange-600 transition-colors duration-200 cursor-pointer text-sm sm:text-base"
-                           >
-                              {contribution.contribution_count}
-                           </button>
+                           {contribution.contribution_count > 0 ? (
+                              <button
+                                 onClick={() => setShowContributorsModal(true)}
+                                 className="font-bold text-blue-800 hover:text-orange-600 transition-colors duration-200 cursor-pointer text-sm sm:text-base"
+                              >
+                                 {contribution.contribution_count}
+                              </button>
+                           ) : (
+                              <span className="font-bold text-dark-text text-sm sm:text-base">0</span>
+                           )}
                         </div>
                         <div className="flex items-center justify-between">
                            <div className="flex items-center text-light-text">
@@ -368,7 +352,7 @@ function ContributionDetailPage() {
                      {/* Donation Form */}
                      {!showDonationForm ? (
                         <button
-                           onClick={() => alert('Coming Soon!')}
+                           onClick={() => setShowDonationForm(true)}
                            className="w-full bg-blue-800 text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-xl hover:bg-orange-600 transition-colors duration-200 mb-4 text-sm sm:text-base"
                         >
                            Contribute Now
@@ -385,12 +369,14 @@ function ContributionDetailPage() {
                                  onChange={(e) => setDonationAmount(Number(e.target.value))}
                                  className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-800 focus:outline-none text-sm sm:text-base"
                                  placeholder="Enter amount"
+                                 min="1"
                               />
                            </div>
                            <div className="flex flex-col sm:flex-row gap-2">
                               <button
-                                 onClick={() => alert('Coming Soon!')}
-                                 className="flex-1 bg-blue-800 text-white font-bold py-2 sm:py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors duration-200 text-sm sm:text-base"
+                                 onClick={handleDonate}
+                                 disabled={!donationAmount || donationAmount < 1}
+                                 className="flex-1 bg-blue-800 text-white font-bold py-2 sm:py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors duration-200 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                               >
                                  Donate
                               </button>
@@ -412,14 +398,13 @@ function ContributionDetailPage() {
                         <Share2 className="w-4 h-4" />
                         <span>Share</span>
                      </button>
-
                   </div>
                </div>
             </div>
          </div>
 
          {/* Contributors Modal */}
-         {showContributorsModal && (
+         {showContributorsModal && contributors.length > 0 && (
             <div className="fixed inset-0 flex items-center justify-center z-50 p-2 sm:p-4" style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}>
                <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] sm:max-h-[80vh] overflow-hidden mx-2 sm:mx-0">
                   {/* Modal Header */}
@@ -441,14 +426,14 @@ function ContributionDetailPage() {
                   {/* Modal Content */}
                   <div className="overflow-y-auto max-h-[60vh]">
                      <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-                        {contribution.contributors.map((contributor, index) => (
+                        {contributors.map((contributor, index) => (
                            <div key={index} className="flex items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
                               <div className="flex items-center flex-1 min-w-0">
                                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-800 rounded-full flex items-center justify-center text-white font-bold mr-3 sm:mr-4 flex-shrink-0">
                                     {contributor.is_anonymous ? (
                                        <UserIcon className="w-4 h-4 sm:w-6 sm:h-6" />
                                     ) : (
-                                       contributor.name.charAt(0)
+                                       contributor.name.charAt(0).toUpperCase()
                                     )}
                                  </div>
                                  <div className="flex-1 min-w-0">
@@ -507,7 +492,6 @@ function ContributionDetailPage() {
          {showShareModal && (
             <div className="fixed inset-0 flex items-center justify-center z-50 p-2 sm:p-4" style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}>
                <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-2 sm:mx-0">
-                  {/* Modal Header */}
                   <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
                      <div className="flex-1 min-w-0">
                         <h2 className="text-xl sm:text-2xl font-bold text-dark-text">Share Contribution</h2>
@@ -523,10 +507,8 @@ function ContributionDetailPage() {
                      </button>
                   </div>
 
-                  {/* Modal Content */}
                   <div className="p-4 sm:p-6">
                      <div className="space-y-4">
-                        {/* Desktop - Copy to Clipboard */}
                         <button
                            onClick={copyToClipboard}
                            className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-blue-800 text-white rounded-lg hover:bg-blue-900 transition-colors duration-200"
@@ -544,7 +526,6 @@ function ContributionDetailPage() {
                            )}
                         </button>
 
-                        {/* Mobile - Social Sharing */}
                         <div className="space-y-3">
                            <p className="text-sm text-gray-600 text-center">Share on social media:</p>
                            
@@ -581,7 +562,6 @@ function ContributionDetailPage() {
                      </div>
                   </div>
 
-                  {/* Modal Footer */}
                   <div className="p-4 sm:p-6 border-t border-gray-200 bg-gray-50">
                      <button
                         onClick={() => setShowShareModal(false)}

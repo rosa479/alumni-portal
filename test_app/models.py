@@ -216,8 +216,8 @@ class Scholarship(models.Model):
 
 class ScholarshipContribution(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    scholarship = models.ForeignKey(Scholarship, on_delete=models.CASCADE, related_name='contributions')
-    contributor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='scholarship_contributions')
+    scholarship = models.ForeignKey(Scholarship, on_delete=models.CASCADE, related_name='endowment')
+    contributor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='scholarship_endowment')
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     is_anonymous = models.BooleanField(default=False)
     message = models.TextField(blank=True, null=True)
@@ -227,7 +227,7 @@ class ScholarshipContribution(models.Model):
         super().save(*args, **kwargs)
         # Update scholarship current amount
         self.scholarship.current_amount = sum(
-            contribution.amount for contribution in self.scholarship.contributions.all()
+            contribution.amount for contribution in self.scholarship.endowment.all()
         )
         self.scholarship.save()
 

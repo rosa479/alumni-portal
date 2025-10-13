@@ -410,8 +410,8 @@ class Command(BaseCommand):
             created_scholarships.append(scholarship)
             self.stdout.write(f'Created scholarship: {scholarship.title}')
 
-        # Create sample scholarship contributions
-        contributions_data = [
+        # Create sample scholarship endowment
+        endowment_data = [
             {
                 'scholarship': created_scholarships[0],  # Merit Scholarship
                 'contributor': created_users[0],  # John Doe
@@ -442,7 +442,7 @@ class Command(BaseCommand):
             }
         ]
 
-        for contribution_data in contributions_data:
+        for contribution_data in endowment_data:
             contribution = ScholarshipContribution.objects.create(**contribution_data)
             self.stdout.write(f'Created contribution: INR {contribution.amount} to {contribution.scholarship.title}')
 
@@ -453,7 +453,7 @@ class Command(BaseCommand):
                 f'- {len(created_communities)} communities\n'
                 f'- {len(posts_data)} posts\n'
                 f'- {len(created_scholarships)} scholarships\n'
-                f'- {len(contributions_data)} scholarship contributions\n\n'
+                f'- {len(endowment_data)} scholarship endowment\n\n'
                 f'You can now login with any of these accounts using password "password123":\n'
                 f'- {created_users[0].email}\n'
                 f'- {created_users[1].email}\n'
