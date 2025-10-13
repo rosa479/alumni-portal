@@ -13,7 +13,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className = "", variant = "default", size = "default", asChild = false, children, ...props }, ref) => {
-    const baseStyles = "inline-flex items-center justify-center rounded-md font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
+    const baseStyles = "inline-flex items-center justify-center rounded-full font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
     
     const variants = {
       default: "bg-[hsl(199,89%,48%)] text-white hover:bg-[hsl(199,89%,40%)]",
@@ -67,7 +67,7 @@ Card.displayName = "Card";
 
 const Navbar = () => {
   return (
-    <header className="bg-background shadow-sm sticky top-0 z-50 backdrop-blur-xl">
+    <header className="bg-background shadow-sm sticky top-5 z-50 backdrop-blur-xl rounded-full w-[95%] mx-auto">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
