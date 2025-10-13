@@ -11,7 +11,6 @@ import {
   Heart,
 } from "lucide-react";
 import heroImage from "./hero.jpg";
-import { CountUp } from "countup.js";
 
 // Inline Button Component
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
