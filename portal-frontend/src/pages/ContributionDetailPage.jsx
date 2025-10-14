@@ -422,7 +422,7 @@ function ContributionDetailPage() {
                      {/* Share Button */}
                      <button 
                         onClick={() => setShowShareModal(true)}
-                        className="w-full flex items-center justify-center gap-2 pt-10 sm:py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-sm sm:text-base hover:cursor-pointer"
+                        className="w-full flex items-center justify-center gap-2 sm:py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-sm sm:text-base hover:cursor-pointer mt-4"
                      >
                         <Share2 className="w-4 h-4" />
                         <span>Share</span>
