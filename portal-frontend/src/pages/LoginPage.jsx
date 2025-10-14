@@ -170,7 +170,7 @@ function LoginPage() {
         </div>
       </div>
 
-      <div className="flex items-center justify-center md:w-1/2 px-4 py-12 md:py-0 relative z-10">
+      <div className="flex items-center justify-center w-full md:w-1/2 min-h-screen px-4 py-12 md:py-0 relative z-10">
         <div className="w-full max-w-md p-10 bg-white rounded-2xl border border-[#E3EAF3] shadow-lg text-center space-y-8">
           <div>
             <h2 className="text-3xl font-bold text-[#0077B5] mb-2">Welcome Back!</h2>
