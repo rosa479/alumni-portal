@@ -2,7 +2,7 @@
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, AlumniProfile, Community, Post, Scholarship, ScholarshipContribution
+from .models import User, AlumniProfile, Community, Post, Scholarship, ScholarshipContribution, WorkExperience, Education, Skill
 
 class CustomUserAdmin(UserAdmin):
     list_display = ('email', 'role', 'status', 'is_staff')
@@ -37,3 +37,6 @@ admin.site.register(AlumniProfile)
 admin.site.register(Community)
 admin.site.register(Scholarship)
 admin.site.register(ScholarshipContribution)
+admin.site.register(WorkExperience)
+admin.site.register(Education)
+admin.site.register(Skill)
