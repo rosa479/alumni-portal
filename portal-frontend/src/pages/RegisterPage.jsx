@@ -32,15 +32,31 @@ function RegisterPage() {
       const { oauthData, isExistingUser: existing } = location.state;
       
       setEmail(oauthData.email || "");
-      setFullName(oauthData.name || oauthData.full_name || "");
       setIsOAuthUser(true); // Mark as OAuth user
       
       if (existing) {
-        // Existing user from OAuth - pre-fill other data
+        // Existing PENDING user - prioritize existing alumni_profile data
+        const profile = oauthData.alumni_profile || {};
+        
+        console.log('Existing user detected. OAuth data:', oauthData);
+        console.log('Alumni profile:', profile);
+        
+        // Use existing data from alumni_profile, fallback to Google OAuth data
+        setFullName(profile.full_name || oauthData.name || "");
         setRollNumber(oauthData.roll_number || "");
-        setGradYear(oauthData.graduation_year?.toString() || "");
-        setDepartment(oauthData.department || "");
+        setGradYear(profile.graduation_year?.toString() || "");
+        setDepartment(profile.department || "");
         setIsExistingUser(true);
+        
+        console.log('Pre-filled values:', {
+          fullName: profile.full_name || oauthData.name,
+          rollNumber: oauthData.roll_number,
+          gradYear: profile.graduation_year,
+          department: profile.department
+        });
+      } else {
+        // New user - use Google OAuth data
+        setFullName(oauthData.name || "");
       }
     }
     // Handle email-first flow
@@ -60,10 +76,12 @@ function RegisterPage() {
       const response = await apiClient.get(`/auth/check-user/?email=${encodeURIComponent(email)}`);
       if (response.data.exists) {
         const user = response.data.user;
-        setFullName(user.full_name || "");
+        const profile = user.alumni_profile || {};
+        
+        setFullName(profile.full_name || "");
         setRollNumber(user.roll_number || "");
-        setGradYear(user.graduation_year?.toString() || "");
-        setDepartment(user.department || "");
+        setGradYear(profile.graduation_year?.toString() || "");
+        setDepartment(profile.department || "");
         setIsExistingUser(true);
       }
     } catch (error) {
