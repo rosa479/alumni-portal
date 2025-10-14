@@ -118,10 +118,10 @@ function RegisterPage() {
       );
       if (response.data.exists) {
         const user = response.data.user;
-        setFullName(user.full_name || "");
+        const profile = user.alumni_profile || {};
+        
+        setFullName(profile.full_name || "");
         setRollNumber(user.roll_number || "");
-        setGradYear(user.graduation_year?.toString() || "");
-        setDepartment(user.department || "");
         setGradYear(profile.graduation_year?.toString() || "");
         setDepartment(profile.department || "");
         setMobileNumber(profile.mobile_number || "");
