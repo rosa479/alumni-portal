@@ -73,6 +73,7 @@ function RegisterPage() {
       const { oauthData, isExistingUser: existing } = location.state;
 
       setEmail(oauthData.email || "");
+      setFullName(oauthData.name || oauthData.full_name || "");
       setIsOAuthUser(true); // Mark as OAuth user
 
       if (existing) {
@@ -85,8 +86,8 @@ function RegisterPage() {
         // Use existing data from alumni_profile, fallback to Google OAuth data
         setFullName(profile.full_name || oauthData.name || "");
         setRollNumber(oauthData.roll_number || "");
-        setGradYear(profile.graduation_year?.toString() || "");
-        setDepartment(profile.department || "");
+        setGradYear(oauthData.graduation_year?.toString() || "");
+        setDepartment(oauthData.department || "");
         setIsExistingUser(true);
         setGradYear(profile.graduation_year?.toString() || "");
         setDepartment(profile.department || "");
