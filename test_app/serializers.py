@@ -64,6 +64,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     graduation_year = serializers.IntegerField(write_only=True)
     department = serializers.CharField(max_length=100, write_only=True)
     mobile_number = serializers.CharField(max_length=15, write_only=True, required=False, allow_blank=True)
+    google_picture = serializers.URLField(write_only=True, required=False, allow_blank=True)
 
     # Make the password write-only to ensure it's not returned in the response
     password = serializers.CharField(min_length=8, write_only=True, required=True, style={'input_type': 'password'})
@@ -71,7 +72,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         # Fields required for creating a User instance
-        fields = ['email', 'roll_number', 'password', 'full_name', 'graduation_year', 'department', 'mobile_number']
+        fields = ['email', 'roll_number', 'password', 'full_name', 'graduation_year', 'department', 'mobile_number', 'google_picture']
 
     def create(self, validated_data):
         # Pop the profile data from the validated data before creating the user
@@ -81,6 +82,11 @@ class RegisterSerializer(serializers.ModelSerializer):
             'department': validated_data.pop('department'),
             'mobile_number': validated_data.pop('mobile_number', '')
         }
+        
+        # Handle Google profile picture
+        google_picture = validated_data.pop('google_picture', None)
+        if google_picture:
+            profile_data['profile_picture_url'] = google_picture
 
         # Use a database transaction to ensure atomicity.
         try:

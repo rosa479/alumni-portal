@@ -157,6 +157,11 @@ function RegisterPage() {
       password: password,
     };
 
+    // Add Google profile picture if available (for OAuth users)
+    if (isOAuthUser && location.state?.oauthData?.picture) {
+      userData.google_picture = location.state.oauthData.picture;
+    }
+
     try {
       let response;
 

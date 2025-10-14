@@ -567,7 +567,10 @@ class GoogleOAuthView(APIView):
             try:
                 user = User.objects.get(email=email)
                 if user.status == User.Status.VERIFIED:
-                    # User exists and is verified - generate tokens
+                    # User exists and is verified - update profile picture if needed
+                    self._update_profile_picture_from_google(user, google_profile)
+                    
+                    # Generate tokens
                     from rest_framework_simplejwt.tokens import RefreshToken
                     refresh = RefreshToken.for_user(user)
                     access = refresh.access_token
@@ -601,6 +604,38 @@ class GoogleOAuthView(APIView):
             import traceback
             traceback.print_exc()
             return Response({'error': 'An unexpected error occurred during authentication'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    def _update_profile_picture_from_google(self, user, google_profile):
+        """
+        Update user's profile picture with Google profile picture if current picture is default/blank
+        """
+        try:
+            google_picture = google_profile.get('picture')
+            if not google_picture:
+                return
+            
+            # Check if user has an alumni profile
+            if hasattr(user, 'alumni_profile'):
+                profile = user.alumni_profile
+                current_picture = profile.profile_picture_url
+                
+                # Update if current picture is default/blank or from gravatar
+                should_update = (
+                    not current_picture or 
+                    current_picture == 'https://i.ibb.co/FbQ7wC2Q/random-pfp.jpg' or
+                    'gravatar.com' in current_picture or
+                    'pravatar.cc' in current_picture or
+                    'ui-avatars.com' in current_picture
+                )
+                
+                if should_update:
+                    profile.profile_picture_url = google_picture
+                    profile.save()
+                    print(f"Updated profile picture for {user.email} to Google picture")
+                    
+        except Exception as e:
+            print(f"Error updating profile picture: {str(e)}")
+            # Don't raise exception - this is not critical
 
 
 class CheckUserView(APIView):
@@ -685,6 +720,9 @@ class ActivateUserView(APIView):
                     mobile_number=mobile_number
                 )
             
+            # Update profile picture from Google if available
+            self._update_profile_picture_from_oauth_data(user, request.data)
+            
             # Generate tokens
             from rest_framework_simplejwt.tokens import RefreshToken
             refresh = RefreshToken.for_user(user)
@@ -702,6 +740,39 @@ class ActivateUserView(APIView):
             import traceback
             traceback.print_exc()
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    def _update_profile_picture_from_oauth_data(self, user, request_data):
+        """
+        Update user's profile picture with Google profile picture from OAuth data
+        """
+        try:
+            # Check if Google profile picture is available in the request data
+            google_picture = request_data.get('google_picture')
+            if not google_picture:
+                return
+            
+            # Check if user has an alumni profile
+            if hasattr(user, 'alumni_profile'):
+                profile = user.alumni_profile
+                current_picture = profile.profile_picture_url
+                
+                # Update if current picture is default/blank or from gravatar
+                should_update = (
+                    not current_picture or 
+                    current_picture == 'https://i.ibb.co/FbQ7wC2Q/random-pfp.jpg' or
+                    'gravatar.com' in current_picture or
+                    'pravatar.cc' in current_picture or
+                    'ui-avatars.com' in current_picture
+                )
+                
+                if should_update:
+                    profile.profile_picture_url = google_picture
+                    profile.save()
+                    print(f"Updated profile picture for {user.email} to Google picture during activation")
+                    
+        except Exception as e:
+            print(f"Error updating profile picture during activation: {str(e)}")
+            # Don't raise exception - this is not critical
 
 
 class GoogleOAuthLoginView(APIView):
