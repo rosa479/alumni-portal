@@ -502,6 +502,7 @@ const Footer = () => {
   return (
     <footer className="bg-black text-gray-400 border-t border-gray-800 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Main grid now has 3 direct children on desktop, with the middle one spanning 2 columns */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Column 1: Brand Info */}
           <div>
@@ -558,98 +559,105 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Column 2: Quick Links */}
-          <div>
-            <h3 className="font-semibold text-white mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  to="/about"
-                  className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
-                >
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/directory"
-                  className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
-                >
-                  Alumni Directory
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/events"
-                  className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
-                >
-                  Events
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/news"
-                  className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
-                >
-                  News & Updates
-                </Link>
-              </li>
-            </ul>
-          </div>
+          {/* START OF CHANGES: New wrapper for links columns */}
+          {/* This wrapper spans 2 columns on medium screens and up */}
+          <div className="md:col-span-2">
+            {/* This nested grid has 2 columns on ALL screen sizes, including phones */}
+            <div className="grid grid-cols-2 gap-8">
+              {/* Column 2: Quick Links */}
+              <div>
+                <h3 className="font-semibold text-white mb-4">Quick Links</h3>
+                <ul className="space-y-2">
+                  <li>
+                    <Link
+                      to="/about"
+                      className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
+                    >
+                      About Us
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/directory"
+                      className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
+                    >
+                      Alumni Directory
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/events"
+                      className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
+                    >
+                      Events
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/news"
+                      className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
+                    >
+                      News & Updates
+                    </Link>
+                  </li>
+                </ul>
+              </div>
 
-          {/* Column 3: Resources */}
-          <div>
-            <h3 className="font-semibold text-white mb-4">Resources</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  to="/mentorship"
-                  className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
-                >
-                  Mentorship
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/jobs"
-                  className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
-                >
-                  Career Hub
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/donate"
-                  className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
-                >
-                  Give Back
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/contact"
-                  className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
-                >
-                  Contact Us
-                </Link>
-              </li>
-            </ul>
+              {/* Column 3: Resources */}
+              <div>
+                <h3 className="font-semibold text-white mb-4">Resources</h3>
+                <ul className="space-y-2">
+                  <li>
+                    <Link
+                      to="/mentorship"
+                      className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
+                    >
+                      Mentorship
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/jobs"
+                      className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
+                    >
+                      Career Hub
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/donate"
+                      className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
+                    >
+                      Give Back
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/contact"
+                      className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
+                    >
+                      Contact Us
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
+          {/* END OF CHANGES */}
 
           {/* Column 4: Map */}
           <div>
             <h3 className="font-semibold text-white mb-4">Visit Us</h3>
             <div className="overflow-hidden rounded-lg">
-              {/* Note: I've replaced your broken iframe src with a working one for IIT Kharagpur. 
-                  The `frameborder` attribute is obsolete; styling is better handled with CSS (e.g., style={{ border: 0 }}). */}
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3690.426362947233!2d87.30843231540547!3d22.33777498530188!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a1d44158c345555%3A0x8a299b136932a32!2sIndian%20Institute%20of%20Technology%20Kharagpur!5e0!3m2!1sen!2sin!4v1671887333933!5m2!1sen!2sin"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3690.428796465355!2d87.3082152758836!3d22.33762644086438!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a1d441474a69323%3A0x7f45a27866e4a9e5!2sIIT%20Kharagpur!5e0!3m2!1sen!2sin!4v1668187823533!5m2!1sen!2sin"
                 width="100%"
                 height="150"
                 style={{ border: 0 }}
                 allowFullScreen={true}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
+                title="IIT Kharagpur Location"
               ></iframe>
             </div>
           </div>
