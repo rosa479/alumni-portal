@@ -163,6 +163,7 @@ function CommunitiesPage() {
                 name={community.name}
                 description={community.description}
                 members={community.members_count}
+                is_member={community.is_member} // Add this line
               />
             ))
           ) : (

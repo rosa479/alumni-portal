@@ -37,6 +37,8 @@ from .views import (
     EducationDetailView,
     SkillListCreateView,
     SkillDetailView,
+    CommunityJoinLeaveView,  # Add this
+    UserStatsView,  # Add this
 )
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -101,4 +103,11 @@ urlpatterns = [
     path('posts/<uuid:post_id>/like/', PostLikeView.as_view(), name='post_like'),
     path('posts/<uuid:post_id>/comments/', PostCommentListCreateView.as_view(), name='post_comments'),
     path('comments/<uuid:pk>/', PostCommentDetailView.as_view(), name='comment_detail'),
+
+    # Community membership
+    path('communities/<uuid:community_id>/join/', CommunityJoinLeaveView.as_view(), name='community_join'),
+    path('communities/<uuid:community_id>/leave/', CommunityJoinLeaveView.as_view(), name='community_leave'),
+
+    # User statistics
+    path('profiles/me/stats/', UserStatsView.as_view(), name='user_stats'),
 ]

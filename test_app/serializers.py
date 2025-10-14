@@ -3,7 +3,6 @@
 from django.db import transaction
 from rest_framework import serializers
 from .models import User, AlumniProfile, Community, Post, Scholarship, ScholarshipContribution, Tag, UserTag, PostLike, PostComment, WorkExperience, Education, Skill
-
 class WorkExperienceSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkExperience
@@ -174,16 +173,23 @@ class CommunitySerializer(serializers.ModelSerializer):
     """
     members_count = serializers.SerializerMethodField()
     posts_count = serializers.SerializerMethodField()
+    is_member = serializers.SerializerMethodField()
     
     class Meta:
         model = Community
-        fields = ['id', 'name', 'description', 'members_count', 'posts_count']
+        fields = ['id', 'name', 'description', 'members_count', 'posts_count', 'is_member']
     
     def get_members_count(self, obj):
         return obj.members.count()
     
     def get_posts_count(self, obj):
         return obj.posts.filter(status=Post.Status.APPROVED).count()
+    
+    def get_is_member(self, obj):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
+            return obj.members.filter(id=request.user.id).exists()
+        return False
 
 
 class CommunityDetailSerializer(serializers.ModelSerializer):
@@ -193,10 +199,11 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
     members_count = serializers.SerializerMethodField()
     posts_count = serializers.SerializerMethodField()
     latest_posts = serializers.SerializerMethodField()
+    is_member = serializers.SerializerMethodField()
     
     class Meta:
         model = Community
-        fields = ['id', 'name', 'description', 'members_count', 'posts_count', 'latest_posts']
+        fields = ['id', 'name', 'description', 'members_count', 'posts_count', 'latest_posts', 'is_member']
     
     def get_members_count(self, obj):
         return obj.members.count()
@@ -206,7 +213,13 @@ class CommunityDetailSerializer(serializers.ModelSerializer):
     
     def get_latest_posts(self, obj):
         latest_posts = obj.posts.filter(status=Post.Status.APPROVED).order_by('-created_at')[:10]
-        return PostSerializer(latest_posts, many=True).data
+        return PostSerializer(latest_posts, many=True, context=self.context).data
+    
+    def get_is_member(self, obj):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
+            return obj.members.filter(id=request.user.id).exists()
+        return False
 
 
 class TagSerializer(serializers.ModelSerializer):

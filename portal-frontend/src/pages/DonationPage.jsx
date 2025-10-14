@@ -100,10 +100,10 @@ function DonationPage() {
                 {/* Submit Button */}
                 <button
                   type="button"
-                  onClick={() => alert('Coming Soon!')}
+                  disabled
                   className="w-full bg-orange-600 text-white font-bold py-4 px-6 rounded-full text-lg hover:bg-orange-700 transition-all transform hover:-translate-y-0.5"
                 >
-                  Proceed to Donate
+                  Coming Soon...
                 </button>
               </form>
             </div>
