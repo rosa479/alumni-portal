@@ -82,7 +82,15 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
   }
 );
 Card.displayName = "Card";
-
+/*
+  <HeroSection />
+  <PlatinumJubilee />
+  <AboutSection />
+  <ImpactSection />
+  <FeaturedHalls />
+  <CTASection />
+  <Footer /> 
+ */
 const Navbar = () => {
   return (
     <header className="hidden md:block bg-[#ffffff70] shadow-sm fixed top-5 z-50 backdrop-blur-xl rounded-full w-[95%] left-1/2 -translate-x-1/2">
@@ -90,49 +98,42 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Left Corner: Logo */}
           <div className="flex-shrink-0">
-            <Link to="/" className="text-3xl font-bold text-foreground">
+            <a href="#" className="text-3xl font-bold text-foreground">
               alumn<span className="text-primary">IIT</span>
-            </Link>
+            </a>
           </div>
 
           {/* Center Options - Hidden on mobile, visible on medium screens and up */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
-              <Link
-                to="/directory"
+              <a
+                href="#platinum"
                 className="relative text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors group"
               >
-                Directory
+                Platinum Jubilee
                 <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[hsl(197,71%,73%)] transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-              <Link
-                to="/events"
+              </a>
+              <a
+                href="#about"
                 className="relative text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors group"
               >
-                Events
+                About
                 <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[hsl(197,71%,73%)] transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-              <Link
-                to="/jobs"
+              </a>
+              <a
+                href="#impact"
                 className="relative text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors group"
               >
-                Career Hub
+                Impact
                 <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[hsl(197,71%,73%)] transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-              <Link
-                to="/mentorship"
+              </a>
+              <a
+                href="#halls"
                 className="relative text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors group"
               >
-                Mentorship
+                Halls
                 <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[hsl(197,71%,73%)] transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-              <Link
-                to="/news"
-                className="relative text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors group"
-              >
-                News
-                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[hsl(197,71%,73%)] transition-all duration-300 group-hover:w-full"></span>
-              </Link>
+              </a>
             </div>
           </div>
 
@@ -237,7 +238,10 @@ const HeroSection = () => {
   }, []); // The empty array ensures this effect runs only once on mount
 
   return (
-    <section className="w-full min-h-screen relative overflow-hidden flex flex-col items-center justify-center px-4 md:py-0">
+    <section
+      id="hero"
+      className="w-full min-h-screen relative overflow-hidden flex flex-col items-center justify-center px-4 md:py-0"
+    >
       {/* Video Background and Overlay */}
       <div className="absolute top-0 left-0 w-full h-full -z-10">
         <video
@@ -272,7 +276,7 @@ const HeroSection = () => {
                 opportunities that shape the future.
               </p>
               <div className="flex flex-col hidden sm:block sm:flex-row gap-4">
-                <Button variant="hero" size="lg" asChild>
+                <Button variant="default" size="lg" asChild>
                   <Link to="/login">Join the Network</Link>
                 </Button>
               </div>
@@ -463,7 +467,10 @@ const ImpactSection = () => {
   }, []);
 
   return (
-    <section className="py-20 bg-[#F0F7FF] from-primary/5 via-secondary/20 to-accent/5">
+    <section
+      id="impact"
+      className="py-20 bg-[#F0F7FF] from-primary/5 via-secondary/20 to-accent/5"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10 sm:mb-16">
           <h2 className="font-octin-sports text-2xl sm:text-3xl md:text-5xl font-bold mb-4">
@@ -504,7 +511,10 @@ const ImpactSection = () => {
 
 const CTASection = () => {
   return (
-    <section className="py-20 bg-[#F0F7FF] bg-gradient-to-r from-primary via-primary to-accent relative overflow-hidden">
+    <section
+      id="difference"
+      className="py-20 bg-[#F0F7FF] bg-gradient-to-r from-primary via-primary to-accent relative overflow-hidden"
+    >
       <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
         <h2 className="font-octin-sports text-2xl sm:text-3xl md:text-5xl font-bold text-primary-foreground mb-6">
@@ -534,18 +544,21 @@ const CTASection = () => {
 
 const Footer = () => {
   return (
-    <footer className="bg-black text-gray-400 border-t border-gray-800 py-12">
+    <footer
+      id="footer"
+      className="bg-black text-gray-400 border-t border-gray-800 py-12"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main grid now has 3 direct children on desktop, with the middle one spanning 2 columns */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Column 1: Brand Info */}
           <div>
-            <Link
-              to="/"
+            <a
+              href="#"
               className="text-3xl font-bold text-white inline-block mb-4"
             >
               alumn<span className="text-primary">IIT</span>
-            </Link>
+            </a>
             <p className="mb-4">
               Connecting IIT Kharagpur alumni across the globe. Building
               networks, creating opportunities, fostering excellence.
@@ -554,7 +567,7 @@ const Footer = () => {
               <a
                 href="#"
                 className="transition-all duration-300 hover:text-[hsl(199,89%,40%)] hover:scale-110"
-                aria-label="LinkedIn"
+                aria-label="aedIn"
               >
                 <svg
                   className="h-6 w-6"
@@ -593,46 +606,46 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* START OF CHANGES: New wrapper for links columns */}
+          {/* START OF CHANGES: New wrapper for as columns */}
           {/* This wrapper spans 2 columns on medium screens and up */}
           <div className="md:col-span-2">
             {/* This nested grid has 2 columns on ALL screen sizes, including phones */}
             <div className="grid grid-cols-2 gap-8">
-              {/* Column 2: Quick Links */}
+              {/* Column 2: Quick as */}
               <div>
-                <h3 className="font-semibold text-white mb-4">Quick Links</h3>
+                <h3 className="font-semibold text-white mb-4">Quick as</h3>
                 <ul className="space-y-2">
                   <li>
-                    <Link
-                      to="/about"
+                    <a
+                      href="#"
                       className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
                     >
                       About Us
-                    </Link>
+                    </a>
                   </li>
                   <li>
-                    <Link
-                      to="/directory"
+                    <a
+                      href="#"
                       className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
                     >
                       Alumni Directory
-                    </Link>
+                    </a>
                   </li>
                   <li>
-                    <Link
-                      to="/events"
+                    <a
+                      href="#"
                       className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
                     >
                       Events
-                    </Link>
+                    </a>
                   </li>
                   <li>
-                    <Link
-                      to="/news"
+                    <a
+                      href="#"
                       className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
                     >
                       News & Updates
-                    </Link>
+                    </a>
                   </li>
                 </ul>
               </div>
@@ -642,36 +655,36 @@ const Footer = () => {
                 <h3 className="font-semibold text-white mb-4">Resources</h3>
                 <ul className="space-y-2">
                   <li>
-                    <Link
-                      to="/mentorship"
+                    <a
+                      href="#"
                       className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
                     >
                       Mentorship
-                    </Link>
+                    </a>
                   </li>
                   <li>
-                    <Link
-                      to="/jobs"
+                    <a
+                      href="#"
                       className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
                     >
                       Career Hub
-                    </Link>
+                    </a>
                   </li>
                   <li>
-                    <Link
-                      to="/donate"
+                    <a
+                      href="#"
                       className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
                     >
                       Give Back
-                    </Link>
+                    </a>
                   </li>
                   <li>
-                    <Link
-                      to="/contact"
+                    <a
+                      href="#"
                       className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
                     >
                       Contact Us
-                    </Link>
+                    </a>
                   </li>
                 </ul>
               </div>
@@ -712,7 +725,6 @@ function LandingPage() {
   return (
     <>
       <Navbar />
-      <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]"></div>
       <HeroSection />
       <PlatinumJubilee />
       <AboutSection />

@@ -114,7 +114,7 @@ const FeaturedHalls = () => {
   }, []);
 
   return (
-    <section className="relative overflow-hidden ">
+    <section id="halls" className="relative overflow-hidden ">
       <AnimatedBackground />
       <div className="bg-[#E6F1F9] relative z-10 pt-16 pb-12">
         <div className="container px-4 mx-auto">

@@ -33,7 +33,7 @@ const commemorativeEvents = {
 // --- Main Platinum Jubilee Component ---
 const PlatinumJubilee = () => {
   return (
-    <div className="bg-[#F0F7FF] font-sans">
+    <div id="platinum" className="bg-[#F0F7FF] font-sans">
       <main className="px-6 md:px-12 lg:px-20">
         {/* --- Hero Section --- */}
         <section className="relative pt-10 pb-5 text-center">

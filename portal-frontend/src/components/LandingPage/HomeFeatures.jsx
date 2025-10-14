@@ -36,7 +36,7 @@ const AboutSection = () => {
   ];
 
   return (
-    <div className="bg-[#E6F1F9]">
+    <div id="about" className="bg-[#E6F1F9]">
       <motion.section
         className="text-[#1E2939] py-16 px-6 md:px-12 lg:px-20 bg-opacity-90"
         initial={{ opacity: 0 }}

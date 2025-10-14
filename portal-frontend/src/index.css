@@ -12,3 +12,7 @@
 @theme {
   --font-octin-sports: "Octin Sports", sans-serif;
 }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
+}
