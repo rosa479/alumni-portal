@@ -19,10 +19,35 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = True
 
 # cors setup
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+# Extract host from BASE_URL environment variable
+BASE_URL = os.environ.get('BASE_URL', 'http://localhost:8000')
+from urllib.parse import urlparse
+
+# Parse BASE_URL to extract hostname
+parsed_url = urlparse(BASE_URL)
+BASE_HOST = parsed_url.hostname
+
+# Build ALLOWED_HOSTS dynamically
+ALLOWED_HOSTS = [
+    'localhost', 
+    '127.0.0.1',
+]
+
+# Add host from BASE_URL if it's not already included
+if BASE_HOST and BASE_HOST not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(BASE_HOST)
+
+# Add any additional hosts from environment variable
+ADDITIONAL_HOSTS = os.environ.get('ADDITIONAL_ALLOWED_HOSTS', '').split(',')
+for host in ADDITIONAL_HOSTS:
+    host = host.strip()
+    if host and host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(host)
+
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173", # Your React frontend URL
+    os.environ.get('FRONTEND_URL', 'http://localhost:5173'), # Your React frontend URL
+    os.environ.get('BASE_URL'), # Backend URL (for self-referencing)
     # Add your production frontend URL here
 ]
 

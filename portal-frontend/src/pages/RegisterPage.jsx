@@ -7,12 +7,53 @@ import Input from "../components/Input"; // Adjust path if needed
 import Button from "../components/Button"; // Adjust path if needed
 
 function RegisterPage() {
+  // Country codes with flags
+  const countryCodes = [
+    { code: "+91", country: "India", flag: "🇮🇳" },
+    { code: "+1", country: "United States", flag: "🇺🇸" },
+    { code: "+44", country: "United Kingdom", flag: "🇬🇧" },
+    { code: "+49", country: "Germany", flag: "🇩🇪" },
+    { code: "+33", country: "France", flag: "🇫🇷" },
+    { code: "+81", country: "Japan", flag: "🇯🇵" },
+    { code: "+86", country: "China", flag: "🇨🇳" },
+    { code: "+61", country: "Australia", flag: "🇦🇺" },
+    { code: "+55", country: "Brazil", flag: "🇧🇷" },
+    { code: "+7", country: "Russia", flag: "🇷🇺" },
+    { code: "+39", country: "Italy", flag: "🇮🇹" },
+    { code: "+34", country: "Spain", flag: "🇪🇸" },
+    { code: "+31", country: "Netherlands", flag: "🇳🇱" },
+    { code: "+46", country: "Sweden", flag: "🇸🇪" },
+    { code: "+47", country: "Norway", flag: "🇳🇴" },
+    { code: "+45", country: "Denmark", flag: "🇩🇰" },
+    { code: "+41", country: "Switzerland", flag: "🇨🇭" },
+    { code: "+43", country: "Austria", flag: "🇦🇹" },
+    { code: "+32", country: "Belgium", flag: "🇧🇪" },
+    { code: "+351", country: "Portugal", flag: "🇵🇹" },
+    { code: "+30", country: "Greece", flag: "🇬🇷" },
+    { code: "+48", country: "Poland", flag: "🇵🇱" },
+    { code: "+420", country: "Czech Republic", flag: "🇨🇿" },
+    { code: "+36", country: "Hungary", flag: "🇭🇺" },
+    { code: "+40", country: "Romania", flag: "🇷🇴" },
+    { code: "+359", country: "Bulgaria", flag: "🇧🇬" },
+    { code: "+385", country: "Croatia", flag: "🇭🇷" },
+    { code: "+386", country: "Slovenia", flag: "🇸🇮" },
+    { code: "+421", country: "Slovakia", flag: "🇸🇰" },
+    { code: "+370", country: "Lithuania", flag: "🇱🇹" },
+    { code: "+371", country: "Latvia", flag: "🇱🇻" },
+    { code: "+372", country: "Estonia", flag: "🇪🇪" },
+    { code: "+358", country: "Finland", flag: "🇫🇮" },
+    { code: "+353", country: "Ireland", flag: "🇮🇪" },
+    { code: "+354", country: "Iceland", flag: "🇮🇸" }
+  ];
+
   // 1. State for each form input
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [rollNumber, setRollNumber] = useState(""); // Added roll number field
   const [gradYear, setGradYear] = useState("");
   const [department, setDepartment] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
+  const [countryCode, setCountryCode] = useState("+91");
   const [password, setPassword] = useState("");
 
   // 2. State for handling submission status and errors
@@ -41,6 +82,21 @@ function RegisterPage() {
         setGradYear(oauthData.graduation_year?.toString() || "");
         setDepartment(oauthData.department || "");
         setIsExistingUser(true);
+        setGradYear(profile.graduation_year?.toString() || "");
+        setDepartment(profile.department || "");
+        setMobileNumber(profile.mobile_number || "");
+        setIsExistingUser(true);
+        
+        console.log('Pre-filled values:', {
+          fullName: profile.full_name || oauthData.name,
+          rollNumber: oauthData.roll_number,
+          gradYear: profile.graduation_year,
+          department: profile.department,
+          mobileNumber: profile.mobile_number
+        });
+      } else {
+        // New user - use Google OAuth data
+        setFullName(oauthData.name || "");
       }
     }
     // Handle email-first flow
@@ -66,6 +122,9 @@ function RegisterPage() {
         setRollNumber(user.roll_number || "");
         setGradYear(user.graduation_year?.toString() || "");
         setDepartment(user.department || "");
+        setGradYear(profile.graduation_year?.toString() || "");
+        setDepartment(profile.department || "");
+        setMobileNumber(profile.mobile_number || "");
         setIsExistingUser(true);
       }
     } catch (error) {
@@ -85,6 +144,7 @@ function RegisterPage() {
       roll_number: rollNumber,
       graduation_year: gradYear,
       department: department,
+      mobile_number: mobileNumber ? `${countryCode}${mobileNumber}` : '',
       password: password,
     };
 
@@ -215,6 +275,39 @@ function RegisterPage() {
               onChange={(e) => setDepartment(e.target.value)}
               required
             />
+            
+            {/* Mobile Number with Country Code */}
+            <div className="text-left">
+              <label htmlFor="mobile" className="block mb-2 text-sm font-medium text-dark-text">
+                Mobile Number
+              </label>
+              <div className="flex w-full max-w-full overflow-hidden">
+                {/* Country Code Dropdown */}
+                <select
+                  value={countryCode}
+                  onChange={(e) => setCountryCode(e.target.value)}
+                  className="flex-shrink-0 w-20 px-2 py-3 bg-gray-50 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-primary-blue focus:outline-none transition border-r-0 text-sm"
+                >
+                  {countryCodes.map((country) => (
+                    <option key={country.code} value={country.code}>
+                      {country.flag} {country.code}
+                    </option>
+                  ))}
+                </select>
+                
+                {/* Mobile Number Input */}
+                <input
+                  id="mobile"
+                  type="tel"
+                  placeholder="9876543210"
+                  value={mobileNumber}
+                  onChange={(e) => setMobileNumber(e.target.value)}
+                  maxLength="15"
+                  className="flex-1 p-3 bg-gray-50 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-primary-blue focus:outline-none transition min-w-0"
+                />
+              </div>
+            </div>
+            
             <Input
               id="password"
               label="Password"
