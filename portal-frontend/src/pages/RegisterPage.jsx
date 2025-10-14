@@ -81,18 +81,14 @@ function RegisterPage() {
         setRollNumber(oauthData.roll_number || "");
         setGradYear(oauthData.graduation_year?.toString() || "");
         setDepartment(oauthData.department || "");
+        setMobileNumber(oauthData.mobile_number || "");
         setIsExistingUser(true);
-        setGradYear(profile.graduation_year?.toString() || "");
-        setDepartment(profile.department || "");
-        setMobileNumber(profile.mobile_number || "");
-        setIsExistingUser(true);
-        
         console.log('Pre-filled values:', {
-          fullName: profile.full_name || oauthData.name,
+          fullName: oauthData.full_name || oauthData.name,
           rollNumber: oauthData.roll_number,
-          gradYear: profile.graduation_year,
-          department: profile.department,
-          mobileNumber: profile.mobile_number
+          gradYear: oauthData.graduation_year,
+          department: oauthData.department,
+          mobileNumber: oauthData.mobile_number
         });
       } else {
         // New user - use Google OAuth data
