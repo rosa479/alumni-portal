@@ -8,3 +8,7 @@
 }
 
 @import "tailwindcss";
+
+@theme {
+  --font-octin-sports: "Octin Sports", sans-serif;
+}

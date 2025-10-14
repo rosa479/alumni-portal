@@ -46,7 +46,7 @@ const AboutSection = () => {
       >
         <div className="max-w-6xl mx-auto text-center">
           <motion.h2
-            className="text-3xl md:text-5xl font-bold mb-6"
+            className="font-octin-sports text-3xl md:text-5xl font-bold mb-6"
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.8 }}

@@ -83,7 +83,7 @@ const PlatinumJubilee = () => {
             {/* On mobile, this takes full width. On desktop, it takes the remaining width. */}
             <div className="relative z-10 md:w-[70%] flex flex-col items-center md:items-start">
               <motion.h1
-                className="text-4xl text-black md:text-6xl font-extrabold mb-4"
+                className="font-octin-sports text-4xl text-black md:text-6xl font-extrabold mb-4"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
@@ -124,7 +124,9 @@ const PlatinumJubilee = () => {
         >
           <h3 className="text-3xl font-bold mb-8 text-gray-800 flex items-center justify-center">
             {commemorativeEvents.icon}{" "}
-            <span className="ml-3">{commemorativeEvents.title}</span>
+            <span className="font-octin-sports ml-3">
+              {commemorativeEvents.title}
+            </span>
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {commemorativeEvents.items.map((item, i) => (
