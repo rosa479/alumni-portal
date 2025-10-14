@@ -93,7 +93,7 @@ Card.displayName = "Card";
 
 const Navbar = () => {
   return (
-    <header className="bg-[#ffffffe5] shadow-sm fixed top-5 z-50 backdrop-blur-xl rounded-full w-[95%] left-1/2 -translate-x-1/2">
+    <header className="bg-[#ffffff70] shadow-sm fixed top-5 z-50 backdrop-blur-xl rounded-full w-[95%] left-1/2 -translate-x-1/2">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Left Corner: Logo */}
