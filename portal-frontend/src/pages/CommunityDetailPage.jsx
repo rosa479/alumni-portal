@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import CommunityHeader from "../components/CommunityHeader";
-import CreatePost from "../components/CreatePost"; // already imported
-import Post from "../components/Post/Post"; // and this!
+import CreatePost from "../components/CreatePost";
+import Post from "../components/Post/Post";
 import apiClient from "../interceptor";
 
 function CommunityDetailPage() {
@@ -17,6 +17,9 @@ function CommunityDetailPage() {
   const [userProfile, setUserProfile] = useState(null);
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [quickTitle, setQuickTitle] = useState("");
+  // Add these new state variables
+  const [isMember, setIsMember] = useState(false);
+  const [membersCount, setMembersCount] = useState(0);
 
   // 2. useEffect hook to fetch data when the component mounts.
   useEffect(() => {
@@ -26,6 +29,10 @@ function CommunityDetailPage() {
         const communityResponse = await apiClient.get(`/communities/${communityId}/`);
         console.log("Received CommunityBackend Data:", communityResponse.data);
         setCommunityBackend([communityResponse.data]);
+        
+        // Set membership status and count
+        setIsMember(communityResponse.data.is_member || false);
+        setMembersCount(communityResponse.data.members_count || 0);
 
         // Fetch user profile for avatar
         try {
@@ -45,6 +52,24 @@ function CommunityDetailPage() {
 
     fetchData();
   }, [communityId]); // Include communityId in dependency array
+
+  // Add join/leave handler
+  const handleJoinLeave = async () => {
+    try {
+      if (isMember) {
+        await apiClient.delete(`/communities/${communityId}/leave/`);
+        setIsMember(false);
+        setMembersCount(prev => prev - 1);
+      } else {
+        await apiClient.post(`/communities/${communityId}/join/`);
+        setIsMember(true);
+        setMembersCount(prev => prev + 1);
+      }
+    } catch (error) {
+      console.error('Failed to update membership:', error);
+      alert('Failed to update membership. Please try again.');
+    }
+  };
 
   // --- Render logic based on the state ---
 
@@ -99,7 +124,13 @@ function CommunityDetailPage() {
   return (
     <div className="bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50 min-h-screen">
       <div className="container mx-auto p-4 lg:p-8">
-        <CommunityHeader community={community} />
+        {/* Pass the handler and state to CommunityHeader */}
+        <CommunityHeader 
+          community={community} 
+          isMember={isMember}
+          membersCount={membersCount}
+          onJoinLeave={handleJoinLeave}
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           <main className="lg:col-span-2 space-y-6">
@@ -143,7 +174,7 @@ function CommunityDetailPage() {
             )}
 
             <div className="space-y-6">
-              {community.latest_posts.map((post) => (
+              {community.latest_posts && community.latest_posts.map((post) => (
                 <Post
                   key={post.id}
                   id={post.id}
@@ -173,7 +204,7 @@ function CommunityDetailPage() {
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Members</span>
                   <span className="font-bold text-blue-800">
-                    {community.members_count}
+                    {membersCount}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">

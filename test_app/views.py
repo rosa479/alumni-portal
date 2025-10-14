@@ -1050,3 +1050,169 @@ class SkillDetailView(generics.RetrieveUpdateDestroyAPIView):
     
     def get_queryset(self):
         return Skill.objects.filter(user=self.request.user)
+
+
+class CommunityJoinLeaveView(APIView):
+    """
+    Handle joining and leaving communities.
+    Corresponds to: POST /api/communities/{community_id}/join/, DELETE /api/communities/{community_id}/leave/
+    """
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, community_id):
+        """Join a community"""
+        try:
+            community = Community.objects.get(id=community_id)
+            user = request.user
+            
+            # Check if user is already a member
+            if community.members.filter(id=user.id).exists():
+                return Response({
+                    'message': 'You are already a member of this community',
+                    'is_member': True
+                }, status=status.HTTP_200_OK)
+            
+            # Add user to community
+            community.members.add(user)
+            
+            return Response({
+                'message': f'Successfully joined {community.name}',
+                'is_member': True,
+                'members_count': community.members.count()
+            }, status=status.HTTP_201_CREATED)
+            
+        except Community.DoesNotExist:
+            return Response({'error': 'Community not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    def delete(self, request, community_id):
+        """Leave a community"""
+        try:
+            community = Community.objects.get(id=community_id)
+            user = request.user
+            
+            # Check if user is a member
+            if not community.members.filter(id=user.id).exists():
+                return Response({
+                    'message': 'You are not a member of this community',
+                    'is_member': False
+                }, status=status.HTTP_200_OK)
+            
+            # Remove user from community
+            community.members.remove(user)
+            
+            return Response({
+                'message': f'Successfully left {community.name}',
+                'is_member': False,
+                'members_count': community.members.count()
+            }, status=status.HTTP_200_OK)
+            
+        except Community.DoesNotExist:
+            return Response({'error': 'Community not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class UserStatsView(APIView):
+    """
+    Get comprehensive statistics for the authenticated user.
+    Corresponds to: GET /api/profiles/me/stats/
+    """
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        try:
+            user = request.user
+            
+            # Communities joined
+            joined_communities = Community.objects.filter(members=user)
+            communities_count = joined_communities.count()
+            
+            # Posts created
+            user_posts = Post.objects.filter(author=user, status=Post.Status.APPROVED)
+            posts_count = user_posts.count()
+            
+            # Total likes received on user's posts
+            total_likes_received = sum(post.likes.count() for post in user_posts)
+            
+            # Total comments made by user
+            total_comments_made = PostComment.objects.filter(user=user).count()
+            
+            # Network connections (users in same communities)
+            network_users = User.objects.filter(
+                joined_communities__in=joined_communities
+            ).exclude(id=user.id).distinct()
+            connections_count = network_users.count()
+            
+            # Recent activity (posts and comments in last 30 days)
+            from django.utils import timezone
+            from datetime import timedelta
+            recent_date = timezone.now() - timedelta(days=30)
+            
+            recent_posts = user_posts.filter(created_at__gte=recent_date).count()
+            recent_comments = PostComment.objects.filter(
+                user=user, created_at__gte=recent_date
+            ).count()
+            
+            # Most active community
+            most_active_community = None
+            if joined_communities.exists():
+                community_activity = {}
+                for community in joined_communities:
+                    activity_score = (
+                        user_posts.filter(community=community).count() * 2 +  # Posts worth 2 points
+                        PostComment.objects.filter(
+                            user=user, post__community=community
+                        ).count()  # Comments worth 1 point
+                    )
+                    community_activity[community] = activity_score
+                
+                if community_activity:
+                    most_active_community = max(community_activity, key=community_activity.get)
+            
+            stats_data = {
+                'communities_joined': communities_count,
+                'posts_created': posts_count,
+                'total_likes_received': total_likes_received,
+                'total_comments_made': total_comments_made,
+                'connections_count': connections_count,
+                'credit_points': user.credit_points,
+                'recent_activity': {
+                    'posts_last_30_days': recent_posts,
+                    'comments_last_30_days': recent_comments,
+                },
+                'most_active_community': {
+                    'id': str(most_active_community.id) if most_active_community else None,
+                    'name': most_active_community.name if most_active_community else None,
+                } if most_active_community else None,
+                'achievement_level': self._get_achievement_level(user.credit_points),
+                'joined_communities_list': [
+                    {
+                        'id': str(community.id),
+                        'name': community.name,
+                        'members_count': community.members.count()
+                    }
+                    for community in joined_communities[:5]  # Top 5 communities
+                ]
+            }
+            
+            return Response(stats_data, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            return Response(
+                {'error': f'Failed to fetch user stats: {str(e)}'}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+    
+    def _get_achievement_level(self, credit_points):
+        """Calculate user achievement level based on credit points"""
+        if credit_points >= 1000:
+            return {'level': 'Alumni Legend', 'tier': 5}
+        elif credit_points >= 500:
+            return {'level': 'Community Leader', 'tier': 4}
+        elif credit_points >= 200:
+            return {'level': 'Active Member', 'tier': 3}
+        elif credit_points >= 50:
+            return {'level': 'Rising Star', 'tier': 2}
+        else:
+            return {'level': 'New Member', 'tier': 1}
