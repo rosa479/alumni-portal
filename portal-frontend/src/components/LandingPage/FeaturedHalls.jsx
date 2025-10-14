@@ -113,6 +113,23 @@ const FeaturedHalls = () => {
     setTimeout(() => setIsAutoRotating(true), 4000);
   }, []);
 
+  const SWIPE_CONFIDENCE_THRESHOLD = 50; // Min distance in pixels for a swipe
+
+  const handleDragEnd = (e, { offset, velocity }) => {
+    if (Math.abs(offset.x) < SWIPE_CONFIDENCE_THRESHOLD) {
+      return; // Not a strong enough swipe
+    }
+
+    // Swiped left (show next)
+    if (offset.x < -SWIPE_CONFIDENCE_THRESHOLD) {
+      nextHall();
+    }
+    // Swiped right (show previous)
+    else if (offset.x > SWIPE_CONFIDENCE_THRESHOLD) {
+      prevHall();
+    }
+  };
+
   return (
     <section id="halls" className="relative overflow-hidden ">
       <AnimatedBackground />
@@ -132,7 +149,13 @@ const FeaturedHalls = () => {
               generations of KGPians.
             </p>
           </motion.div>
-          <div className="relative h-[300px] flex items-center justify-center">
+          <motion.div
+            className="relative h-[300px] flex items-center justify-center cursor-grab active:cursor-grabbing"
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.1}
+            onDragEnd={handleDragEnd}
+          >
             {halls.map((hall, index) => (
               <HallCard
                 key={hall.id}
@@ -143,7 +166,7 @@ const FeaturedHalls = () => {
                 totalHalls={halls.length}
               />
             ))}
-          </div>
+          </motion.div>
           <div className="flex justify-center items-center space-x-36 md:space-x-6 mt-12">
             <button
               onClick={prevHall}
