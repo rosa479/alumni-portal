@@ -14,6 +14,7 @@ import { CountUp } from "countup.js";
 import iitkgpDrone from "../assets/dist_iitkgpvideo1.webm";
 import AboutSection from "../components/LandingPage/HomeFeatures";
 import FeaturedHalls from "../components/LandingPage/FeaturedHalls";
+import PlatinumJubilee from "../components/LandingPage/PlatinumJubilee";
 
 // Inline Button Component
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -674,6 +675,7 @@ function LandingPage() {
       <Navbar />
       <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]"></div>
       <HeroSection />
+      <PlatinumJubilee />
       <AboutSection />
       <ImpactSection />
       <FeaturedHalls />
