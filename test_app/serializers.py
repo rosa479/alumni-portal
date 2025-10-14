@@ -2,16 +2,44 @@
 
 from django.db import transaction
 from rest_framework import serializers
-from .models import User, AlumniProfile, Community, Post, Scholarship, ScholarshipContribution, Tag, UserTag, PostLike, PostComment
+from .models import User, AlumniProfile, Community, Post, Scholarship, ScholarshipContribution, Tag, UserTag, PostLike, PostComment, WorkExperience, Education, Skill
+
+class WorkExperienceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WorkExperience
+        fields = ['id', 'company_name', 'position', 'location', 'start_date', 
+                 'end_date', 'description', 'is_current', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+
+class EducationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Education
+        fields = ['id', 'institution_name', 'degree', 'field_of_study', 
+                 'start_date', 'end_date', 'grade', 'description', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+
+class SkillSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Skill
+        fields = ['id', 'name', 'level', 'created_at']
+        read_only_fields = ['id', 'created_at']
+
 
 class AlumniProfileSerializer(serializers.ModelSerializer):
     """
     Serializer for the AlumniProfile model. Made this a standalone class
     so we can reuse it.
     """
+    work_experiences = WorkExperienceSerializer(source='user.work_experiences', many=True, read_only=True)
+    education_history = EducationSerializer(source='user.education_history', many=True, read_only=True)
+    skills = SkillSerializer(source='user.skills', many=True, read_only=True)
+    
     class Meta:
         model = AlumniProfile
-        fields = ['full_name', 'graduation_year', 'department', 'about_me', 'credit_score', 'profile_picture_url']
+        fields = ['full_name', 'graduation_year', 'department', 'profile_picture_url', 
+                 'about_me', 'credit_score', 'work_experiences', 'education_history', 'skills']
         read_only_fields = ['credit_score'] # Users should not be able to edit their score directly
 
 

@@ -28,7 +28,15 @@ from .views import (
     CheckUserView,
     ActivateUserView,
     GoogleOAuthLoginView,
-    PostDetailView,  # Import the PostDetailView
+    PostDetailView,
+    # Add these new imports
+    UserProfileUpdateView,
+    WorkExperienceListCreateView,
+    WorkExperienceDetailView,
+    EducationListCreateView,
+    EducationDetailView,
+    SkillListCreateView,
+    SkillDetailView,
 )
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -48,7 +56,20 @@ urlpatterns = [
     # Service: Profile
     path('profiles/me/', UserProfileView.as_view(), name='user_profile'),
     path('profiles/<uuid:id>/', PublicUserProfileView.as_view(), name='public_user_profile'),
-    path('profiles/recommendations/', UserRecommendationsView.as_view(), name='user_recommendations'),  # Add this line
+    path('profiles/recommendations/', UserRecommendationsView.as_view(), name='user_recommendations'),
+    path('profiles/me/update/', UserProfileUpdateView.as_view(), name='user_profile_update'),  # Add this line
+    
+    # Work Experience
+    path('work-experience/', WorkExperienceListCreateView.as_view(), name='work_experience_list_create'),
+    path('work-experience/<uuid:pk>/', WorkExperienceDetailView.as_view(), name='work_experience_detail'),
+    
+    # Education
+    path('education/', EducationListCreateView.as_view(), name='education_list_create'),
+    path('education/<uuid:pk>/', EducationDetailView.as_view(), name='education_detail'),
+    
+    # Skills
+    path('skills/', SkillListCreateView.as_view(), name='skill_list_create'),
+    path('skills/<uuid:pk>/', SkillDetailView.as_view(), name='skill_detail'),
 
     # Service: Admin
     path('admin/verifications/', AdminVerificationListView.as_view(), name='admin_verification_list'),
@@ -58,7 +79,7 @@ urlpatterns = [
     path('communities/', CommunityListView.as_view(), name='community_list'),
     path('communities/<uuid:id>/', CommunityDetailView.as_view(), name='community_detail'),
     path('posts/', PostListCreateView.as_view(), name='post_create'),
-    path('posts/<uuid:id>/', PostDetailView.as_view(), name='post_detail'),  # Add this line
+    path('posts/<uuid:id>/', PostDetailView.as_view(), name='post_detail'),
     path('communities/<uuid:community_id>/posts/', CommunityPostListView.as_view(), name='community_post_list'),
 
     # Service: Scholarships
@@ -80,5 +101,4 @@ urlpatterns = [
     path('posts/<uuid:post_id>/like/', PostLikeView.as_view(), name='post_like'),
     path('posts/<uuid:post_id>/comments/', PostCommentListCreateView.as_view(), name='post_comments'),
     path('comments/<uuid:pk>/', PostCommentDetailView.as_view(), name='comment_detail'),
-
 ]

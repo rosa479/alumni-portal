@@ -9,8 +9,27 @@ from django.core.files.base import ContentFile
 from test_app.storage import MediaStorage
 import uuid
 import os
-from .serializers import RegisterSerializer, UserSerializer, UserProfileSerializer, CommunitySerializer, CommunityDetailSerializer, PostSerializer, ScholarshipSerializer, ScholarshipListSerializer, ScholarshipContributionSerializer, TagSerializer, UserTagSerializer, PostLikeSerializer, PostCommentSerializer
-from .models import User, Community, Post, Scholarship, ScholarshipContribution, Tag, UserTag, PostLike, PostComment
+import requests
+from .serializers import (
+    RegisterSerializer, 
+    UserSerializer, 
+    UserProfileSerializer, 
+    CommunitySerializer, 
+    CommunityDetailSerializer, 
+    PostSerializer, 
+    ScholarshipSerializer, 
+    ScholarshipListSerializer, 
+    ScholarshipContributionSerializer, 
+    TagSerializer, 
+    UserTagSerializer, 
+    PostLikeSerializer, 
+    PostCommentSerializer,
+    AlumniProfileSerializer,  # Add this
+    WorkExperienceSerializer,  # Add this
+    EducationSerializer,  # Add this
+    SkillSerializer  # Add this
+)
+from .models import User, Community, Post, Scholarship, ScholarshipContribution, Tag, UserTag, PostLike, PostComment, WorkExperience, Education, Skill  # Add the new models
 from .permissions import IsAdminUser
 
 class RegisterView(generics.CreateAPIView):
@@ -896,3 +915,138 @@ class UserRecommendationsView(generics.ListAPIView):
             return " • ".join(reasons[:2])  # Show max 2 reasons
         else:
             return "Fellow alumni"
+
+# Add these new views
+
+class UserProfileUpdateView(generics.UpdateAPIView):
+    """
+    Update user profile information.
+    Corresponds to: PUT /api/profiles/me/update/
+    """
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self):
+        return self.request.user
+    
+    def update(self, request, *args, **kwargs):
+        user = self.get_object()
+        
+        # Update user fields
+        user_data = {}
+        if 'roll_number' in request.data:
+            user_data['roll_number'] = request.data['roll_number']
+        if 'credit_points' in request.data:
+            user_data['credit_points'] = request.data['credit_points']
+        
+        # Update user if there's data
+        if user_data:
+            user_serializer = UserSerializer(user, data=user_data, partial=True)
+            if user_serializer.is_valid():
+                user_serializer.save()
+        
+        # Update alumni profile
+        if hasattr(user, 'alumni_profile'):
+            profile = user.alumni_profile
+            profile_data = {}
+            
+            if 'full_name' in request.data:
+                profile_data['full_name'] = request.data['full_name']
+            if 'graduation_year' in request.data:
+                profile_data['graduation_year'] = request.data['graduation_year']
+            if 'department' in request.data:
+                profile_data['department'] = request.data['department']
+            if 'profile_picture_url' in request.data:
+                profile_data['profile_picture_url'] = request.data['profile_picture_url']
+            if 'about_me' in request.data:
+                profile_data['about_me'] = request.data['about_me']
+            
+            if profile_data:
+                profile_serializer = AlumniProfileSerializer(profile, data=profile_data, partial=True)
+                if profile_serializer.is_valid():
+                    profile_serializer.save()
+        
+        # Return updated user data
+        updated_user = User.objects.get(id=user.id)
+        return Response(UserProfileSerializer(updated_user).data)
+
+
+class WorkExperienceListCreateView(generics.ListCreateAPIView):
+    """
+    List and create work experiences for the authenticated user.
+    Corresponds to: GET/POST /api/work-experience/
+    """
+    serializer_class = WorkExperienceSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return WorkExperience.objects.filter(user=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class WorkExperienceDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update, or delete a work experience.
+    Corresponds to: GET/PUT/DELETE /api/work-experience/{id}/
+    """
+    serializer_class = WorkExperienceSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return WorkExperience.objects.filter(user=self.request.user)
+
+
+class EducationListCreateView(generics.ListCreateAPIView):
+    """
+    List and create education entries for the authenticated user.
+    Corresponds to: GET/POST /api/education/
+    """
+    serializer_class = EducationSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return Education.objects.filter(user=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class EducationDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update, or delete an education entry.
+    Corresponds to: GET/PUT/DELETE /api/education/{id}/
+    """
+    serializer_class = EducationSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return Education.objects.filter(user=self.request.user)
+
+
+class SkillListCreateView(generics.ListCreateAPIView):
+    """
+    List and create skills for the authenticated user.
+    Corresponds to: GET/POST /api/skills/
+    """
+    serializer_class = SkillSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return Skill.objects.filter(user=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class SkillDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update, or delete a skill.
+    Corresponds to: GET/PUT/DELETE /api/skills/{id}/
+    """
+    serializer_class = SkillSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return Skill.objects.filter(user=self.request.user)
