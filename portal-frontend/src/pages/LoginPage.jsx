@@ -60,7 +60,7 @@ function LoginPage() {
     setIsLoading(true);
     try {
       const response = await apiClient.get(`/auth/check-user/?email=${encodeURIComponent(email)}`);
-      if (response.data.exists) {
+      if (response.data.exists && response.data.status=="VERIFIED") {
         setStep("password");
       } else {
         navigate("/register", { 
