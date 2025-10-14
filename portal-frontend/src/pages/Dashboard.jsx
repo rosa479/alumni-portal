@@ -520,7 +520,7 @@ function Dashboard() {
             department={user.alumni_profile.department}
           />
           <section className="col-span-3 space-y-6">
-            <div className="bg-white rounded-xl shadow-sm p-6 mb-2">
+            <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
               <h2 className="text-2xl font-bold text-black mb-1">
                 Welcome back, <span style={{ color: '#0077B5' }}>{user.alumni_profile.full_name?.split(' ')[0] || 'Alumnus'}</span>
               </h2>
