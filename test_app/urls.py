@@ -17,6 +17,7 @@ from .views import (
     ScholarshipEndowmentListView,
     TagListCreateView,
     TagDetailView,
+    UserRecommendationsView,
     UserTagListCreateView,
     CommunityUserTagsView,
     ImageUploadView,
@@ -47,6 +48,7 @@ urlpatterns = [
     # Service: Profile
     path('profiles/me/', UserProfileView.as_view(), name='user_profile'),
     path('profiles/<uuid:id>/', PublicUserProfileView.as_view(), name='public_user_profile'),
+    path('profiles/recommendations/', UserRecommendationsView.as_view(), name='user_recommendations'),  # Add this line
 
     # Service: Admin
     path('admin/verifications/', AdminVerificationListView.as_view(), name='admin_verification_list'),

@@ -288,6 +288,36 @@ function ContributionDetailPage() {
                            </div>
                         </div>
                      )}
+                     {/* Stepper Section */}
+                  <div className="w-full flex flex-col items-center my-8">
+                    <div className="flex items-center w-full max-w-xl">
+                      {/* Step 1: Registration */}
+                      <div className="flex flex-col items-center flex-1">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${['REGISTRATION', 'SELECTION', 'FUND_RAISE'].includes(contribution.status) ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-gray-300 text-gray-400'}`}>
+                          <CheckCircle className="w-5 h-5" />
+                        </div>
+                        <span className={`mt-2 text-sm font-semibold ${['REGISTRATION', 'SELECTION', 'FUND_RAISE'].includes(contribution.status) ? 'text-blue-700' : 'text-gray-500'}`}>Registration</span>
+                      </div>
+                      {/* Connector */}
+                      <div className={`flex-1 h-1 ${['SELECTION', 'FUND_RAISE'].includes(contribution.status) ? 'bg-blue-500' : 'bg-gray-300'} mx-2`}></div>
+                      {/* Step 2: Selection */}
+                      <div className="flex flex-col items-center flex-1">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${['SELECTION', 'FUND_RAISE'].includes(contribution.status) ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-gray-300 text-gray-400'}`}>
+                          <CheckCircle className="w-5 h-5" />
+                        </div>
+                        <span className={`mt-2 text-sm font-semibold ${['SELECTION', 'FUND_RAISE'].includes(contribution.status) ? 'text-blue-700' : 'text-gray-500'}`}>Selection</span>
+                      </div>
+                      {/* Connector */}
+                      <div className={`flex-1 h-1 ${contribution.status === 'FUND_RAISE' ? 'bg-blue-500' : 'bg-gray-300'} mx-2`}></div>
+                      {/* Step 3: Fund Raise */}
+                      <div className="flex flex-col items-center flex-1">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${contribution.status === 'FUND_RAISE' ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-gray-300 text-gray-400'}`}>
+                          <CheckCircle className="w-5 h-5" />
+                        </div>
+                        <span className={`mt-2 text-sm font-semibold ${contribution.status === 'FUND_RAISE' ? 'text-blue-700' : 'text-gray-500'}`}>Fund Raise</span>
+                      </div>
+                    </div>
+                  </div>
                   </div>
                </div>
 

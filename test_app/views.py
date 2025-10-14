@@ -678,3 +678,221 @@ class PostDetailView(generics.RetrieveAPIView):
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'id'
+
+
+class UserRecommendationsView(generics.ListAPIView):
+    """
+    Get recommended users based on similarity to the current user.
+    Corresponds to: GET /api/profiles/recommendations/
+    """
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        """
+        Returns top 6 recommended users based on similarity algorithm.
+        """
+        current_user = self.request.user
+        
+        # Get current user's profile information
+        try:
+            user_profile = current_user.alumni_profile
+            user_graduation_year = user_profile.graduation_year
+            user_department = user_profile.department
+        except:
+            # If user doesn't have a profile, return random verified users
+            return User.objects.filter(
+                status=User.Status.VERIFIED
+            ).exclude(id=current_user.id).order_by('?')[:6]
+        
+        # Get all verified users except current user
+        potential_users = User.objects.filter(
+            status=User.Status.VERIFIED
+        ).exclude(id=current_user.id).select_related('alumni_profile')
+        
+        # Calculate similarity scores for each user
+        users_with_scores = []
+        
+        for user in potential_users:
+            similarity_score = self._calculate_user_similarity(
+                current_user, user, user_graduation_year, user_department
+            )
+            
+            # Only include users with some similarity (score > 0)
+            if similarity_score > 0:
+                users_with_scores.append((user, similarity_score))
+        
+        # Sort by similarity score (highest first)
+        users_with_scores.sort(key=lambda x: x[1], reverse=True)
+        
+        # Return top 6 recommendations
+        recommended_users = [user for user, score in users_with_scores[:6]]
+        
+        # If we don't have enough similar users, fill with random users
+        if len(recommended_users) < 6:
+            remaining_count = 6 - len(recommended_users)
+            excluded_ids = [user.id for user in recommended_users] + [current_user.id]
+            
+            additional_users = User.objects.filter(
+                status=User.Status.VERIFIED
+            ).exclude(id__in=excluded_ids).order_by('?')[:remaining_count]
+            
+            recommended_users.extend(additional_users)
+        
+        return recommended_users[:6]  # Ensure we never return more than 6
+    
+    def _calculate_user_similarity(self, current_user, target_user, user_graduation_year, user_department):
+        """
+        Calculate similarity score between current user and target user.
+        Higher score means more similar users.
+        
+        Scoring system:
+        - Same department: 100 points
+        - Same graduation year: 80 points
+        - 1 year difference: 60 points
+        - 2 years difference: 40 points
+        - 3-5 years difference: 20 points
+        - Same department + close year bonus: +30 points
+        - Same role: +20 points
+        - Recently active: +10 points
+        """
+        try:
+            target_profile = target_user.alumni_profile
+            target_graduation_year = target_profile.graduation_year
+            target_department = target_profile.department
+        except:
+            return 0  # No profile means no similarity
+        
+        similarity_score = 0
+        
+        # Department similarity (highest weight - 100 points)
+        if user_department.lower() == target_department.lower():
+            similarity_score += 100
+        
+        # Graduation year proximity (80 points max)
+        year_difference = abs(user_graduation_year - target_graduation_year)
+        if year_difference == 0:
+            similarity_score += 80  # Same year
+        elif year_difference == 1:
+            similarity_score += 60  # 1 year difference
+        elif year_difference == 2:
+            similarity_score += 40  # 2 years difference
+        elif year_difference <= 5:
+            similarity_score += 20  # Within 5 years
+        
+        # Bonus for same department AND close graduation year
+        if (user_department.lower() == target_department.lower() and year_difference <= 2):
+            similarity_score += 30  # Strong similarity bonus
+        
+        # Role similarity (20 points)
+        if current_user.role == target_user.role:
+            similarity_score += 20
+        
+        # Recent activity bonus (10 points)
+        from django.utils import timezone
+        from datetime import timedelta
+        
+        # Check if user has been active recently (posted or commented in last 30 days)
+        recent_date = timezone.now() - timedelta(days=30)
+        has_recent_activity = (
+            target_user.posts.filter(created_at__gte=recent_date).exists() or
+            target_user.post_comments.filter(created_at__gte=recent_date).exists()
+        )
+        
+        if has_recent_activity:
+            similarity_score += 10
+        
+        # Credit score proximity bonus (5 points max)
+        try:
+            current_credit = current_user.alumni_profile.credit_score
+            target_credit = target_profile.credit_score
+            credit_difference = abs(current_credit - target_credit)
+            
+            if credit_difference <= 50:
+                similarity_score += 5
+        except:
+            pass  # Ignore if credit scores not available
+        
+        return similarity_score
+    
+    def list(self, request, *args, **kwargs):
+        """Override list to add recommendation reasons"""
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        
+        # Add recommendation reasons for each user
+        current_user = request.user
+        try:
+            user_profile = current_user.alumni_profile
+            user_graduation_year = user_profile.graduation_year
+            user_department = user_profile.department
+        except:
+            user_graduation_year = None
+            user_department = None
+        
+        enhanced_data = []
+        for i, user_data in enumerate(serializer.data):
+            user = queryset[i]
+            
+            # Generate recommendation reason
+            reason = self._get_recommendation_reason(
+                current_user, user, user_graduation_year, user_department
+            )
+            
+            enhanced_data.append({
+                **user_data,
+                'recommendation_reason': reason
+            })
+        
+        return Response({
+            'results': enhanced_data,
+            'total_recommendations': len(enhanced_data)
+        })
+    
+    def _get_recommendation_reason(self, current_user, target_user, user_graduation_year, user_department):
+        """Generate a human-readable reason for the recommendation"""
+        try:
+            target_profile = target_user.alumni_profile
+            target_graduation_year = target_profile.graduation_year
+            target_department = target_profile.department
+        except:
+            return "Fellow alumni"
+        
+        reasons = []
+        
+        # Check department match
+        if user_department and user_department.lower() == target_department.lower():
+            reasons.append(f"Same department ({user_department})")
+        
+        # Check graduation year
+        if user_graduation_year:
+            year_difference = abs(user_graduation_year - target_graduation_year)
+            if year_difference == 0:
+                reasons.append(f"Same batch ({user_graduation_year})")
+            elif year_difference == 1:
+                reasons.append("Close batch mate")
+            elif year_difference <= 3:
+                reasons.append("Recent batch mate")
+        
+        # Check role
+        if current_user.role == target_user.role:
+            role_display = dict(current_user.Role.choices).get(current_user.role, current_user.role)
+            reasons.append(f"Fellow {role_display.lower()}")
+        
+        # Check recent activity
+        from django.utils import timezone
+        from datetime import timedelta
+        recent_date = timezone.now() - timedelta(days=30)
+        has_recent_activity = (
+            target_user.posts.filter(created_at__gte=recent_date).exists() or
+            target_user.post_comments.filter(created_at__gte=recent_date).exists()
+        )
+        
+        if has_recent_activity:
+            reasons.append("Recently active")
+        
+        # Return the most relevant reason or default
+        if reasons:
+            return " • ".join(reasons[:2])  # Show max 2 reasons
+        else:
+            return "Fellow alumni"
