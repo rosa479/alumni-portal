@@ -91,26 +91,26 @@ const FeaturedHalls = () => {
     if (!isAutoRotating) return;
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % halls.length);
-    }, 4000);
+    }, 2000);
     return () => clearInterval(interval);
   }, [isAutoRotating, halls.length]);
 
   const nextHall = useCallback(() => {
     setIsAutoRotating(false);
     setActiveIndex((prev) => (prev + 1) % halls.length);
-    setTimeout(() => setIsAutoRotating(true), 8000);
+    setTimeout(() => setIsAutoRotating(true), 4000);
   }, [halls.length]);
 
   const prevHall = useCallback(() => {
     setIsAutoRotating(false);
     setActiveIndex((prev) => (prev - 1 + halls.length) % halls.length);
-    setTimeout(() => setIsAutoRotating(true), 8000);
+    setTimeout(() => setIsAutoRotating(true), 4000);
   }, [halls.length]);
 
   const selectHall = useCallback((index) => {
     setIsAutoRotating(false);
     setActiveIndex(index);
-    setTimeout(() => setIsAutoRotating(true), 8000);
+    setTimeout(() => setIsAutoRotating(true), 4000);
   }, []);
 
   return (
