@@ -152,7 +152,7 @@ function PostDashboard({
           disabled={isLoading}
           className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
             currentLiked
-              ? "text-red-500 bg-red-50"
+              ? "text-blue-600 bg-red-50"
               : "text-gray-600 hover:bg-gray-100"
           }`}
         >
