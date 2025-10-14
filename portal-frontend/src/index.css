@@ -1,1 +1,10 @@
+@font-face {
+  font-family: "Octin Sports";
+  /* Path to Octin Sports font in public folder, spaces encoded */
+  src: url("./assets/fonts/Octin\ Sports\ Rg.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @import "tailwindcss";
