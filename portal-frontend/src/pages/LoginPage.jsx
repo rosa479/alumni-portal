@@ -90,7 +90,17 @@ function LoginPage() {
     try {
       const response = await apiClient.post("/auth/login/", { email, password });
       const { access, refresh, user } = response.data;
-      login(access, refresh, user);
+
+      // If alumni_profile is missing, fetch the full profile
+      let fullUser = user;
+      if (!user?.alumni_profile) {
+        const profileRes = await apiClient.get("/profiles/me/", {
+          headers: { Authorization: `Bearer ${access}` },
+        });
+        fullUser = profileRes.data;
+      }
+
+      login(access, refresh, fullUser);
       navigate("/dashboard");
     } catch (err) {
       console.error("Login failed, going to register");
