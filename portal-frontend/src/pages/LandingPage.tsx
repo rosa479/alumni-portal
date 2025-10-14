@@ -17,7 +17,7 @@ import FeaturedHalls from "../components/LandingPage/FeaturedHalls";
 
 // Inline Button Component
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "default" | "outline" | "hero" | "secondary";
+  variant?: "default" | "outline" | "hero" | "secondary" | "outline-blue";
   size?: "default" | "lg";
   asChild?: boolean;
   children: React.ReactNode;
@@ -41,9 +41,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const variants = {
       default: "bg-[hsl(199,89%,48%)] text-white hover:bg-[hsl(199,89%,40%)]",
       outline:
-        "border border-[hsl(199,89%,48%)] text-[hsl(199,89%,48%)] hover:bg-[hsl(199,89%,48%)]/10",
+        "border outline-2 border-[hsl(199,89%,48%)] text-[hsl(199,89%,48%)] hover:bg-[hsl(199,89%,48%)]/10",
       hero: "bg-[hsl(199,89%,48%)] text-white hover:bg-[hsl(197,71%,73%)] shadow-[0_0_40px_hsl(197,71%,73%,0.4)] hover:shadow-[0_0_40px_hsl(197,71%,73%,0.4)]",
       secondary: "bg-white text-[hsl(199,89%,48%)] hover:bg-white/90",
+      "outline-blue":
+        "border border-blue-500 text-blue-500 hover:bg-blue-500/10",
     };
 
     const sizes = {
@@ -278,7 +280,7 @@ const HeroSection = () => {
               <Button variant="hero" size="lg" asChild>
                 <Link to="/register">Join the Network</Link>
               </Button>
-              <Button variant="outline" size="lg" asChild>
+              <Button variant="outline-blue" size="lg" asChild>
                 <Link to="/directory">Explore Directory</Link>
               </Button>
             </div>
@@ -478,7 +480,7 @@ const CTASection = () => {
           </Button>
           <Button
             size="lg"
-            variant="outline"
+            variant="outline-blue"
             asChild
             className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
           >
