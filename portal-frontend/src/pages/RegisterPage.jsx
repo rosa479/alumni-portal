@@ -88,10 +88,7 @@ function RegisterPage() {
         setRollNumber(oauthData.roll_number || "");
         setGradYear(oauthData.graduation_year?.toString() || "");
         setDepartment(oauthData.department || "");
-        setIsExistingUser(true);
-        setGradYear(profile.graduation_year?.toString() || "");
-        setDepartment(profile.department || "");
-        setMobileNumber(profile.mobile_number || "");
+        setMobileNumber(oauthData.mobile_number || "");
         setIsExistingUser(true);
 
         console.log("Pre-filled values:", {
