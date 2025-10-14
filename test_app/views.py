@@ -660,6 +660,7 @@ class ActivateUserView(APIView):
             full_name = request.data.get('full_name')
             graduation_year = request.data.get('graduation_year')
             department = request.data.get('department')
+            mobile_number = request.data.get('mobile_number', '')
             
             # Update or create alumni profile
             from test_app.models import AlumniProfile
@@ -671,6 +672,8 @@ class ActivateUserView(APIView):
                     profile.graduation_year = graduation_year
                 if department:
                     profile.department = department
+                if mobile_number:
+                    profile.mobile_number = mobile_number
                 profile.save()
             else:
                 # Create profile if it doesn't exist
@@ -678,7 +681,8 @@ class ActivateUserView(APIView):
                     user=user,
                     full_name=full_name or '',
                     graduation_year=graduation_year or 2020,
-                    department=department or ''
+                    department=department or '',
+                    mobile_number=mobile_number
                 )
             
             # Generate tokens

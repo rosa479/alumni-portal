@@ -1,7 +1,7 @@
 // Google OAuth Configuration
 export const GOOGLE_OAUTH_CONFIG = {
   clientId: import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID || '395218970441-tkujr9gj2agl87k0i3b4p6n8c9ac32bm.apps.googleusercontent.com',
-  redirectUri: import.meta.env.VITE_GOOGLE_OAUTH_REDIRECT_URI || 'http://localhost:5173/callback',
+  redirectUri: import.meta.env.VITE_GOOGLE_OAUTH_REDIRECT_URI || `${import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173'}/callback`,
   scope: 'openid email profile',
   responseType: 'code',
   accessType: 'offline',

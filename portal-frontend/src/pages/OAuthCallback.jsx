@@ -42,7 +42,7 @@ function OAuthCallback() {
         const redirectUri = import.meta.env.VITE_GOOGLE_OAUTH_REDIRECT_URI || 'http://localhost:5173/callback';
         
         console.log('Making OAuth request to backend...');
-        const oauthResponse = await fetch('http://localhost:8000/api/auth/google/', {
+        const oauthResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'}/auth/google/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
