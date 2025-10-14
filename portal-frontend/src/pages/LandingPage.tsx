@@ -281,9 +281,6 @@ const HeroSection = () => {
               <Button variant="hero" size="lg" asChild>
                 <Link to="/register">Join the Network</Link>
               </Button>
-              <Button variant="outline-blue" size="lg" asChild>
-                <Link to="/directory">Explore Directory</Link>
-              </Button>
             </div>
             <div className="flex flex-col sm:flex-row items-left px-6 gap-8 pt-4">
               <div>
