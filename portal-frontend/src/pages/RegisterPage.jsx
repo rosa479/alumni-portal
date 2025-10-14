@@ -129,8 +129,6 @@ function RegisterPage() {
 
         setFullName(profile.full_name || "");
         setRollNumber(user.roll_number || "");
-        setGradYear(user.graduation_year?.toString() || "");
-        setDepartment(user.department || "");
         setGradYear(profile.graduation_year?.toString() || "");
         setDepartment(profile.department || "");
         setMobileNumber(profile.mobile_number || "");
