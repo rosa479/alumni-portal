@@ -303,7 +303,7 @@ function AnimatedWelcome({ user }) {
   return (
     <div className="relative overflow-hidden rounded-2xl mb-6">
       <div className="absolute inset-0 bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 animate-gradient-x opacity-80"></div>
-      <div className="relative z-10 flex items-center gap-3 px-5 py-6">
+      {/* <div className="relative z-10 flex items-center gap-3 px-5 py-6">
         <div className="animate-bounce-slow">
           <Star className="w-10 h-10 text-yellow-400 drop-shadow-lg" />
         </div>
@@ -318,7 +318,7 @@ function AnimatedWelcome({ user }) {
             Here’s what’s happening in your alumni network today.
           </p>
         </div>
-      </div>
+      </div> */}
       {/* Subtle floating stars */}
       <div className="absolute top-2 right-6 animate-float">
         <Star className="w-6 h-6 text-purple-300 opacity-70" />
@@ -520,6 +520,14 @@ function Dashboard() {
             department={user.alumni_profile.department}
           />
           <section className="col-span-3 space-y-6">
+            <div className="bg-white rounded-xl shadow-sm p-6 mb-2">
+              <h2 className="text-2xl font-bold text-black mb-1">
+                Welcome back, <span style={{ color: '#0077B5' }}>{user.alumni_profile.full_name?.split(' ')[0] || 'Alumnus'}</span>
+              </h2>
+              <p className="text-gray-700 text-base mt-1">
+                Here’s what’s happening in your alumni network today.
+              </p>
+            </div>
             {posts.map((post) => (
               <PostDashboard
                 key={post.id}
@@ -530,7 +538,7 @@ function Dashboard() {
                 content={post.content}
                 title={post.title || ""}
                 imageUrl={post.image_url}
-                tags={post.tags || []}
+                tags={post.tags || []} 
                 likesCount={post.likes_count}
                 commentsCount={post.comments_count}
                 isLiked={post.is_liked}
