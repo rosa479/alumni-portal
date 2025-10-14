@@ -107,7 +107,7 @@ function PostDashboard({
             <span>{authorName.charAt(0).toUpperCase()}</span>
           )}
         </div>
-        <div className="ml-4 flex-1">
+        <div className="aspect-w-3 aspect-h-4 w-full ml-4 flex-1">
           <Link 
             to={`/users/${authorId}`}
             className="font-semibold text-gray-800 hover:text-blue-600 transition-colors"
@@ -129,11 +129,11 @@ function PostDashboard({
         
         {/* Image */}
         {imageUrl && (
-          <div className="mb-4">
-            <img 
-              src={imageUrl} 
-              alt={title || 'Post image'} 
-              className="w-full h-64 object-cover rounded-lg"
+          <div className="mb-4 aspect-w-3 aspect-h-4 w-full rounded-lg overflow-hidden bg-gray-100">
+            <img
+              src={imageUrl}
+              alt={title || 'Post image'}
+              className="object-cover w-full h-full"
             />
           </div>
         )}

@@ -115,14 +115,14 @@ function Post({ id, authorName, authorAvatar, created_at, content, title, imageU
       {/* 1. Title first */}
       <Link to={`/posts/${id}`} className="block cursor-pointer">
         {title && <h3 className="text-xl font-semibold text-dark-text mb-4">{title}</h3>}
-        
-        {/* 2. Image second */}
+
+        {/* 3:4 Aspect Ratio Image Container */}
         {imageUrl && (
-          <div className="mb-4">
-            <img 
-              src={imageUrl} 
-              alt={title || 'Post image'} 
-              className="w-full h-64 object-cover rounded-lg"
+          <div className="mb-4 aspect-w-3 aspect-h-4 w-full rounded-lg overflow-hidden bg-gray-100">
+            <img
+              src={imageUrl}
+              alt={title || 'Post image'}
+              className="object-cover w-full h-full"
             />
           </div>
         )}

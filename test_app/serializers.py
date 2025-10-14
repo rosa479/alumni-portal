@@ -67,30 +67,22 @@ class RegisterSerializer(serializers.ModelSerializer):
     
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    """
-    Serializer for retrieving and updating the logged-in user's profile.
-    """
-    # Use the serializer above for the nested alumni_profile
-    alumni_profile = AlumniProfileSerializer()
-
+    alumni_profile = AlumniProfileSerializer(read_only=True)
+    joined_communities_count = serializers.SerializerMethodField()
+    posts_count = serializers.SerializerMethodField()
+    
     class Meta:
         model = User
-        fields = ['id', 'roll_number', 'email', 'role', 'status', 'credit_points', 'alumni_profile']
-        # These fields are read-only because they are managed by the system, not the user.
-        read_only_fields = ['id', 'email', 'roll_number', 'role', 'status']
+        fields = ['id', 'email', 'roll_number', 'role', 'status', 'credit_points', 
+                 'alumni_profile', 'joined_communities_count', 'posts_count']
+        read_only_fields = ['id', 'email', 'role', 'status']
+    
+    def get_joined_communities_count(self, obj):
+        return obj.joined_communities.count()
+    
+    def get_posts_count(self, obj):
+        return obj.posts.filter(status='APPROVED').count()
 
-    def update(self, instance, validated_data):
-        # Handle the nested profile data update
-        profile_data = validated_data.pop('alumni_profile', {})
-        
-        # Update the AlumniProfile instance
-        alumni_profile = instance.alumni_profile
-        for attr, value in profile_data.items():
-            setattr(alumni_profile, attr, value)
-        alumni_profile.save()
-
-        # The parent update() method will handle the User fields if any
-        return super().update(instance, validated_data)
 class UserPublicSerializer(serializers.ModelSerializer):
     alumni_profile = AlumniProfileSerializer()
     class Meta:
