@@ -43,7 +43,7 @@ function RegisterPage() {
     { code: "+372", country: "Estonia", flag: "🇪🇪" },
     { code: "+358", country: "Finland", flag: "🇫🇮" },
     { code: "+353", country: "Ireland", flag: "🇮🇪" },
-    { code: "+354", country: "Iceland", flag: "🇮🇸" }
+    { code: "+354", country: "Iceland", flag: "🇮🇸" },
   ];
 
   // 1. State for each form input
@@ -73,26 +73,32 @@ function RegisterPage() {
       const { oauthData, isExistingUser: existing } = location.state;
 
       setEmail(oauthData.email || "");
-      setFullName(oauthData.name || oauthData.full_name || "");
       setIsOAuthUser(true); // Mark as OAuth user
 
       if (existing) {
-        // Existing user from OAuth - pre-fill other data
+        // Existing PENDING user - prioritize existing alumni_profile data
+        const profile = oauthData.alumni_profile || {};
+
+        console.log("Existing user detected. OAuth data:", oauthData);
+        console.log("Alumni profile:", profile);
+
+        // Use existing data from alumni_profile, fallback to Google OAuth data
+        setFullName(profile.full_name || oauthData.name || "");
         setRollNumber(oauthData.roll_number || "");
-        setGradYear(oauthData.graduation_year?.toString() || "");
-        setDepartment(oauthData.department || "");
+        setGradYear(profile.graduation_year?.toString() || "");
+        setDepartment(profile.department || "");
         setIsExistingUser(true);
         setGradYear(profile.graduation_year?.toString() || "");
         setDepartment(profile.department || "");
         setMobileNumber(profile.mobile_number || "");
         setIsExistingUser(true);
-        
-        console.log('Pre-filled values:', {
+
+        console.log("Pre-filled values:", {
           fullName: profile.full_name || oauthData.name,
           rollNumber: oauthData.roll_number,
           gradYear: profile.graduation_year,
           department: profile.department,
-          mobileNumber: profile.mobile_number
+          mobileNumber: profile.mobile_number,
         });
       } else {
         // New user - use Google OAuth data
@@ -118,7 +124,9 @@ function RegisterPage() {
       );
       if (response.data.exists) {
         const user = response.data.user;
-        setFullName(user.full_name || "");
+        const profile = user.alumni_profile || {};
+
+        setFullName(profile.full_name || "");
         setRollNumber(user.roll_number || "");
         setGradYear(user.graduation_year?.toString() || "");
         setDepartment(user.department || "");
@@ -144,7 +152,7 @@ function RegisterPage() {
       roll_number: rollNumber,
       graduation_year: gradYear,
       department: department,
-      mobile_number: mobileNumber ? `${countryCode}${mobileNumber}` : '',
+      mobile_number: mobileNumber ? `${countryCode}${mobileNumber}` : "",
       password: password,
     };
 
@@ -195,7 +203,9 @@ function RegisterPage() {
       {/* Changed max-w-md to max-w-lg to make the box wider */}
       <div className="w-full max-w-xl p-10 space-y-8 bg-white rounded-2xl border border-[#E3EAF3] text-center">
         <h2 className="text-3xl font-bold text-[#0077B5] mb-2">
-          {isExistingUser ? "Complete Your Registration" : "Create Your Account"}
+          {isExistingUser
+            ? "Complete Your Registration"
+            : "Create Your Account"}
         </h2>
         {location.state?.oauthData && (
           <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm text-left mb-4">
@@ -275,10 +285,13 @@ function RegisterPage() {
               onChange={(e) => setDepartment(e.target.value)}
               required
             />
-            
+
             {/* Mobile Number with Country Code */}
             <div className="text-left">
-              <label htmlFor="mobile" className="block mb-2 text-sm font-medium text-dark-text">
+              <label
+                htmlFor="mobile"
+                className="block mb-2 text-sm font-medium text-dark-text"
+              >
                 Mobile Number
               </label>
               <div className="flex w-full max-w-full overflow-hidden">
@@ -294,7 +307,7 @@ function RegisterPage() {
                     </option>
                   ))}
                 </select>
-                
+
                 {/* Mobile Number Input */}
                 <input
                   id="mobile"
@@ -307,7 +320,7 @@ function RegisterPage() {
                 />
               </div>
             </div>
-            
+
             <Input
               id="password"
               label="Password"
