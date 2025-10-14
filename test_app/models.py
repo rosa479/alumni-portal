@@ -50,9 +50,9 @@ class User(AbstractUser):
     last_name = None
 
     # Fields from your schema
-    id = models.UUIDField(default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True)
-    roll_number = models.CharField(max_length=20, primary_key=True, default='2XDDNNNNN', editable=True)
+    roll_number = models.CharField(max_length=20, blank=True, null=True, default='')
     role = models.CharField(max_length=10, choices=Role.choices, default=Role.ALUMNI)
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.VERIFIED)
     credit_points = models.IntegerField(default=0)
@@ -75,6 +75,9 @@ class User(AbstractUser):
 
 
 class AlumniProfile(models.Model):
+    # Primary key
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    
     # One-to-one link to the User model
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='alumni_profile')
 

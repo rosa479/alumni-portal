@@ -11,9 +11,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='user',
-            name='id',
-            field=models.UUIDField(default=uuid.uuid4, editable=False),
+        # Just mark as applied if column already exists
+        migrations.RunSQL(
+            "SELECT 1;",  # No-op SQL, column already exists
+            reverse_sql="SELECT 1;"
         ),
     ]

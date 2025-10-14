@@ -115,7 +115,7 @@ function RegisterPage() {
       if (response.data.exists) {
         const user = response.data.user;
         const profile = user.alumni_profile || {};
-        
+        console.log(profile);
         setFullName(profile.full_name || "");
         setRollNumber(user.roll_number || "");
         setGradYear(profile.graduation_year?.toString() || "");
