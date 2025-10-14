@@ -3,8 +3,58 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import apiClient from "../interceptor";
-import Input from "../components/Input"; // Adjust path if needed
-import Button from "../components/Button"; // Adjust path if needed
+import {
+  Handshake,
+  Users,
+  Network,
+  Sparkles,
+  GraduationCap,
+  Star,
+  Briefcase,
+  Globe,
+} from "lucide-react";
+
+// --- Reusable Components ---
+const Input = ({
+  id,
+  label,
+  value,
+  onChange,
+  type,
+  placeholder,
+  className,
+  disabled,
+}) => (
+  <div className="text-left">
+    <label
+      htmlFor={id}
+      className="block text-sm font-medium text-gray-700 mb-1"
+    >
+      {label}
+    </label>
+    <input
+      id={id}
+      type={type}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      disabled={disabled}
+      className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0077B5] text-gray-800 ${className} ${
+        disabled ? "bg-gray-200 cursor-not-allowed" : "bg-[#F5F8FA]"
+      }`}
+      required
+    />
+  </div>
+);
+
+const Button = ({ children, className, ...props }) => (
+  <button
+    {...props}
+    className={`w-full py-2 px-4 text-base font-semibold rounded-lg transition-colors duration-200 ${className}`}
+  >
+    {children}
+  </button>
+);
 
 function RegisterPage() {
   // Country codes with flags
