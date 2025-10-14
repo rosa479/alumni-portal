@@ -404,11 +404,10 @@ function ContributionDetailPage() {
                            </div>
                            <div className="flex flex-col sm:flex-row gap-2">
                               <button
-                                 onClick={handleDonate}
-                                 disabled={!donationAmount || donationAmount < 1}
+                                 disabled
                                  className="flex-1 bg-blue-800 text-white font-bold py-2 sm:py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors duration-200 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                               >
-                                 Donate
+                                 Coming Soon...
                               </button>
                               <button
                                  onClick={() => setShowDonationForm(false)}
@@ -423,7 +422,7 @@ function ContributionDetailPage() {
                      {/* Share Button */}
                      <button 
                         onClick={() => setShowShareModal(true)}
-                        className="w-full flex items-center justify-center gap-2 py-2 sm:py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-sm sm:text-base"
+                        className="w-full flex items-center justify-center gap-2 pt-10 sm:py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-sm sm:text-base hover:cursor-pointer"
                      >
                         <Share2 className="w-4 h-4" />
                         <span>Share</span>
