@@ -85,6 +85,14 @@ function LoginPage() {
       );
       if (response.data.exists && response.data.status == "VERIFIED") {
         setStep("password");
+      }else 
+      if (response.data.exists && response.data.status=="PENDING") {
+        navigate("/register", { 
+          state: { 
+            email: email,
+            isNewUser: false 
+          } 
+        });
       } else {
         navigate("/register", {
           state: {
