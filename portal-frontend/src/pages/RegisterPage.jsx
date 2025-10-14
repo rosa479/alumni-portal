@@ -7,12 +7,53 @@ import Input from "../components/Input"; // Adjust path if needed
 import Button from "../components/Button"; // Adjust path if needed
 
 function RegisterPage() {
+  // Country codes with flags
+  const countryCodes = [
+    { code: "+91", country: "India", flag: "🇮🇳" },
+    { code: "+1", country: "United States", flag: "🇺🇸" },
+    { code: "+44", country: "United Kingdom", flag: "🇬🇧" },
+    { code: "+49", country: "Germany", flag: "🇩🇪" },
+    { code: "+33", country: "France", flag: "🇫🇷" },
+    { code: "+81", country: "Japan", flag: "🇯🇵" },
+    { code: "+86", country: "China", flag: "🇨🇳" },
+    { code: "+61", country: "Australia", flag: "🇦🇺" },
+    { code: "+55", country: "Brazil", flag: "🇧🇷" },
+    { code: "+7", country: "Russia", flag: "🇷🇺" },
+    { code: "+39", country: "Italy", flag: "🇮🇹" },
+    { code: "+34", country: "Spain", flag: "🇪🇸" },
+    { code: "+31", country: "Netherlands", flag: "🇳🇱" },
+    { code: "+46", country: "Sweden", flag: "🇸🇪" },
+    { code: "+47", country: "Norway", flag: "🇳🇴" },
+    { code: "+45", country: "Denmark", flag: "🇩🇰" },
+    { code: "+41", country: "Switzerland", flag: "🇨🇭" },
+    { code: "+43", country: "Austria", flag: "🇦🇹" },
+    { code: "+32", country: "Belgium", flag: "🇧🇪" },
+    { code: "+351", country: "Portugal", flag: "🇵🇹" },
+    { code: "+30", country: "Greece", flag: "🇬🇷" },
+    { code: "+48", country: "Poland", flag: "🇵🇱" },
+    { code: "+420", country: "Czech Republic", flag: "🇨🇿" },
+    { code: "+36", country: "Hungary", flag: "🇭🇺" },
+    { code: "+40", country: "Romania", flag: "🇷🇴" },
+    { code: "+359", country: "Bulgaria", flag: "🇧🇬" },
+    { code: "+385", country: "Croatia", flag: "🇭🇷" },
+    { code: "+386", country: "Slovenia", flag: "🇸🇮" },
+    { code: "+421", country: "Slovakia", flag: "🇸🇰" },
+    { code: "+370", country: "Lithuania", flag: "🇱🇹" },
+    { code: "+371", country: "Latvia", flag: "🇱🇻" },
+    { code: "+372", country: "Estonia", flag: "🇪🇪" },
+    { code: "+358", country: "Finland", flag: "🇫🇮" },
+    { code: "+353", country: "Ireland", flag: "🇮🇪" },
+    { code: "+354", country: "Iceland", flag: "🇮🇸" }
+  ];
+
   // 1. State for each form input
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [rollNumber, setRollNumber] = useState(""); // Added roll number field
   const [gradYear, setGradYear] = useState("");
   const [department, setDepartment] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
+  const [countryCode, setCountryCode] = useState("+91");
   const [password, setPassword] = useState("");
 
   // 2. State for handling submission status and errors
@@ -30,24 +71,39 @@ function RegisterPage() {
     // Handle OAuth data
     if (location.state?.oauthData) {
       const { oauthData, isExistingUser: existing } = location.state;
-      
+
       setEmail(oauthData.email || "");
       setFullName(oauthData.name || oauthData.full_name || "");
       setIsOAuthUser(true); // Mark as OAuth user
-      
+
       if (existing) {
         // Existing user from OAuth - pre-fill other data
         setRollNumber(oauthData.roll_number || "");
         setGradYear(oauthData.graduation_year?.toString() || "");
         setDepartment(oauthData.department || "");
         setIsExistingUser(true);
+        setGradYear(profile.graduation_year?.toString() || "");
+        setDepartment(profile.department || "");
+        setMobileNumber(profile.mobile_number || "");
+        setIsExistingUser(true);
+        
+        console.log('Pre-filled values:', {
+          fullName: profile.full_name || oauthData.name,
+          rollNumber: oauthData.roll_number,
+          gradYear: profile.graduation_year,
+          department: profile.department,
+          mobileNumber: profile.mobile_number
+        });
+      } else {
+        // New user - use Google OAuth data
+        setFullName(oauthData.name || "");
       }
     }
     // Handle email-first flow
     else if (location.state?.email) {
       const { email: preEmail, isNewUser } = location.state;
       setEmail(preEmail);
-      
+
       if (!isNewUser) {
         // User exists but came from email flow - fetch user data
         fetchUserData(preEmail);
@@ -57,13 +113,18 @@ function RegisterPage() {
 
   const fetchUserData = async (email) => {
     try {
-      const response = await apiClient.get(`/auth/check-user/?email=${encodeURIComponent(email)}`);
+      const response = await apiClient.get(
+        `/auth/check-user/?email=${encodeURIComponent(email)}`
+      );
       if (response.data.exists) {
         const user = response.data.user;
         setFullName(user.full_name || "");
         setRollNumber(user.roll_number || "");
         setGradYear(user.graduation_year?.toString() || "");
         setDepartment(user.department || "");
+        setGradYear(profile.graduation_year?.toString() || "");
+        setDepartment(profile.department || "");
+        setMobileNumber(profile.mobile_number || "");
         setIsExistingUser(true);
       }
     } catch (error) {
@@ -83,17 +144,18 @@ function RegisterPage() {
       roll_number: rollNumber,
       graduation_year: gradYear,
       department: department,
+      mobile_number: mobileNumber ? `${countryCode}${mobileNumber}` : '',
       password: password,
     };
 
     try {
       let response;
-      
+
       if (isExistingUser) {
         // Existing user activation
         response = await apiClient.post("/auth/activate-user/", {
           email: email,
-          ...userData
+          ...userData,
         });
       } else {
         // New user registration
@@ -130,9 +192,10 @@ function RegisterPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#F5F8FA] via-[#E3F0FB] to-[#B3D6F2]">
-      <div className="w-full max-w-md p-10 space-y-8 bg-white rounded-2xl border border-[#E3EAF3] text-center">
+      {/* Changed max-w-md to max-w-lg to make the box wider */}
+      <div className="w-full max-w-xl p-10 space-y-8 bg-white rounded-2xl border border-[#E3EAF3] text-center">
         <h2 className="text-3xl font-bold text-[#0077B5] mb-2">
-          {isExistingUser ? 'Complete Your Registration' : 'Create Your Account'}
+          {isExistingUser ? "Complete Your Registration" : "Create Your Account"}
         </h2>
         {location.state?.oauthData && (
           <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm text-left mb-4">
@@ -143,9 +206,13 @@ function RegisterPage() {
         {isExistingUser && !location.state?.oauthData && (
           <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg text-sm text-left">
             <p className="font-semibold">Account Found!</p>
-            <p>Your account exists. Please complete the form below to activate your account.</p>
+            <p>
+              Your account exists. Please complete the form below to activate
+              your account.
+            </p>
           </div>
         )}
+
         <form className="space-y-6" onSubmit={handleSubmit}>
           {/* 9. Display an error message if one exists */}
           {error && (
@@ -158,69 +225,111 @@ function RegisterPage() {
             </div>
           )}
 
-          {/* 10. Inputs are now controlled components (value + onChange) */}
-          <Input
-            id="fullName"
-            label="Full Name"
-            placeholder="John Doe"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            required
-          />
-          <Input
-            id="email"
-            label="Email Address"
-            type="email"
-            placeholder="your.email@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            disabled={isExistingUser || isOAuthUser}
-            className={`bg-[#F5F8FA] border border-[#E3EAF3] rounded-lg ${(isExistingUser || isOAuthUser) ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-          />
-          <Input
-            id="rollNumber"
-            label="Roll Number"
-            placeholder="20CS10001"
-            value={rollNumber}
-            onChange={(e) => setRollNumber(e.target.value)}
-            required
-          />
-          <Input
-            id="gradYear"
-            label="Graduation Year"
-            type="number"
-            placeholder="2018"
-            value={gradYear}
-            onChange={(e) => setGradYear(e.target.value)}
-            required
-          />
-          <Input
-            id="department"
-            label="Department"
-            placeholder="Computer Science"
-            value={department}
-            onChange={(e) => setDepartment(e.target.value)}
-            required
-          />
-          <Input
-            id="password"
-            label="Password"
-            type="password"
-            placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          {/* Inputs in grid: 2 per row on sm+, stacked on mobile */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Input
+              id="fullName"
+              label="Full Name"
+              placeholder="John Doe"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              required
+            />
+            <Input
+              id="email"
+              label="Email Address"
+              type="email"
+              placeholder="your.email@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={isExistingUser || isOAuthUser}
+              className={`bg-[#F5F8FA] border border-[#E3EAF3] rounded-lg ${
+                isExistingUser || isOAuthUser
+                  ? "bg-gray-100 cursor-not-allowed"
+                  : ""
+              }`}
+            />
+            <Input
+              id="rollNumber"
+              label="Roll Number"
+              placeholder="20CS10001"
+              value={rollNumber}
+              onChange={(e) => setRollNumber(e.target.value)}
+              required
+            />
+            <Input
+              id="gradYear"
+              label="Graduation Year"
+              type="number"
+              placeholder="2018"
+              value={gradYear}
+              onChange={(e) => setGradYear(e.target.value)}
+              required
+            />
+            <Input
+              id="department"
+              label="Department"
+              placeholder="Computer Science"
+              value={department}
+              onChange={(e) => setDepartment(e.target.value)}
+              required
+            />
+            
+            {/* Mobile Number with Country Code */}
+            <div className="text-left">
+              <label htmlFor="mobile" className="block mb-2 text-sm font-medium text-dark-text">
+                Mobile Number
+              </label>
+              <div className="flex w-full max-w-full overflow-hidden">
+                {/* Country Code Dropdown */}
+                <select
+                  value={countryCode}
+                  onChange={(e) => setCountryCode(e.target.value)}
+                  className="flex-shrink-0 w-20 px-2 py-3 bg-gray-50 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-primary-blue focus:outline-none transition border-r-0 text-sm"
+                >
+                  {countryCodes.map((country) => (
+                    <option key={country.code} value={country.code}>
+                      {country.flag} {country.code}
+                    </option>
+                  ))}
+                </select>
+                
+                {/* Mobile Number Input */}
+                <input
+                  id="mobile"
+                  type="tel"
+                  placeholder="9876543210"
+                  value={mobileNumber}
+                  onChange={(e) => setMobileNumber(e.target.value)}
+                  maxLength="15"
+                  className="flex-1 p-3 bg-gray-50 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-primary-blue focus:outline-none transition min-w-0"
+                />
+              </div>
+            </div>
+            
+            <Input
+              id="password"
+              label="Password"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
           <Button
             type="submit"
             disabled={isSubmitting}
             className="w-full bg-[#0077B5] text-white rounded-lg hover:bg-[#005983] transition-colors font-semibold"
           >
-            {isSubmitting 
-              ? (isExistingUser ? "Activating Account..." : "Creating Account...")
-              : (isExistingUser ? "Activate Account" : "Create Account")
-            }
+            {isSubmitting
+              ? isExistingUser
+                ? "Activating Account..."
+                : "Creating Account..."
+              : isExistingUser
+              ? "Activate Account"
+              : "Create Account"}
           </Button>
         </form>
         <p className="text-sm text-light-text">

@@ -93,7 +93,7 @@ Card.displayName = "Card";
 
 const Navbar = () => {
   return (
-    <header className="bg-[#FFFFFF70] shadow-sm fixed top-5 z-50 backdrop-blur-xl rounded-full w-[95%] left-1/2 -translate-x-1/2">
+    <header className="bg-[#ffffffe5] shadow-sm fixed top-5 z-50 backdrop-blur-xl rounded-full w-[95%] left-1/2 -translate-x-1/2">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Left Corner: Logo */}
@@ -108,33 +108,38 @@ const Navbar = () => {
             <div className="ml-10 flex items-baseline space-x-4">
               <Link
                 to="/directory"
-                className="text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors"
+                className="relative text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors group"
               >
                 Directory
+                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[hsl(197,71%,73%)] transition-all duration-300 group-hover:w-full"></span>
               </Link>
               <Link
                 to="/events"
-                className="text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors"
+                className="relative text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors group"
               >
                 Events
+                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[hsl(197,71%,73%)] transition-all duration-300 group-hover:w-full"></span>
               </Link>
               <Link
                 to="/jobs"
-                className="text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors"
+                className="relative text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors group"
               >
                 Career Hub
+                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[hsl(197,71%,73%)] transition-all duration-300 group-hover:w-full"></span>
               </Link>
               <Link
                 to="/mentorship"
-                className="text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors"
+                className="relative text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors group"
               >
                 Mentorship
+                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[hsl(197,71%,73%)] transition-all duration-300 group-hover:w-full"></span>
               </Link>
               <Link
                 to="/news"
-                className="text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors"
+                className="relative text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors group"
               >
                 News
+                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[hsl(197,71%,73%)] transition-all duration-300 group-hover:w-full"></span>
               </Link>
             </div>
           </div>
@@ -146,7 +151,7 @@ const Navbar = () => {
                 <Link to="/login">Login</Link>
               </Button>
               <Button asChild>
-                <Link to="/register">Sign Up</Link>
+                <Link to="/login">Sign Up</Link>
               </Button>
             </div>
           </div>
@@ -240,7 +245,7 @@ const HeroSection = () => {
   }, []); // The empty array ensures this effect runs only once on mount
 
   return (
-    <section className="w-dvw h-dvh relative overflow-hidden flex items-center">
+    <section className="w-full min-h-screen relative overflow-hidden flex flex-col items-center justify-center px-4 py-12 md:py-0">
       {/* Video Background and Overlay */}
       <div className="absolute top-0 left-0 w-full h-full -z-10">
         <video
@@ -250,28 +255,23 @@ const HeroSection = () => {
           playsInline
           className="w-full h-full object-cover"
         >
-          {/* --- IMPORTANT --- */}
-          {/* Replace this src with the path to your video file */}
           <source src={iitkgpDrone} type="video/mp4" />
           Your browser does not support the video tag.
         </video>
-        {/* This overlay improves text readability over the video */}
         <div className="absolute inset-0 bg-black/30"></div>
       </div>
 
       {/* Content */}
-      <div className="relative max-w-7xl md:ml-40 px-4 sm:px-6 lg:px-8">
-        {/* The content now lives in a single, width-constrained container */}
-        <div className="max-w-3xl">
-          <div className="space-y-8 ">
-            {/* Text colors are updated for better contrast */}
-            <h1 className="text-4xl md:text-5xl font-bold leading-tight text-white">
+      <div className="relative w-full  max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-0.5">
+          <div className="space-y-8">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight text-white">
               Welcome to the IIT Kharagpur Community
             </h1>
-            <h1 className="text-4xl md:text-3xl font-bold leading-tight text-white">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight text-white">
               Connect. Collaborate.
             </h1>
-            <p className="text-lg text-gray-300 leading-relaxed">
+            <p className="text-base sm:text-lg text-gray-300 leading-relaxed">
               Join thousands of IIT Kharagpur alumni worldwide. Network with
               fellow graduates, mentor the next generation, and unlock
               opportunities that shape the future.
@@ -280,39 +280,50 @@ const HeroSection = () => {
               <Button variant="hero" size="lg" asChild>
                 <Link to="/register">Join the Network</Link>
               </Button>
-              <Button variant="outline-blue" size="lg" asChild>
+              <Button
+                className="text-white border-white"
+                variant="outline"
+                size="lg"
+                asChild
+              >
                 <Link to="/directory">Explore Directory</Link>
               </Button>
             </div>
-            <div className="flex items-center gap-8 pt-4">
+            <div className="flex flex-col sm:flex-row items-left px-6 gap-8 pt-4">
               <div>
                 <div
                   ref={membersRef}
-                  className="text-3xl font-bold text-gray-300"
+                  className="text-2xl sm:text-3xl font-bold text-gray-300"
                 >
                   50,000+
                 </div>
-                <div className="text-sm text-gray-400">Alumni Members</div>
+                <div className="text-xs sm:text-sm text-gray-400">
+                  Alumni Members
+                </div>
               </div>
-              <div className="h-12 w-px bg-border"></div>
+              <div className="hidden sm:block h-12 w-px bg-border"></div>
               <div>
                 <div
                   ref={countriesRef}
-                  className="text-3xl font-bold text-gray-300"
+                  className="text-2xl sm:text-3xl font-bold text-gray-300"
                 >
                   150+
                 </div>
-                <div className="text-sm text-gray-400">Countries</div>
+                <div className="text-xs sm:text-sm text-gray-400">
+                  Countries
+                </div>
               </div>
-              <div className="h-12 w-px bg-border"></div>
+              <div className="hidden sm:block h-12 w-px bg-border"></div>
               <div>
                 <div
                   ref={companiesRef}
-                  className="text-3xl font-bold text-gray-300"
+                  className="text-2xl sm:text-3xl font-bold text-gray-300"
                 >
                   2000+
                 </div>
-                <div className="text-sm text-gray-400">Companies</div>
+                <div className="text-xs sm:text-sm text-gray-400">
+                  Companies
+                </div>
               </div>
             </div>
           </div>
@@ -327,7 +338,7 @@ const ImpactSection = () => {
   const trendUpRef = useRef(null);
   const globeRef = useRef(null);
   const awardRef = useRef(null);
-  const contributionsRef = useRef(null);
+  const endowmentRef = useRef(null);
 
   const stats = [
     {
@@ -355,8 +366,8 @@ const ImpactSection = () => {
       icon: Heart,
       value: "₹50Cr+",
       label: "Giving Back",
-      description: "Contributions to alma mater",
-      ref: contributionsRef,
+      description: "Endowment to alma mater",
+      ref: endowmentRef,
     },
   ];
 
@@ -403,8 +414,8 @@ const ImpactSection = () => {
       }
     }
 
-    if (contributionsRef.current) {
-      const membersCountUp = new CountUp(contributionsRef.current, 50, {
+    if (endowmentRef.current) {
+      const membersCountUp = new CountUp(endowmentRef.current, 50, {
         duration: 3,
         prefix: "₹",
         suffix: "Cr+",
@@ -422,31 +433,33 @@ const ImpactSection = () => {
   return (
     <section className="py-20 bg-[#F0F7FF] from-primary/5 via-secondary/20 to-accent/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">
+        <div className="text-center mb-10 sm:mb-16">
+          <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4">
             Making a Difference Together
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
             Our alumni network creates lasting impact through collaboration,
             mentorship, and giving back
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           {stats.map((stat, index) => (
             <div
               key={index}
               className="text-center p-6 rounded-xl bg-card border border-border hover:border-primary/50 transition-colors"
             >
-              <stat.icon className="h-10 w-10 text-primary mx-auto mb-4" />
+              <stat.icon className="h-8 w-8 sm:h-10 sm:w-10 text-primary mx-auto mb-4" />
               <div
                 ref={stat.ref}
-                className="text-4xl font-bold text-primary mb-2"
+                className="text-2xl sm:text-4xl font-bold text-primary mb-2"
               >
                 {stat.value}
               </div>
-              <div className="text-lg font-semibold mb-1">{stat.label}</div>
-              <p className="text-sm text-muted-foreground">
+              <div className="text-base sm:text-lg font-semibold mb-1">
+                {stat.label}
+              </div>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 {stat.description}
               </p>
             </div>
@@ -462,10 +475,10 @@ const CTASection = () => {
     <section className="py-20 bg-[#F0F7FF] bg-gradient-to-r from-primary via-primary to-accent relative overflow-hidden">
       <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-        <h2 className="text-3xl md:text-5xl font-bold text-primary-foreground mb-6">
+        <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-primary-foreground mb-6">
           Ready to Reconnect with Your Alma Mater?
         </h2>
-        <p className="text-lg text-primary-foreground/90 mb-8 max-w-2xl mx-auto">
+        <p className="text-base sm:text-lg text-primary-foreground/90 mb-8 max-w-2xl mx-auto">
           Join AlumnIIT today and become part of a thriving global community of
           IIT Kharagpur graduates making waves across industries.
         </p>
@@ -476,7 +489,7 @@ const CTASection = () => {
             asChild
             className="text-primary font-semibold"
           >
-            <Link to="/register">Create Your Profile</Link>
+            <Link to="/login">Create Your Profile</Link>
           </Button>
           <Button
             size="lg"
@@ -496,7 +509,7 @@ const Footer = () => {
   return (
     <footer className="bg-black text-gray-400 border-t border-gray-800 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Column 1: Brand Info */}
           <div>
             <Link

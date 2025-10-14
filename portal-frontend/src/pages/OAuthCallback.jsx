@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -8,10 +8,18 @@ function OAuthCallback() {
   const { login } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const hasProcessed = useRef(false);
 
   useEffect(() => {
+    // Prevent duplicate requests (React Strict Mode runs effects twice in dev)
+    if (hasProcessed.current) {
+      return;
+    }
+
     const processOAuthCallback = async () => {
       try {
+        // Mark as processed immediately to prevent race conditions
+        hasProcessed.current = true;
         setLoading(true);
         
         // Get the authorization code from URL
@@ -30,121 +38,45 @@ function OAuthCallback() {
           return;
         }
 
-        // Exchange the code for access token and get user info from Google
-        let googleProfile = null;
-        try {
-          
-          const clientId = import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID || '';
-          const clientSecret = import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_SECRET || '';
-          const redirectUri = import.meta.env.VITE_GOOGLE_OAUTH_REDIRECT_URI || 'http://localhost:5173/callback';
-          
-          // Step 1: Exchange code for access token
-          const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({
-              code: code,
-              client_id: clientId,
-              client_secret: clientSecret,
-              redirect_uri: redirectUri,
-              grant_type: 'authorization_code'
-            })
-          });
-          
-          const tokenData = await tokenResponse.json();
-          
-          if (tokenData.access_token) {
-            // Step 2: Get user info from Google
-            const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-              headers: {
-                'Authorization': `Bearer ${tokenData.access_token}`
-              }
-            });
-            
-            googleProfile = await userInfoResponse.json();
-          }
-        } catch (error) {
-          console.error('Error getting Google user info:', error);
-        }
+        // Use backend to securely exchange code for tokens and get user info
+        const redirectUri = import.meta.env.VITE_GOOGLE_OAUTH_REDIRECT_URI || 'http://localhost:5173/callback';
         
-        // Check if user exists in backend
-        let userExists = false;
-        let userData = null;
-        let isActive = false;
-        
-        if (googleProfile && googleProfile.email) {
-          try {
-            const checkUserResponse = await fetch(`http://localhost:8000/api/auth/check-user/?email=${encodeURIComponent(googleProfile.email)}`);
-            
-            if (checkUserResponse.ok) {
-              const checkUserData = await checkUserResponse.json();
-              userExists = checkUserData.exists || false;
-              isActive = checkUserData.is_active || false;
-              userData = checkUserData.user || null;
-            } else if (checkUserResponse.status === 404) {
-              // Backend endpoint not available, treat as new user
-              userExists = false;
-            }
-          } catch (error) {
-            console.error('Error checking user:', error);
-            // On error, assume new user
-            userExists = false;
-          }
-        }
-        
-        // Create auth result with actual Google data
-        const authResult = {
-          user_exists: userExists,
-          google_profile: googleProfile || {
-            email: 'test@example.com',
-            name: 'Test User',
-            given_name: 'Test',
-            family_name: 'User'
+        console.log('Making OAuth request to backend...');
+        const oauthResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'}/auth/google/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
           },
-          user: userData,
-          is_active: isActive
-        };
+          body: JSON.stringify({
+            code: code,
+            redirect_uri: redirectUri
+          })
+        });
+
+        if (!oauthResponse.ok) {
+          const errorData = await oauthResponse.json();
+          console.error('OAuth backend error:', errorData);
+          setError(errorData.error || 'Authentication failed');
+          setLoading(false);
+          return;
+        }
+
+        const authResult = await oauthResponse.json();
+        console.log('OAuth response received:', { 
+          user_exists: authResult.user_exists, 
+          status: authResult.status,
+          has_tokens: !!(authResult.access && authResult.refresh)
+        });
         
-        // Handle the auth result
-        if (authResult.user_exists && authResult.is_active) {
-          // User exists and is active - login directly via backend OAuth
-          try {
-            // Call backend Google login endpoint to get tokens
-            const oauthResponse = await fetch('http://localhost:8000/api/auth/google-login/', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                email: googleProfile.email
-              })
-            });
-            
-            if (oauthResponse.ok) {
-              const oauthData = await oauthResponse.json();
-              
-              if (oauthData.access && oauthData.refresh) {
-                login(oauthData.access, oauthData.refresh);
-                navigate('/dashboard');
-                return;
-              }
-            }
-          } catch (error) {
-            console.error('Error getting OAuth tokens:', error);
-          }
-          
-          // Fallback: if OAuth backend fails, redirect to login
-          navigate('/login', {
-            state: {
-              message: 'Please login with your email and password.',
-              email: authResult.google_profile.email
-            }
-          });
-        } else if (authResult.user_exists && !authResult.is_active) {
-          // User exists but not active - go to register with pre-filled data
+        // Handle the auth result based on user status
+        if (authResult.user_exists && authResult.access && authResult.refresh) {
+          // User exists and is VERIFIED - login with provided tokens
+          login(authResult.access, authResult.refresh);
+          navigate('/dashboard', { replace: true });
+        } else if (authResult.user_exists && authResult.status === 'PENDING') {
+          // User exists but PENDING - go to register/activate with pre-filled data
           navigate('/register', { 
+            replace: true,
             state: { 
               oauthData: {
                 ...authResult.google_profile,
@@ -153,14 +85,22 @@ function OAuthCallback() {
               isExistingUser: true 
             } 
           });
-        } else {
-          // User doesn't exist - go to register with email only
+        } else if (authResult.user_exists && authResult.status === 'REJECTED') {
+          // User was rejected
+          setError('Your account registration was rejected. Please contact support.');
+          setLoading(false);
+        } else if (authResult.google_profile) {
+          // User doesn't exist - go to register
           navigate('/register', { 
+            replace: true,
             state: { 
               oauthData: authResult.google_profile,
               isExistingUser: false 
             } 
           });
+        } else {
+          setError('Invalid response from authentication server');
+          setLoading(false);
         }
       } catch (error) {
         console.error('OAuth callback error:', error);

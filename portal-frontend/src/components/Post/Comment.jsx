@@ -3,11 +3,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const Comment = ({ authorName, authorId, text, time }) => {
+const Comment = ({ authorName, authorAvatar, authorId, text, time }) => {
   return (
     <div className="flex items-start space-x-3 py-3 border-b last:border-0">
       <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
-        {authorName?.charAt(0).toUpperCase() || "U"}
+        {authorAvatar ? (
+          <img src={authorAvatar} alt={authorName} className="w-full h-full rounded-full" />
+        ) : (
+          authorName?.charAt(0).toUpperCase() || "U"
+        )}
       </div>
       <div className="flex-1">
         <div className="flex items-center space-x-2">

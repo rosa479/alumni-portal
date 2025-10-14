@@ -82,6 +82,7 @@ class AlumniProfile(models.Model):
     full_name = models.CharField(max_length=255)
     graduation_year = models.PositiveIntegerField()
     department = models.CharField(max_length=100)
+    mobile_number = models.CharField(max_length=15, blank=True, help_text="Mobile number with country code")
     profile_picture_url = models.URLField(max_length=500, null=True, blank=True, default='https://i.ibb.co/FbQ7wC2Q/random-pfp.jpg')
     about_me = models.TextField(blank=True)
     credit_score = models.IntegerField(default=0)
@@ -216,8 +217,8 @@ class Scholarship(models.Model):
 
 class ScholarshipContribution(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    scholarship = models.ForeignKey(Scholarship, on_delete=models.CASCADE, related_name='contributions')
-    contributor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='scholarship_contributions')
+    scholarship = models.ForeignKey(Scholarship, on_delete=models.CASCADE, related_name='endowment')
+    contributor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='scholarship_endowment')
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     is_anonymous = models.BooleanField(default=False)
     message = models.TextField(blank=True, null=True)
@@ -227,9 +228,67 @@ class ScholarshipContribution(models.Model):
         super().save(*args, **kwargs)
         # Update scholarship current amount
         self.scholarship.current_amount = sum(
-            contribution.amount for contribution in self.scholarship.contributions.all()
+            contribution.amount for contribution in self.scholarship.endowment.all()
         )
         self.scholarship.save()
 
     def __str__(self):
         return f'{self.contributor.email} contributed ₹{self.amount} to {self.scholarship.title}'
+
+class WorkExperience(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='work_experiences')
+    company_name = models.CharField(max_length=200)
+    position = models.CharField(max_length=200)
+    location = models.CharField(max_length=200, blank=True)
+    start_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)  # null means current job
+    description = models.TextField(blank=True)
+    is_current = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-start_date']
+
+    def __str__(self):
+        return f"{self.position} at {self.company_name}"
+
+
+class Education(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='education_history')
+    institution_name = models.CharField(max_length=200)
+    degree = models.CharField(max_length=200)
+    field_of_study = models.CharField(max_length=200, blank=True)
+    start_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)
+    grade = models.CharField(max_length=50, blank=True)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-start_date']
+
+    def __str__(self):
+        return f"{self.degree} from {self.institution_name}"
+
+
+class Skill(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='skills')
+    name = models.CharField(max_length=100)
+    level = models.CharField(max_length=20, choices=[
+        ('BEGINNER', 'Beginner'),
+        ('INTERMEDIATE', 'Intermediate'),
+        ('ADVANCED', 'Advanced'),
+        ('EXPERT', 'Expert'),
+    ], default='INTERMEDIATE')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ['user', 'name']
+
+    def __str__(self):
+        return f"{self.name} ({self.level})"

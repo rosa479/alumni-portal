@@ -9,8 +9,27 @@ from django.core.files.base import ContentFile
 from test_app.storage import MediaStorage
 import uuid
 import os
-from .serializers import RegisterSerializer, UserSerializer, UserProfileSerializer, CommunitySerializer, CommunityDetailSerializer, PostSerializer, ScholarshipSerializer, ScholarshipListSerializer, ScholarshipContributionSerializer, TagSerializer, UserTagSerializer, PostLikeSerializer, PostCommentSerializer
-from .models import User, Community, Post, Scholarship, ScholarshipContribution, Tag, UserTag, PostLike, PostComment
+import requests
+from .serializers import (
+    RegisterSerializer, 
+    UserSerializer, 
+    UserProfileSerializer, 
+    CommunitySerializer, 
+    CommunityDetailSerializer, 
+    PostSerializer, 
+    ScholarshipSerializer, 
+    ScholarshipListSerializer, 
+    ScholarshipContributionSerializer, 
+    TagSerializer, 
+    UserTagSerializer, 
+    PostLikeSerializer, 
+    PostCommentSerializer,
+    AlumniProfileSerializer,  # Add this
+    WorkExperienceSerializer,  # Add this
+    EducationSerializer,  # Add this
+    SkillSerializer  # Add this
+)
+from .models import User, Community, Post, Scholarship, ScholarshipContribution, Tag, UserTag, PostLike, PostComment, WorkExperience, Education, Skill  # Add the new models
 from .permissions import IsAdminUser
 
 class RegisterView(generics.CreateAPIView):
@@ -267,7 +286,7 @@ class ScholarshipListView(generics.ListCreateAPIView):
         
         # Calculate totals
         total_raised = sum(float(scholarship.current_amount) for scholarship in queryset)
-        total_contributors = sum(scholarship.contributions.count() for scholarship in queryset)
+        total_contributors = sum(scholarship.endowment.count() for scholarship in queryset)
         
         return Response({
             'results': serializer.data,
@@ -290,7 +309,7 @@ class ScholarshipDetailView(generics.RetrieveUpdateDestroyAPIView):
 class ScholarshipContributionCreateView(generics.CreateAPIView):
     """
     Create a contribution to a scholarship.
-    Corresponds to: POST /api/scholarships/{scholarship_id}/contributions/
+    Corresponds to: POST /api/scholarships/{scholarship_id}/endowment/
     """
     serializer_class = ScholarshipContributionSerializer
     permission_classes = [IsAuthenticated]
@@ -301,10 +320,10 @@ class ScholarshipContributionCreateView(generics.CreateAPIView):
         serializer.save(scholarship=scholarship)
 
 
-class ScholarshipContributionsListView(generics.ListAPIView):
+class ScholarshipEndowmentListView(generics.ListAPIView):
     """
-    List all contributions for a specific scholarship.
-    Corresponds to: GET /api/scholarships/{scholarship_id}/contributions/
+    List all endowment for a specific scholarship.
+    Corresponds to: GET /api/scholarships/{scholarship_id}/endowment/
     """
     serializer_class = ScholarshipContributionSerializer
     permission_classes = [IsAuthenticated]
@@ -522,13 +541,22 @@ class GoogleOAuthView(APIView):
             }
             
             token_response = requests.post(token_url, data=token_data)
-            token_response.raise_for_status()
+            
+            # Handle Google OAuth errors (e.g., invalid or expired code)
+            if not token_response.ok:
+                error_data = token_response.json()
+                error_msg = error_data.get('error_description', error_data.get('error', 'OAuth token exchange failed'))
+                return Response({'error': error_msg}, status=status.HTTP_400_BAD_REQUEST)
+            
             token_info = token_response.json()
             
             # Get user info from Google
             user_info_url = f"https://www.googleapis.com/oauth2/v2/userinfo?access_token={token_info['access_token']}"
             user_response = requests.get(user_info_url)
-            user_response.raise_for_status()
+            
+            if not user_response.ok:
+                return Response({'error': 'Failed to get user info from Google'}, status=status.HTTP_400_BAD_REQUEST)
+            
             google_profile = user_response.json()
             
             email = google_profile.get('email')
@@ -538,8 +566,8 @@ class GoogleOAuthView(APIView):
             # Check if user exists
             try:
                 user = User.objects.get(email=email)
-                if user.is_active:
-                    # User exists and is active - generate tokens
+                if user.status == User.Status.VERIFIED:
+                    # User exists and is verified - generate tokens
                     from rest_framework_simplejwt.tokens import RefreshToken
                     refresh = RefreshToken.for_user(user)
                     access = refresh.access_token
@@ -551,9 +579,10 @@ class GoogleOAuthView(APIView):
                         'refresh': str(refresh)
                     })
                 else:
-                    # User exists but not active
+                    # User exists but not verified (PENDING or REJECTED)
                     return Response({
                         'user_exists': True,
+                        'status': user.status,
                         'user': UserSerializer(user).data,
                         'google_profile': google_profile
                     })
@@ -564,8 +593,14 @@ class GoogleOAuthView(APIView):
                     'google_profile': google_profile
                 })
                 
+        except requests.RequestException as e:
+            # Network or request-related errors
+            return Response({'error': f'OAuth request failed: {str(e)}'}, status=status.HTTP_502_BAD_GATEWAY)
         except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            # Other unexpected errors
+            import traceback
+            traceback.print_exc()
+            return Response({'error': 'An unexpected error occurred during authentication'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class CheckUserView(APIView):
@@ -583,7 +618,8 @@ class CheckUserView(APIView):
             user = User.objects.get(email=email)
             return Response({
                 'exists': True,
-                'is_active': user.is_active,
+                'status': user.status,
+                'is_verified': user.status == User.Status.VERIFIED,
                 'user': UserSerializer(user).data
             })
         except User.DoesNotExist:
@@ -599,26 +635,55 @@ class ActivateUserView(APIView):
     def post(self, request):
         try:
             email = request.data.get('email')
+            password = request.data.get('password')
+            
             if not email:
                 return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
             
+            if not password:
+                return Response({'error': 'Password is required'}, status=status.HTTP_400_BAD_REQUEST)
+            
             user = User.objects.get(email=email)
             
-            # Update user data
-            user.full_name = request.data.get('full_name', user.full_name)
+            # Update user basic data
             user.roll_number = request.data.get('roll_number', user.roll_number)
-            user.graduation_year = request.data.get('graduation_year', user.graduation_year)
-            user.department = request.data.get('department', user.department)
+            
+            # Set password (hashed)
+            user.set_password(password)
+            
+            # Mark as verified and active
+            user.status = User.Status.VERIFIED
             user.is_active = True
             user.save()
             
-            # Update alumni profile if exists
+            # Get profile data
+            full_name = request.data.get('full_name')
+            graduation_year = request.data.get('graduation_year')
+            department = request.data.get('department')
+            mobile_number = request.data.get('mobile_number', '')
+            
+            # Update or create alumni profile
+            from test_app.models import AlumniProfile
             if hasattr(user, 'alumni_profile'):
                 profile = user.alumni_profile
-                profile.full_name = request.data.get('full_name', profile.full_name)
-                profile.graduation_year = request.data.get('graduation_year', profile.graduation_year)
-                profile.department = request.data.get('department', profile.department)
+                if full_name:
+                    profile.full_name = full_name
+                if graduation_year:
+                    profile.graduation_year = graduation_year
+                if department:
+                    profile.department = department
+                if mobile_number:
+                    profile.mobile_number = mobile_number
                 profile.save()
+            else:
+                # Create profile if it doesn't exist
+                AlumniProfile.objects.create(
+                    user=user,
+                    full_name=full_name or '',
+                    graduation_year=graduation_year or 2020,
+                    department=department or '',
+                    mobile_number=mobile_number
+                )
             
             # Generate tokens
             from rest_framework_simplejwt.tokens import RefreshToken
@@ -634,6 +699,8 @@ class ActivateUserView(APIView):
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -649,11 +716,11 @@ class GoogleOAuthLoginView(APIView):
             if not email:
                 return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
             
-            # Check if user exists and is active
+            # Check if user exists and is verified
             try:
-                user = User.objects.get(email=email, is_active=True)
+                user = User.objects.get(email=email, status=User.Status.VERIFIED)
             except User.DoesNotExist:
-                return Response({'error': 'User not found or not active'}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'error': 'User not found or not verified'}, status=status.HTTP_404_NOT_FOUND)
             
             # Generate tokens
             from rest_framework_simplejwt.tokens import RefreshToken
@@ -678,3 +745,356 @@ class PostDetailView(generics.RetrieveAPIView):
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'id'
+
+
+class UserRecommendationsView(generics.ListAPIView):
+    """
+    Get recommended users based on similarity to the current user.
+    Corresponds to: GET /api/profiles/recommendations/
+    """
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        """
+        Returns top 6 recommended users based on similarity algorithm.
+        """
+        current_user = self.request.user
+        
+        # Get current user's profile information
+        try:
+            user_profile = current_user.alumni_profile
+            user_graduation_year = user_profile.graduation_year
+            user_department = user_profile.department
+        except:
+            # If user doesn't have a profile, return random verified users
+            return User.objects.filter(
+                status=User.Status.VERIFIED
+            ).exclude(id=current_user.id).order_by('?')[:6]
+        
+        # Get all verified users except current user
+        potential_users = User.objects.filter(
+            status=User.Status.VERIFIED
+        ).exclude(id=current_user.id).select_related('alumni_profile')
+        
+        # Calculate similarity scores for each user
+        users_with_scores = []
+        
+        for user in potential_users:
+            similarity_score = self._calculate_user_similarity(
+                current_user, user, user_graduation_year, user_department
+            )
+            
+            # Only include users with some similarity (score > 0)
+            if similarity_score > 0:
+                users_with_scores.append((user, similarity_score))
+        
+        # Sort by similarity score (highest first)
+        users_with_scores.sort(key=lambda x: x[1], reverse=True)
+        
+        # Return top 6 recommendations
+        recommended_users = [user for user, score in users_with_scores[:6]]
+        
+        # If we don't have enough similar users, fill with random users
+        if len(recommended_users) < 6:
+            remaining_count = 6 - len(recommended_users)
+            excluded_ids = [user.id for user in recommended_users] + [current_user.id]
+            
+            additional_users = User.objects.filter(
+                status=User.Status.VERIFIED
+            ).exclude(id__in=excluded_ids).order_by('?')[:remaining_count]
+            
+            recommended_users.extend(additional_users)
+        
+        return recommended_users[:6]  # Ensure we never return more than 6
+    
+    def _calculate_user_similarity(self, current_user, target_user, user_graduation_year, user_department):
+        """
+        Calculate similarity score between current user and target user.
+        Higher score means more similar users.
+        
+        Scoring system:
+        - Same department: 100 points
+        - Same graduation year: 80 points
+        - 1 year difference: 60 points
+        - 2 years difference: 40 points
+        - 3-5 years difference: 20 points
+        - Same department + close year bonus: +30 points
+        - Same role: +20 points
+        - Recently active: +10 points
+        """
+        try:
+            target_profile = target_user.alumni_profile
+            target_graduation_year = target_profile.graduation_year
+            target_department = target_profile.department
+        except:
+            return 0  # No profile means no similarity
+        
+        similarity_score = 0
+        
+        # Department similarity (highest weight - 100 points)
+        if user_department.lower() == target_department.lower():
+            similarity_score += 100
+        
+        # Graduation year proximity (80 points max)
+        year_difference = abs(user_graduation_year - target_graduation_year)
+        if year_difference == 0:
+            similarity_score += 80  # Same year
+        elif year_difference == 1:
+            similarity_score += 60  # 1 year difference
+        elif year_difference == 2:
+            similarity_score += 40  # 2 years difference
+        elif year_difference <= 5:
+            similarity_score += 20  # Within 5 years
+        
+        # Bonus for same department AND close graduation year
+        if (user_department.lower() == target_department.lower() and year_difference <= 2):
+            similarity_score += 30  # Strong similarity bonus
+        
+        # Role similarity (20 points)
+        if current_user.role == target_user.role:
+            similarity_score += 20
+        
+        # Recent activity bonus (10 points)
+        from django.utils import timezone
+        from datetime import timedelta
+        
+        # Check if user has been active recently (posted or commented in last 30 days)
+        recent_date = timezone.now() - timedelta(days=30)
+        has_recent_activity = (
+            target_user.posts.filter(created_at__gte=recent_date).exists() or
+            target_user.post_comments.filter(created_at__gte=recent_date).exists()
+        )
+        
+        if has_recent_activity:
+            similarity_score += 10
+        
+        # Credit score proximity bonus (5 points max)
+        try:
+            current_credit = current_user.alumni_profile.credit_score
+            target_credit = target_profile.credit_score
+            credit_difference = abs(current_credit - target_credit)
+            
+            if credit_difference <= 50:
+                similarity_score += 5
+        except:
+            pass  # Ignore if credit scores not available
+        
+        return similarity_score
+    
+    def list(self, request, *args, **kwargs):
+        """Override list to add recommendation reasons"""
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        
+        # Add recommendation reasons for each user
+        current_user = request.user
+        try:
+            user_profile = current_user.alumni_profile
+            user_graduation_year = user_profile.graduation_year
+            user_department = user_profile.department
+        except:
+            user_graduation_year = None
+            user_department = None
+        
+        enhanced_data = []
+        for i, user_data in enumerate(serializer.data):
+            user = queryset[i]
+            
+            # Generate recommendation reason
+            reason = self._get_recommendation_reason(
+                current_user, user, user_graduation_year, user_department
+            )
+            
+            enhanced_data.append({
+                **user_data,
+                'recommendation_reason': reason
+            })
+        
+        return Response({
+            'results': enhanced_data,
+            'total_recommendations': len(enhanced_data)
+        })
+    
+    def _get_recommendation_reason(self, current_user, target_user, user_graduation_year, user_department):
+        """Generate a human-readable reason for the recommendation"""
+        try:
+            target_profile = target_user.alumni_profile
+            target_graduation_year = target_profile.graduation_year
+            target_department = target_profile.department
+        except:
+            return "Fellow alumni"
+        
+        reasons = []
+        
+        # Check department match
+        if user_department and user_department.lower() == target_department.lower():
+            reasons.append(f"Same department ({user_department})")
+        
+        # Check graduation year
+        if user_graduation_year:
+            year_difference = abs(user_graduation_year - target_graduation_year)
+            if year_difference == 0:
+                reasons.append(f"Same batch ({user_graduation_year})")
+            elif year_difference == 1:
+                reasons.append("Close batch mate")
+            elif year_difference <= 3:
+                reasons.append("Recent batch mate")
+        
+        # Check role
+        if current_user.role == target_user.role:
+            role_display = dict(current_user.Role.choices).get(current_user.role, current_user.role)
+            reasons.append(f"Fellow {role_display.lower()}")
+        
+        # Check recent activity
+        from django.utils import timezone
+        from datetime import timedelta
+        recent_date = timezone.now() - timedelta(days=30)
+        has_recent_activity = (
+            target_user.posts.filter(created_at__gte=recent_date).exists() or
+            target_user.post_comments.filter(created_at__gte=recent_date).exists()
+        )
+        
+        if has_recent_activity:
+            reasons.append("Recently active")
+        
+        # Return the most relevant reason or default
+        if reasons:
+            return " • ".join(reasons[:2])  # Show max 2 reasons
+        else:
+            return "Fellow alumni"
+
+# Add these new views
+
+class UserProfileUpdateView(generics.UpdateAPIView):
+    """
+    Update user profile information.
+    Corresponds to: PUT /api/profiles/me/update/
+    """
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self):
+        return self.request.user
+    
+    def update(self, request, *args, **kwargs):
+        user = self.get_object()
+        
+        # Update user fields
+        user_data = {}
+        if 'roll_number' in request.data:
+            user_data['roll_number'] = request.data['roll_number']
+        if 'credit_points' in request.data:
+            user_data['credit_points'] = request.data['credit_points']
+        
+        # Update user if there's data
+        if user_data:
+            user_serializer = UserSerializer(user, data=user_data, partial=True)
+            if user_serializer.is_valid():
+                user_serializer.save()
+        
+        # Update alumni profile
+        if hasattr(user, 'alumni_profile'):
+            profile = user.alumni_profile
+            profile_data = {}
+            
+            if 'full_name' in request.data:
+                profile_data['full_name'] = request.data['full_name']
+            if 'graduation_year' in request.data:
+                profile_data['graduation_year'] = request.data['graduation_year']
+            if 'department' in request.data:
+                profile_data['department'] = request.data['department']
+            if 'profile_picture_url' in request.data:
+                profile_data['profile_picture_url'] = request.data['profile_picture_url']
+            if 'about_me' in request.data:
+                profile_data['about_me'] = request.data['about_me']
+            
+            if profile_data:
+                profile_serializer = AlumniProfileSerializer(profile, data=profile_data, partial=True)
+                if profile_serializer.is_valid():
+                    profile_serializer.save()
+        
+        # Return updated user data
+        updated_user = User.objects.get(id=user.id)
+        return Response(UserProfileSerializer(updated_user).data)
+
+
+class WorkExperienceListCreateView(generics.ListCreateAPIView):
+    """
+    List and create work experiences for the authenticated user.
+    Corresponds to: GET/POST /api/work-experience/
+    """
+    serializer_class = WorkExperienceSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return WorkExperience.objects.filter(user=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class WorkExperienceDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update, or delete a work experience.
+    Corresponds to: GET/PUT/DELETE /api/work-experience/{id}/
+    """
+    serializer_class = WorkExperienceSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return WorkExperience.objects.filter(user=self.request.user)
+
+
+class EducationListCreateView(generics.ListCreateAPIView):
+    """
+    List and create education entries for the authenticated user.
+    Corresponds to: GET/POST /api/education/
+    """
+    serializer_class = EducationSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return Education.objects.filter(user=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class EducationDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update, or delete an education entry.
+    Corresponds to: GET/PUT/DELETE /api/education/{id}/
+    """
+    serializer_class = EducationSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return Education.objects.filter(user=self.request.user)
+
+
+class SkillListCreateView(generics.ListCreateAPIView):
+    """
+    List and create skills for the authenticated user.
+    Corresponds to: GET/POST /api/skills/
+    """
+    serializer_class = SkillSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return Skill.objects.filter(user=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class SkillDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update, or delete a skill.
+    Corresponds to: GET/PUT/DELETE /api/skills/{id}/
+    """
+    serializer_class = SkillSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return Skill.objects.filter(user=self.request.user)

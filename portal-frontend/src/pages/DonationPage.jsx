@@ -37,7 +37,7 @@ function DonationPage() {
             <h1 className="text-4xl font-bold text-[#0077B5] mb-4">Indian Institute of Technology Kharagpur</h1>
           </div>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Support the growth and development of your alma mater. Your contributions help IIT Kharagpur
+            Support the growth and development of your alma mater. Your endowment help IIT Kharagpur
             maintain its excellence in education, research, and innovation.
           </p>
         </div>
