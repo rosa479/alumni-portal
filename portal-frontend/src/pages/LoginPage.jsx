@@ -60,7 +60,7 @@ function LoginPage() {
     setIsLoading(true);
     try {
       const response = await apiClient.get(`/auth/check-user/?email=${encodeURIComponent(email)}`);
-      if (response.data.exists) {
+      if (response.data.exists && response.data.status=="VERIFIED") {
         setStep("password");
       } else {
         navigate("/register", { 
@@ -144,8 +144,8 @@ function LoginPage() {
         <Star size={60} className="text-[#0077B5] opacity-10" />
       </div> */}
 
-      <div className="flex flex-col items-start justify-center md:w-1/2 px-8 md:px-16 lg:px-24 relative z-10">
-        <div className="animate-fade-in-up max-w-md">
+      <div className="flex flex-col items-start  justify-center md:w-1/2 px-8 md:px-16 lg:px-24 relative z-10">
+        <div className="animate-fade-in-up max-w-md ">
           <div className="relative">
             <div className="absolute -left-12 -top-8 animate-float">
               <Handshake size={32} className="text-[#0077B5] rotate-[-15deg]" />
@@ -160,17 +160,17 @@ function LoginPage() {
               <Sparkles size={20} className="text-[#0077B5] rotate-[15deg]" />
             </div>
 
-            <h1 className="text-5xl md:text-6xl font-bold mb-4 text-[#0077B5]">
+            <h1 className="hidden sm:block text-5xl md:text-6xl font-bold mb-4 text-[#0077B5]">
               AlumnIIT
             </h1>
           </div>
-          <p className="text-lg md:text-xl text-gray-600 font-bold">
+          <p className="hidden sm:flex justify-center items-center text-lg md:text-xl text-gray-600 font-bold">
             Connecting the Past, Empowering the Future. AlumnIIT connects IIT Kharagpur alumni, helping you reconnect, explore mentorship, and stay updated on events and achievements. Bridge generations, seek guidance, and give back to the KGP community.
           </p>
         </div>
       </div>
 
-      <div className="flex items-center justify-center md:w-1/2 px-4 py-12 md:py-0 relative z-10">
+      <div className="flex items-center justify-center w-full md:w-1/2 min-h-screen px-4 py-12 md:py-0 relative z-10">
         <div className="w-full max-w-md p-10 bg-white rounded-2xl border border-[#E3EAF3] shadow-lg text-center space-y-8">
           <div>
             <h2 className="text-3xl font-bold text-[#0077B5] mb-2">Welcome Back!</h2>

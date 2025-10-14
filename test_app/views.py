@@ -541,13 +541,22 @@ class GoogleOAuthView(APIView):
             }
             
             token_response = requests.post(token_url, data=token_data)
-            token_response.raise_for_status()
+            
+            # Handle Google OAuth errors (e.g., invalid or expired code)
+            if not token_response.ok:
+                error_data = token_response.json()
+                error_msg = error_data.get('error_description', error_data.get('error', 'OAuth token exchange failed'))
+                return Response({'error': error_msg}, status=status.HTTP_400_BAD_REQUEST)
+            
             token_info = token_response.json()
             
             # Get user info from Google
             user_info_url = f"https://www.googleapis.com/oauth2/v2/userinfo?access_token={token_info['access_token']}"
             user_response = requests.get(user_info_url)
-            user_response.raise_for_status()
+            
+            if not user_response.ok:
+                return Response({'error': 'Failed to get user info from Google'}, status=status.HTTP_400_BAD_REQUEST)
+            
             google_profile = user_response.json()
             
             email = google_profile.get('email')
@@ -557,8 +566,11 @@ class GoogleOAuthView(APIView):
             # Check if user exists
             try:
                 user = User.objects.get(email=email)
-                if user.is_active:
-                    # User exists and is active - generate tokens
+                if user.status == User.Status.VERIFIED:
+                    # User exists and is verified - update profile picture if needed
+                    self._update_profile_picture_from_google(user, google_profile)
+                    
+                    # Generate tokens
                     from rest_framework_simplejwt.tokens import RefreshToken
                     refresh = RefreshToken.for_user(user)
                     access = refresh.access_token
@@ -570,9 +582,10 @@ class GoogleOAuthView(APIView):
                         'refresh': str(refresh)
                     })
                 else:
-                    # User exists but not active
+                    # User exists but not verified (PENDING or REJECTED)
                     return Response({
                         'user_exists': True,
+                        'status': user.status,
                         'user': UserSerializer(user).data,
                         'google_profile': google_profile
                     })
@@ -583,8 +596,46 @@ class GoogleOAuthView(APIView):
                     'google_profile': google_profile
                 })
                 
+        except requests.RequestException as e:
+            # Network or request-related errors
+            return Response({'error': f'OAuth request failed: {str(e)}'}, status=status.HTTP_502_BAD_GATEWAY)
         except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            # Other unexpected errors
+            import traceback
+            traceback.print_exc()
+            return Response({'error': 'An unexpected error occurred during authentication'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    def _update_profile_picture_from_google(self, user, google_profile):
+        """
+        Update user's profile picture with Google profile picture if current picture is default/blank
+        """
+        try:
+            google_picture = google_profile.get('picture')
+            if not google_picture:
+                return
+            
+            # Check if user has an alumni profile
+            if hasattr(user, 'alumni_profile'):
+                profile = user.alumni_profile
+                current_picture = profile.profile_picture_url
+                
+                # Update if current picture is default/blank or from gravatar
+                should_update = (
+                    not current_picture or 
+                    current_picture == 'https://i.ibb.co/FbQ7wC2Q/random-pfp.jpg' or
+                    'gravatar.com' in current_picture or
+                    'pravatar.cc' in current_picture or
+                    'ui-avatars.com' in current_picture
+                )
+                
+                if should_update:
+                    profile.profile_picture_url = google_picture
+                    profile.save()
+                    print(f"Updated profile picture for {user.email} to Google picture")
+                    
+        except Exception as e:
+            print(f"Error updating profile picture: {str(e)}")
+            # Don't raise exception - this is not critical
 
 
 class CheckUserView(APIView):
@@ -602,7 +653,8 @@ class CheckUserView(APIView):
             user = User.objects.get(email=email)
             return Response({
                 'exists': True,
-                'is_active': user.is_active,
+                'status': user.status,
+                'is_verified': user.status == User.Status.VERIFIED,
                 'user': UserSerializer(user).data
             })
         except User.DoesNotExist:
@@ -618,26 +670,58 @@ class ActivateUserView(APIView):
     def post(self, request):
         try:
             email = request.data.get('email')
+            password = request.data.get('password')
+            
             if not email:
                 return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
             
+            if not password:
+                return Response({'error': 'Password is required'}, status=status.HTTP_400_BAD_REQUEST)
+            
             user = User.objects.get(email=email)
             
-            # Update user data
-            user.full_name = request.data.get('full_name', user.full_name)
+            # Update user basic data
             user.roll_number = request.data.get('roll_number', user.roll_number)
-            user.graduation_year = request.data.get('graduation_year', user.graduation_year)
-            user.department = request.data.get('department', user.department)
+            
+            # Set password (hashed)
+            user.set_password(password)
+            
+            # Mark as verified and active
+            user.status = User.Status.VERIFIED
             user.is_active = True
             user.save()
             
-            # Update alumni profile if exists
+            # Get profile data
+            full_name = request.data.get('full_name')
+            graduation_year = request.data.get('graduation_year')
+            department = request.data.get('department')
+            mobile_number = request.data.get('mobile_number', '')
+            
+            # Update or create alumni profile
+            from test_app.models import AlumniProfile
             if hasattr(user, 'alumni_profile'):
                 profile = user.alumni_profile
-                profile.full_name = request.data.get('full_name', profile.full_name)
-                profile.graduation_year = request.data.get('graduation_year', profile.graduation_year)
-                profile.department = request.data.get('department', profile.department)
+                if full_name:
+                    profile.full_name = full_name
+                if graduation_year:
+                    profile.graduation_year = graduation_year
+                if department:
+                    profile.department = department
+                if mobile_number:
+                    profile.mobile_number = mobile_number
                 profile.save()
+            else:
+                # Create profile if it doesn't exist
+                AlumniProfile.objects.create(
+                    user=user,
+                    full_name=full_name or '',
+                    graduation_year=graduation_year or 2020,
+                    department=department or '',
+                    mobile_number=mobile_number
+                )
+            
+            # Update profile picture from Google if available
+            self._update_profile_picture_from_oauth_data(user, request.data)
             
             # Generate tokens
             from rest_framework_simplejwt.tokens import RefreshToken
@@ -653,7 +737,42 @@ class ActivateUserView(APIView):
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    def _update_profile_picture_from_oauth_data(self, user, request_data):
+        """
+        Update user's profile picture with Google profile picture from OAuth data
+        """
+        try:
+            # Check if Google profile picture is available in the request data
+            google_picture = request_data.get('google_picture')
+            if not google_picture:
+                return
+            
+            # Check if user has an alumni profile
+            if hasattr(user, 'alumni_profile'):
+                profile = user.alumni_profile
+                current_picture = profile.profile_picture_url
+                
+                # Update if current picture is default/blank or from gravatar
+                should_update = (
+                    not current_picture or 
+                    current_picture == 'https://i.ibb.co/FbQ7wC2Q/random-pfp.jpg' or
+                    'gravatar.com' in current_picture or
+                    'pravatar.cc' in current_picture or
+                    'ui-avatars.com' in current_picture
+                )
+                
+                if should_update:
+                    profile.profile_picture_url = google_picture
+                    profile.save()
+                    print(f"Updated profile picture for {user.email} to Google picture during activation")
+                    
+        except Exception as e:
+            print(f"Error updating profile picture during activation: {str(e)}")
+            # Don't raise exception - this is not critical
 
 
 class GoogleOAuthLoginView(APIView):
@@ -668,11 +787,11 @@ class GoogleOAuthLoginView(APIView):
             if not email:
                 return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
             
-            # Check if user exists and is active
+            # Check if user exists and is verified
             try:
-                user = User.objects.get(email=email, is_active=True)
+                user = User.objects.get(email=email, status=User.Status.VERIFIED)
             except User.DoesNotExist:
-                return Response({'error': 'User not found or not active'}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'error': 'User not found or not verified'}, status=status.HTTP_404_NOT_FOUND)
             
             # Generate tokens
             from rest_framework_simplejwt.tokens import RefreshToken

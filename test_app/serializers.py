@@ -37,7 +37,7 @@ class AlumniProfileSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = AlumniProfile
-        fields = ['full_name', 'graduation_year', 'department', 'profile_picture_url', 
+        fields = ['full_name', 'graduation_year', 'department', 'mobile_number', 'profile_picture_url', 
                  'about_me', 'credit_score', 'work_experiences', 'education_history', 'skills']
         read_only_fields = ['credit_score'] # Users should not be able to edit their score directly
 
@@ -62,6 +62,8 @@ class RegisterSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(max_length=255, write_only=True)
     graduation_year = serializers.IntegerField(write_only=True)
     department = serializers.CharField(max_length=100, write_only=True)
+    mobile_number = serializers.CharField(max_length=15, write_only=True, required=False, allow_blank=True)
+    google_picture = serializers.URLField(write_only=True, required=False, allow_blank=True)
 
     # Make the password write-only to ensure it's not returned in the response
     password = serializers.CharField(min_length=8, write_only=True, required=True, style={'input_type': 'password'})
@@ -69,15 +71,21 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         # Fields required for creating a User instance
-        fields = ['email', 'roll_number', 'password', 'full_name', 'graduation_year', 'department']
+        fields = ['email', 'roll_number', 'password', 'full_name', 'graduation_year', 'department', 'mobile_number', 'google_picture']
 
     def create(self, validated_data):
         # Pop the profile data from the validated data before creating the user
         profile_data = {
             'full_name': validated_data.pop('full_name'),
             'graduation_year': validated_data.pop('graduation_year'),
-            'department': validated_data.pop('department')
+            'department': validated_data.pop('department'),
+            'mobile_number': validated_data.pop('mobile_number', '')
         }
+        
+        # Handle Google profile picture
+        google_picture = validated_data.pop('google_picture', None)
+        if google_picture:
+            profile_data['profile_picture_url'] = google_picture
 
         # Use a database transaction to ensure atomicity.
         try:
