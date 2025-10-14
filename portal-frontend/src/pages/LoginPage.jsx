@@ -62,6 +62,14 @@ function LoginPage() {
       const response = await apiClient.get(`/auth/check-user/?email=${encodeURIComponent(email)}`);
       if (response.data.exists && response.data.status=="VERIFIED") {
         setStep("password");
+      }else 
+      if (response.data.exists && response.data.status=="PENDING") {
+        navigate("/register", { 
+          state: { 
+            email: email,
+            isNewUser: false 
+          } 
+        });
       } else {
         navigate("/register", { 
           state: { 
