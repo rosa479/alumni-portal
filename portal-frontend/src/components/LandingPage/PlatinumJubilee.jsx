@@ -57,9 +57,9 @@ const PlatinumJubilee = () => {
           <motion.img
             src={floatingPngPlaceholder}
             alt="Floating Jubilee Icon"
-            className="absolute z-20 left-[5%] md:left-[5%] top-[25%] w-24 h-24 md:w-60 md:h-60 object-contain"
-            initial={{ opacity: 0, scale: 0.5, y: 50 }}
-            animate={{ opacity: 1, scale: 1, y: [50, -50, 50] }} // Example float animation
+            className="absolute z-20 left-[5%] md:left-[15%] top-[25%] w-24 h-24 md:w-70 md:h-70 object-contain"
+            initial={{ opacity: 0, scale: 0.5, x: -100 }}
+            animate={{ opacity: 1, scale: 1, x: [-100, 50, -50] }} // Example float animation
             transition={{ duration: 3, ease: "easeInOut" }}
           />
 
@@ -81,7 +81,7 @@ const PlatinumJubilee = () => {
             />
           </motion.div>
           <motion.div
-            className="absolute z-20 left-[20%] md:left-[30%] top-[70%] p-3 rounded-full bg-white shadow-lg cursor-pointer hover:scale-110 transition-transform duration-300"
+            className="absolute z-20 left-[20%] md:left-[35%] top-[70%] p-3 rounded-full bg-white shadow-lg cursor-pointer hover:scale-110 transition-transform duration-300"
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: [-50, 0, -50] }}
             transition={{
@@ -98,7 +98,7 @@ const PlatinumJubilee = () => {
           </motion.div>
 
           {/* Content for the Hero Section - placed on top of the arc and background */}
-          <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
+          <div className="relative z-10 max-w-4xl ml-[30%] flex flex-col items-center">
             <motion.h1
               className="text-4xl text-black md:text-6xl font-extrabold mb-4 pt-10" // Added padding-top to avoid clipping arc
               initial={{ opacity: 0, y: -20 }}
@@ -109,7 +109,7 @@ const PlatinumJubilee = () => {
             </motion.h1>
             <motion.div
               // Adjusted positioning to be to the right of the perceived arc
-              className="text-left text-base md:text-lg space-y-3 text-black p-6 rounded-lg w-full md:w-3/4 lg:w-2/3 ml-auto pr-0" // Removed bg-opacity, added ml-auto
+              className="text-left text-base md:text-lg space-y-3 text-black p-6 rounded-lg w-full md:w-3/4 lg:w-2/3 mx-auto pr-0" // Removed bg-opacity, added ml-auto
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6, duration: 0.8 }}
