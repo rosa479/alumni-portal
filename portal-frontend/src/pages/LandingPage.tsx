@@ -94,7 +94,7 @@ Card.displayName = "Card";
 
 const Navbar = () => {
   return (
-    <header className="bg-[#ffffff70] shadow-sm fixed top-5 z-50 backdrop-blur-xl rounded-full w-[95%] left-1/2 -translate-x-1/2">
+    <header className="hidden md:block bg-[#ffffff70] shadow-sm fixed top-5 z-50 backdrop-blur-xl rounded-full w-[95%] left-1/2 -translate-x-1/2">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Left Corner: Logo */}
@@ -246,7 +246,7 @@ const HeroSection = () => {
   }, []); // The empty array ensures this effect runs only once on mount
 
   return (
-    <section className="w-full min-h-screen relative overflow-hidden flex flex-col items-center justify-center px-4 py-12 md:py-0">
+    <section className="w-full min-h-screen relative overflow-hidden flex flex-col items-center justify-center px-4 md:py-0">
       {/* Video Background and Overlay */}
       <div className="absolute top-0 left-0 w-full h-full -z-10">
         <video
@@ -265,58 +265,106 @@ const HeroSection = () => {
       {/* Content */}
       <div className="relative w-full  max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-0.5">
-          <div className="space-y-8">
-            <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold leading-tight text-white">
-              Welcome to the IIT Kharagpur Community
-            </h1>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight text-white">
-              Connect. Collaborate.
-            </h1>
-            <p className="text-base sm:text-lg text-gray-300 leading-relaxed">
-              Join thousands of IIT Kharagpur alumni worldwide. Network with
-              fellow graduates, mentor the next generation, and unlock
-              opportunities that shape the future.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button variant="hero" size="lg" asChild>
-                <Link to="/register">Join the Network</Link>
-              </Button>
+          <div className="space-y-40">
+            <div className="space-y-10">
+              <div className="space-y-2">
+                <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold leading-tight text-white">
+                  Welcome to the IIT Kharagpur Community
+                </h1>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight text-blue-200">
+                  Connect. Collaborate.
+                </h1>
+              </div>
+              <p className="text-base sm:text-lg text-gray-300 leading-relaxed">
+                Join thousands of IIT Kharagpur alumni worldwide. Network with
+                fellow graduates, mentor the next generation, and unlock
+                opportunities that shape the future.
+              </p>
+              <div className="flex flex-col hidden sm:block sm:flex-row gap-4">
+                <Button variant="hero" size="lg" asChild>
+                  <Link to="/register">Join the Network</Link>
+                </Button>
+              </div>
+              <div className="hidden md:flex flex-row items-left px-6 gap-8 pt-4">
+                <div>
+                  <div
+                    ref={membersRef}
+                    className="text-lg sm:text-3xl font-bold text-gray-300"
+                  >
+                    50,000+
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-400">
+                    Alumni Members
+                  </div>
+                </div>
+                <div className="hidden sm:block h-12 w-px bg-border"></div>
+                <div>
+                  <div
+                    ref={countriesRef}
+                    className="text-lg sm:text-3xl font-bold text-gray-300"
+                  >
+                    150+
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-400">
+                    Countries
+                  </div>
+                </div>
+                <div className="hidden sm:block h-12 w-px bg-border"></div>
+                <div>
+                  <div
+                    ref={companiesRef}
+                    className="text-lg sm:text-3xl font-bold text-gray-300"
+                  >
+                    2000+
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-400">
+                    Companies
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="flex flex-col sm:flex-row items-left px-6 gap-8 pt-4">
-              <div>
-                <div
-                  ref={membersRef}
-                  className="text-2xl sm:text-3xl font-bold text-gray-300"
-                >
-                  50,000+
+            <div className="space-y-6">
+              <div className="flex md:hidden flex-row items-left px-6 gap-8 pt-4">
+                <div>
+                  <div
+                    ref={membersRef}
+                    className="text-lg sm:text-3xl font-bold text-gray-300"
+                  >
+                    50,000+
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-400">
+                    Alumni Members
+                  </div>
                 </div>
-                <div className="text-xs sm:text-sm text-gray-400">
-                  Alumni Members
+                <div className="hidden sm:block h-12 w-px bg-border"></div>
+                <div>
+                  <div
+                    ref={countriesRef}
+                    className="text-lg sm:text-3xl font-bold text-gray-300"
+                  >
+                    150+
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-400">
+                    Countries
+                  </div>
+                </div>
+                <div className="hidden sm:block h-12 w-px bg-border"></div>
+                <div>
+                  <div
+                    ref={companiesRef}
+                    className="text-lg sm:text-3xl font-bold text-gray-300"
+                  >
+                    2000+
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-400">
+                    Companies
+                  </div>
                 </div>
               </div>
-              <div className="hidden sm:block h-12 w-px bg-border"></div>
-              <div>
-                <div
-                  ref={countriesRef}
-                  className="text-2xl sm:text-3xl font-bold text-gray-300"
-                >
-                  150+
-                </div>
-                <div className="text-xs sm:text-sm text-gray-400">
-                  Countries
-                </div>
-              </div>
-              <div className="hidden sm:block h-12 w-px bg-border"></div>
-              <div>
-                <div
-                  ref={companiesRef}
-                  className="text-2xl sm:text-3xl font-bold text-gray-300"
-                >
-                  2000+
-                </div>
-                <div className="text-xs sm:text-sm text-gray-400">
-                  Companies
-                </div>
+              <div className="flex flex-col sm:hidden sm:flex-row gap-4">
+                <Button variant="hero" size="lg" asChild>
+                  <Link to="/register">Join the Network</Link>
+                </Button>
               </div>
             </div>
           </div>

@@ -56,7 +56,7 @@ const PlatinumJubilee = () => {
                 src={floatingPngPlaceholder}
                 alt="Floating Jubilee Icon"
                 // Mobile: Centered, relative positioning. Desktop: Absolute positioning.
-                className="relative mx-auto mb-8 w-32 h-32 md:mx-0 md:mb-0 z-20 md:left-[35%] md:top-[10%] md:w-70 md:h-70 object-contain"
+                className="relative mx-auto mb-8 w-32 h-32 md:mx-0 md:mb-0 z-20 md:left-[35%] md:top-[30%] md:w-[55%] md:h-[55%] object-contain"
                 initial={{ opacity: 0, scale: 0.5, x: -100 }}
                 animate={{ opacity: 1, scale: 1, x: 0 }}
                 transition={{ duration: 1.5, ease: "easeInOut" }}

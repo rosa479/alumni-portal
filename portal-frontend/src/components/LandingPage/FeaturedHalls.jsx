@@ -144,14 +144,14 @@ const FeaturedHalls = () => {
               />
             ))}
           </div>
-          <div className="flex justify-center items-center space-x-6 mt-12">
+          <div className="flex justify-center items-center space-x-36 md:space-x-6 mt-12">
             <button
               onClick={prevHall}
               className="p-3 bg-white hover:bg-gray-100 rounded-full text-gray-600 hover:text-[#0077B5] transition-all duration-200 border border-gray-300 shadow-sm"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <div className="flex space-x-2">
+            <div className="hidden md:block md:space-x-2">
               {halls.map((_, index) => (
                 <button
                   key={index}
