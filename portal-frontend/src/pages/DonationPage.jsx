@@ -101,7 +101,7 @@ function DonationPage() {
                 <button
                   type="button"
                   disabled
-                  className="w-full bg-orange-600 text-white font-bold py-4 px-6 rounded-full text-lg hover:bg-orange-700 transition-all transform hover:-translate-y-0.5"
+                  className="w-full border-[#0077B5] border-2 text-[#0077B5] font-bold py-4 px-6 rounded-full text-lg hover:bg-[#dadde3] transition-all transform hover:-translate-y-0.5"
                 >
                   Coming Soon...
                 </button>
