@@ -30,40 +30,24 @@ function RegisterPage() {
     // Handle OAuth data
     if (location.state?.oauthData) {
       const { oauthData, isExistingUser: existing } = location.state;
-      
+
       setEmail(oauthData.email || "");
+      setFullName(oauthData.name || oauthData.full_name || "");
       setIsOAuthUser(true); // Mark as OAuth user
-      
+
       if (existing) {
-        // Existing PENDING user - prioritize existing alumni_profile data
-        const profile = oauthData.alumni_profile || {};
-        
-        console.log('Existing user detected. OAuth data:', oauthData);
-        console.log('Alumni profile:', profile);
-        
-        // Use existing data from alumni_profile, fallback to Google OAuth data
-        setFullName(profile.full_name || oauthData.name || "");
+        // Existing user from OAuth - pre-fill other data
         setRollNumber(oauthData.roll_number || "");
-        setGradYear(profile.graduation_year?.toString() || "");
-        setDepartment(profile.department || "");
+        setGradYear(oauthData.graduation_year?.toString() || "");
+        setDepartment(oauthData.department || "");
         setIsExistingUser(true);
-        
-        console.log('Pre-filled values:', {
-          fullName: profile.full_name || oauthData.name,
-          rollNumber: oauthData.roll_number,
-          gradYear: profile.graduation_year,
-          department: profile.department
-        });
-      } else {
-        // New user - use Google OAuth data
-        setFullName(oauthData.name || "");
       }
     }
     // Handle email-first flow
     else if (location.state?.email) {
       const { email: preEmail, isNewUser } = location.state;
       setEmail(preEmail);
-      
+
       if (!isNewUser) {
         // User exists but came from email flow - fetch user data
         fetchUserData(preEmail);
@@ -73,15 +57,15 @@ function RegisterPage() {
 
   const fetchUserData = async (email) => {
     try {
-      const response = await apiClient.get(`/auth/check-user/?email=${encodeURIComponent(email)}`);
+      const response = await apiClient.get(
+        `/auth/check-user/?email=${encodeURIComponent(email)}`
+      );
       if (response.data.exists) {
         const user = response.data.user;
-        const profile = user.alumni_profile || {};
-        
-        setFullName(profile.full_name || "");
+        setFullName(user.full_name || "");
         setRollNumber(user.roll_number || "");
-        setGradYear(profile.graduation_year?.toString() || "");
-        setDepartment(profile.department || "");
+        setGradYear(user.graduation_year?.toString() || "");
+        setDepartment(user.department || "");
         setIsExistingUser(true);
       }
     } catch (error) {
@@ -106,12 +90,12 @@ function RegisterPage() {
 
     try {
       let response;
-      
+
       if (isExistingUser) {
         // Existing user activation
         response = await apiClient.post("/auth/activate-user/", {
           email: email,
-          ...userData
+          ...userData,
         });
       } else {
         // New user registration
@@ -148,9 +132,10 @@ function RegisterPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#F5F8FA] via-[#E3F0FB] to-[#B3D6F2]">
-      <div className="w-full max-w-md p-10 space-y-8 bg-white rounded-2xl border border-[#E3EAF3] text-center">
+      {/* Changed max-w-md to max-w-lg to make the box wider */}
+      <div className="w-full max-w-xl p-10 space-y-8 bg-white rounded-2xl border border-[#E3EAF3] text-center">
         <h2 className="text-3xl font-bold text-[#0077B5] mb-2">
-          {isExistingUser ? 'Complete Your Registration' : 'Create Your Account'}
+          {isExistingUser ? "Complete Your Registration" : "Create Your Account"}
         </h2>
         {location.state?.oauthData && (
           <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm text-left mb-4">
@@ -161,9 +146,13 @@ function RegisterPage() {
         {isExistingUser && !location.state?.oauthData && (
           <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg text-sm text-left">
             <p className="font-semibold">Account Found!</p>
-            <p>Your account exists. Please complete the form below to activate your account.</p>
+            <p>
+              Your account exists. Please complete the form below to activate
+              your account.
+            </p>
           </div>
         )}
+
         <form className="space-y-6" onSubmit={handleSubmit}>
           {/* 9. Display an error message if one exists */}
           {error && (
@@ -176,69 +165,78 @@ function RegisterPage() {
             </div>
           )}
 
-          {/* 10. Inputs are now controlled components (value + onChange) */}
-          <Input
-            id="fullName"
-            label="Full Name"
-            placeholder="John Doe"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            required
-          />
-          <Input
-            id="email"
-            label="Email Address"
-            type="email"
-            placeholder="your.email@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            disabled={isExistingUser || isOAuthUser}
-            className={`bg-[#F5F8FA] border border-[#E3EAF3] rounded-lg ${(isExistingUser || isOAuthUser) ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-          />
-          <Input
-            id="rollNumber"
-            label="Roll Number"
-            placeholder="20CS10001"
-            value={rollNumber}
-            onChange={(e) => setRollNumber(e.target.value)}
-            required
-          />
-          <Input
-            id="gradYear"
-            label="Graduation Year"
-            type="number"
-            placeholder="2018"
-            value={gradYear}
-            onChange={(e) => setGradYear(e.target.value)}
-            required
-          />
-          <Input
-            id="department"
-            label="Department"
-            placeholder="Computer Science"
-            value={department}
-            onChange={(e) => setDepartment(e.target.value)}
-            required
-          />
-          <Input
-            id="password"
-            label="Password"
-            type="password"
-            placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          {/* Inputs in grid: 2 per row on sm+, stacked on mobile */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Input
+              id="fullName"
+              label="Full Name"
+              placeholder="John Doe"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              required
+            />
+            <Input
+              id="email"
+              label="Email Address"
+              type="email"
+              placeholder="your.email@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={isExistingUser || isOAuthUser}
+              className={`bg-[#F5F8FA] border border-[#E3EAF3] rounded-lg ${
+                isExistingUser || isOAuthUser
+                  ? "bg-gray-100 cursor-not-allowed"
+                  : ""
+              }`}
+            />
+            <Input
+              id="rollNumber"
+              label="Roll Number"
+              placeholder="20CS10001"
+              value={rollNumber}
+              onChange={(e) => setRollNumber(e.target.value)}
+              required
+            />
+            <Input
+              id="gradYear"
+              label="Graduation Year"
+              type="number"
+              placeholder="2018"
+              value={gradYear}
+              onChange={(e) => setGradYear(e.target.value)}
+              required
+            />
+            <Input
+              id="department"
+              label="Department"
+              placeholder="Computer Science"
+              value={department}
+              onChange={(e) => setDepartment(e.target.value)}
+              required
+            />
+            <Input
+              id="password"
+              label="Password"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
           <Button
             type="submit"
             disabled={isSubmitting}
             className="w-full bg-[#0077B5] text-white rounded-lg hover:bg-[#005983] transition-colors font-semibold"
           >
-            {isSubmitting 
-              ? (isExistingUser ? "Activating Account..." : "Creating Account...")
-              : (isExistingUser ? "Activate Account" : "Create Account")
-            }
+            {isSubmitting
+              ? isExistingUser
+                ? "Activating Account..."
+                : "Creating Account..."
+              : isExistingUser
+              ? "Activate Account"
+              : "Create Account"}
           </Button>
         </form>
         <p className="text-sm text-light-text">
