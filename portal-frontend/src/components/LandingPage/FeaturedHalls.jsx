@@ -91,30 +91,47 @@ const FeaturedHalls = () => {
     if (!isAutoRotating) return;
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % halls.length);
-    }, 4000);
+    }, 2000);
     return () => clearInterval(interval);
   }, [isAutoRotating, halls.length]);
 
   const nextHall = useCallback(() => {
     setIsAutoRotating(false);
     setActiveIndex((prev) => (prev + 1) % halls.length);
-    setTimeout(() => setIsAutoRotating(true), 8000);
+    setTimeout(() => setIsAutoRotating(true), 4000);
   }, [halls.length]);
 
   const prevHall = useCallback(() => {
     setIsAutoRotating(false);
     setActiveIndex((prev) => (prev - 1 + halls.length) % halls.length);
-    setTimeout(() => setIsAutoRotating(true), 8000);
+    setTimeout(() => setIsAutoRotating(true), 4000);
   }, [halls.length]);
 
   const selectHall = useCallback((index) => {
     setIsAutoRotating(false);
     setActiveIndex(index);
-    setTimeout(() => setIsAutoRotating(true), 8000);
+    setTimeout(() => setIsAutoRotating(true), 4000);
   }, []);
 
+  const SWIPE_CONFIDENCE_THRESHOLD = 50; // Min distance in pixels for a swipe
+
+  const handleDragEnd = (e, { offset, velocity }) => {
+    if (Math.abs(offset.x) < SWIPE_CONFIDENCE_THRESHOLD) {
+      return; // Not a strong enough swipe
+    }
+
+    // Swiped left (show next)
+    if (offset.x < -SWIPE_CONFIDENCE_THRESHOLD) {
+      nextHall();
+    }
+    // Swiped right (show previous)
+    else if (offset.x > SWIPE_CONFIDENCE_THRESHOLD) {
+      prevHall();
+    }
+  };
+
   return (
-    <section className="relative overflow-hidden ">
+    <section id="halls" className="relative overflow-hidden ">
       <AnimatedBackground />
       <div className="bg-[#E6F1F9] relative z-10 pt-16 pb-12">
         <div className="container px-4 mx-auto">
@@ -124,7 +141,7 @@ const FeaturedHalls = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-800 mb-4">
+            <h1 className="font-octin-sports text-5xl md:text-6xl font-bold text-gray-800 mb-4">
               Your Hall, Your Legacy
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -132,7 +149,13 @@ const FeaturedHalls = () => {
               generations of KGPians.
             </p>
           </motion.div>
-          <div className="relative h-[300px] flex items-center justify-center">
+          <motion.div
+            className="relative h-[300px] flex items-center justify-center cursor-grab active:cursor-grabbing"
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.1}
+            onDragEnd={handleDragEnd}
+          >
             {halls.map((hall, index) => (
               <HallCard
                 key={hall.id}
@@ -143,15 +166,15 @@ const FeaturedHalls = () => {
                 totalHalls={halls.length}
               />
             ))}
-          </div>
-          <div className="flex justify-center items-center space-x-6 mt-12">
+          </motion.div>
+          <div className="flex justify-center items-center space-x-36 md:space-x-6 mt-12">
             <button
               onClick={prevHall}
               className="p-3 bg-white hover:bg-gray-100 rounded-full text-gray-600 hover:text-[#0077B5] transition-all duration-200 border border-gray-300 shadow-sm"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <div className="flex space-x-2">
+            <div className="hidden md:block md:space-x-2">
               {halls.map((_, index) => (
                 <button
                   key={index}

@@ -1,19 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import {
-  Users,
-  Calendar,
-  Briefcase,
-  GraduationCap,
-  TrendingUp,
-  Globe,
-  Award,
-  Heart,
-} from "lucide-react";
+import { TrendingUp, Globe, Award, Heart } from "lucide-react";
 import { CountUp } from "countup.js";
 import iitkgpDrone from "../assets/dist_iitkgpvideo1.webm";
 import AboutSection from "../components/LandingPage/HomeFeatures";
 import FeaturedHalls from "../components/LandingPage/FeaturedHalls";
+import PlatinumJubilee from "../components/LandingPage/PlatinumJubilee";
 
 // Inline Button Component
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -90,57 +82,58 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
   }
 );
 Card.displayName = "Card";
-
+/*
+  <HeroSection />
+  <PlatinumJubilee />
+  <AboutSection />
+  <ImpactSection />
+  <FeaturedHalls />
+  <CTASection />
+  <Footer /> 
+ */
 const Navbar = () => {
   return (
-    <header className="bg-[#ffffffe5] shadow-sm fixed top-5 z-50 backdrop-blur-xl rounded-full w-[95%] left-1/2 -translate-x-1/2">
+    <header className="hidden md:block bg-[#ffffff70] shadow-sm fixed top-5 z-50 backdrop-blur-xl rounded-full w-[95%] left-1/2 -translate-x-1/2">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Left Corner: Logo */}
           <div className="flex-shrink-0">
-            <Link to="/" className="text-3xl font-bold text-foreground">
+            <a href="#" className="text-3xl font-bold text-foreground">
               alumn<span className="text-primary">IIT</span>
-            </Link>
+            </a>
           </div>
 
           {/* Center Options - Hidden on mobile, visible on medium screens and up */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
-              <Link
-                to="/directory"
+              <a
+                href="#platinum"
                 className="relative text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors group"
               >
-                Directory
+                Platinum Jubilee
                 <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[hsl(197,71%,73%)] transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-              <Link
-                to="/events"
+              </a>
+              <a
+                href="#about"
                 className="relative text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors group"
               >
-                Events
+                About
                 <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[hsl(197,71%,73%)] transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-              <Link
-                to="/jobs"
+              </a>
+              <a
+                href="#impact"
                 className="relative text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors group"
               >
-                Career Hub
+                Impact
                 <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[hsl(197,71%,73%)] transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-              <Link
-                to="/mentorship"
+              </a>
+              <a
+                href="#halls"
                 className="relative text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors group"
               >
-                Mentorship
+                Halls
                 <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[hsl(197,71%,73%)] transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-              <Link
-                to="/news"
-                className="relative text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-semibold transition-colors group"
-              >
-                News
-                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[hsl(197,71%,73%)] transition-all duration-300 group-hover:w-full"></span>
-              </Link>
+              </a>
             </div>
           </div>
 
@@ -245,7 +238,10 @@ const HeroSection = () => {
   }, []); // The empty array ensures this effect runs only once on mount
 
   return (
-    <section className="w-full min-h-screen relative overflow-hidden flex flex-col items-center justify-center px-4 py-12 md:py-0">
+    <section
+      id="hero"
+      className="w-full min-h-screen relative overflow-hidden flex flex-col items-center justify-center px-4 md:py-0"
+    >
       {/* Video Background and Overlay */}
       <div className="absolute top-0 left-0 w-full h-full -z-10">
         <video
@@ -264,66 +260,106 @@ const HeroSection = () => {
       {/* Content */}
       <div className="relative w-full  max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-0.5">
-          <div className="space-y-8">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight text-white">
-              Welcome to the IIT Kharagpur Community
-            </h1>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight text-white">
-              Connect. Collaborate.
-            </h1>
-            <p className="text-base sm:text-lg text-gray-300 leading-relaxed">
-              Join thousands of IIT Kharagpur alumni worldwide. Network with
-              fellow graduates, mentor the next generation, and unlock
-              opportunities that shape the future.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button variant="hero" size="lg" asChild>
-                <Link to="/register">Join the Network</Link>
-              </Button>
-              <Button
-                className="text-white border-white"
-                variant="outline"
-                size="lg"
-                asChild
-              >
-                <Link to="/directory">Explore Directory</Link>
-              </Button>
+          <div className="space-y-40">
+            <div className="space-y-10">
+              <div className="space-y-2">
+                <h1 className="font-octin-sports md:mt-55 text-3xl sm:text-4xl md:text-5xl font-bold leading-tight text-white">
+                  Welcome to the IIT Kharagpur Community
+                </h1>
+                <h1 className="font-octin-sports text-2xl sm:text-3xl md:text-4xl font-bold leading-tight text-blue-200">
+                  Connect. Collaborate.
+                </h1>
+              </div>
+              <p className="text-base sm:text-lg text-gray-300 leading-relaxed">
+                Join thousands of IIT Kharagpur alumni worldwide. Network with
+                fellow graduates, mentor the next generation, and unlock
+                opportunities that shape the future.
+              </p>
+              <div className="flex flex-col hidden sm:block sm:flex-row gap-4">
+                <Button variant="default" size="lg" asChild>
+                  <Link to="/login">Join the Network</Link>
+                </Button>
+              </div>
+              <div className="hidden md:flex flex-row items-left px-6 gap-8 pt-4">
+                <div>
+                  <div
+                    ref={membersRef}
+                    className="text-lg sm:text-3xl font-bold text-gray-300"
+                  >
+                    50,000+
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-400">
+                    Alumni Members
+                  </div>
+                </div>
+                <div className="hidden sm:block h-12 w-px bg-border"></div>
+                <div>
+                  <div
+                    ref={countriesRef}
+                    className="text-lg sm:text-3xl font-bold text-gray-300"
+                  >
+                    150+
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-400">
+                    Countries
+                  </div>
+                </div>
+                <div className="hidden sm:block h-12 w-px bg-border"></div>
+                <div>
+                  <div
+                    ref={companiesRef}
+                    className="text-lg sm:text-3xl font-bold text-gray-300"
+                  >
+                    2000+
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-400">
+                    Companies
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="flex flex-col sm:flex-row items-left px-6 gap-8 pt-4">
-              <div>
-                <div
-                  ref={membersRef}
-                  className="text-2xl sm:text-3xl font-bold text-gray-300"
-                >
-                  50,000+
+            <div className="space-y-6">
+              <div className="flex md:hidden flex-row items-left px-6 gap-8 pt-4">
+                <div>
+                  <div
+                    ref={membersRef}
+                    className="text-lg sm:text-3xl font-bold text-gray-300"
+                  >
+                    50,000+
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-400">
+                    Alumni Members
+                  </div>
                 </div>
-                <div className="text-xs sm:text-sm text-gray-400">
-                  Alumni Members
+                <div className="hidden sm:block h-12 w-px bg-border"></div>
+                <div>
+                  <div
+                    ref={countriesRef}
+                    className="text-lg sm:text-3xl font-bold text-gray-300"
+                  >
+                    150+
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-400">
+                    Countries
+                  </div>
+                </div>
+                <div className="hidden sm:block h-12 w-px bg-border"></div>
+                <div>
+                  <div
+                    ref={companiesRef}
+                    className="text-lg sm:text-3xl font-bold text-gray-300"
+                  >
+                    2000+
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-400">
+                    Companies
+                  </div>
                 </div>
               </div>
-              <div className="hidden sm:block h-12 w-px bg-border"></div>
-              <div>
-                <div
-                  ref={countriesRef}
-                  className="text-2xl sm:text-3xl font-bold text-gray-300"
-                >
-                  150+
-                </div>
-                <div className="text-xs sm:text-sm text-gray-400">
-                  Countries
-                </div>
-              </div>
-              <div className="hidden sm:block h-12 w-px bg-border"></div>
-              <div>
-                <div
-                  ref={companiesRef}
-                  className="text-2xl sm:text-3xl font-bold text-gray-300"
-                >
-                  2000+
-                </div>
-                <div className="text-xs sm:text-sm text-gray-400">
-                  Companies
-                </div>
+              <div className="flex flex-col sm:hidden sm:flex-row gap-4">
+                <Button variant="hero" size="lg" asChild>
+                  <Link to="/register">Join the Network</Link>
+                </Button>
               </div>
             </div>
           </div>
@@ -431,19 +467,22 @@ const ImpactSection = () => {
   }, []);
 
   return (
-    <section className="py-20 bg-[#F0F7FF] from-primary/5 via-secondary/20 to-accent/5">
+    <section
+      id="impact"
+      className="py-20 bg-[#F0F7FF] from-primary/5 via-secondary/20 to-accent/5"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10 sm:mb-16">
-          <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4">
+          <h2 className="font-octin-sports text-2xl sm:text-3xl md:text-5xl font-bold mb-4">
             Making a Difference Together
           </h2>
-          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-blue-950 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
             Our alumni network creates lasting impact through collaboration,
             mentorship, and giving back
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+        <div className="text-blue-900 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           {stats.map((stat, index) => (
             <div
               key={index}
@@ -472,10 +511,13 @@ const ImpactSection = () => {
 
 const CTASection = () => {
   return (
-    <section className="py-20 bg-[#F0F7FF] bg-gradient-to-r from-primary via-primary to-accent relative overflow-hidden">
+    <section
+      id="difference"
+      className="py-20 bg-[#F0F7FF] bg-gradient-to-r from-primary via-primary to-accent relative overflow-hidden"
+    >
       <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-        <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-primary-foreground mb-6">
+        <h2 className="font-octin-sports text-2xl sm:text-3xl md:text-5xl font-bold text-primary-foreground mb-6">
           Ready to Reconnect with Your Alma Mater?
         </h2>
         <p className="text-base sm:text-lg text-primary-foreground/90 mb-8 max-w-2xl mx-auto">
@@ -483,12 +525,7 @@ const CTASection = () => {
           IIT Kharagpur graduates making waves across industries.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button
-            size="lg"
-            variant="secondary"
-            asChild
-            className="text-primary font-semibold"
-          >
+          <Button size="lg" asChild className="text-primary font-semibold">
             <Link to="/login">Create Your Profile</Link>
           </Button>
           <Button
@@ -507,17 +544,21 @@ const CTASection = () => {
 
 const Footer = () => {
   return (
-    <footer className="bg-black text-gray-400 border-t border-gray-800 py-12">
+    <footer
+      id="footer"
+      className="bg-black text-gray-400 border-t border-gray-800 py-12"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Main grid now has 3 direct children on desktop, with the middle one spanning 2 columns */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Column 1: Brand Info */}
           <div>
-            <Link
-              to="/"
+            <a
+              href="#"
               className="text-3xl font-bold text-white inline-block mb-4"
             >
               alumn<span className="text-primary">IIT</span>
-            </Link>
+            </a>
             <p className="mb-4">
               Connecting IIT Kharagpur alumni across the globe. Building
               networks, creating opportunities, fostering excellence.
@@ -526,7 +567,7 @@ const Footer = () => {
               <a
                 href="#"
                 className="transition-all duration-300 hover:text-[hsl(199,89%,40%)] hover:scale-110"
-                aria-label="LinkedIn"
+                aria-label="aedIn"
               >
                 <svg
                   className="h-6 w-6"
@@ -565,98 +606,105 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Column 2: Quick Links */}
-          <div>
-            <h3 className="font-semibold text-white mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  to="/about"
-                  className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
-                >
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/directory"
-                  className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
-                >
-                  Alumni Directory
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/events"
-                  className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
-                >
-                  Events
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/news"
-                  className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
-                >
-                  News & Updates
-                </Link>
-              </li>
-            </ul>
-          </div>
+          {/* START OF CHANGES: New wrapper for as columns */}
+          {/* This wrapper spans 2 columns on medium screens and up */}
+          <div className="md:col-span-2">
+            {/* This nested grid has 2 columns on ALL screen sizes, including phones */}
+            <div className="grid grid-cols-2 gap-8">
+              {/* Column 2: Quick as */}
+              <div>
+                <h3 className="font-semibold text-white mb-4">Quick as</h3>
+                <ul className="space-y-2">
+                  <li>
+                    <a
+                      href="#"
+                      className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
+                    >
+                      About Us
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
+                    >
+                      Alumni Directory
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
+                    >
+                      Events
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
+                    >
+                      News & Updates
+                    </a>
+                  </li>
+                </ul>
+              </div>
 
-          {/* Column 3: Resources */}
-          <div>
-            <h3 className="font-semibold text-white mb-4">Resources</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  to="/mentorship"
-                  className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
-                >
-                  Mentorship
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/jobs"
-                  className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
-                >
-                  Career Hub
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/donate"
-                  className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
-                >
-                  Give Back
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/contact"
-                  className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
-                >
-                  Contact Us
-                </Link>
-              </li>
-            </ul>
+              {/* Column 3: Resources */}
+              <div>
+                <h3 className="font-semibold text-white mb-4">Resources</h3>
+                <ul className="space-y-2">
+                  <li>
+                    <a
+                      href="#"
+                      className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
+                    >
+                      Mentorship
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
+                    >
+                      Career Hub
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
+                    >
+                      Give Back
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      className="relative transition-colors duration-300 hover:text-white after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-[hsl(199,89%,40%)] after:transition-all after:duration-300 hover:after:w-full"
+                    >
+                      Contact Us
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
+          {/* END OF CHANGES */}
 
           {/* Column 4: Map */}
           <div>
             <h3 className="font-semibold text-white mb-4">Visit Us</h3>
             <div className="overflow-hidden rounded-lg">
-              {/* Note: I've replaced your broken iframe src with a working one for IIT Kharagpur. 
-                  The `frameborder` attribute is obsolete; styling is better handled with CSS (e.g., style={{ border: 0 }}). */}
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3690.426362947233!2d87.30843231540547!3d22.33777498530188!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a1d44158c345555%3A0x8a299b136932a32!2sIndian%20Institute%20of%20Technology%20Kharagpur!5e0!3m2!1sen!2sin!4v1671887333933!5m2!1sen!2sin"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3690.428796465355!2d87.3082152758836!3d22.33762644086438!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a1d441474a69323%3A0x7f45a27866e4a9e5!2sIIT%20Kharagpur!5e0!3m2!1sen!2sin!4v1668187823533!5m2!1sen!2sin"
                 width="100%"
                 height="150"
                 style={{ border: 0 }}
                 allowFullScreen={true}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
+                title="IIT Kharagpur Location"
               ></iframe>
             </div>
           </div>
@@ -677,8 +725,8 @@ function LandingPage() {
   return (
     <>
       <Navbar />
-      <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]"></div>
       <HeroSection />
+      <PlatinumJubilee />
       <AboutSection />
       <ImpactSection />
       <FeaturedHalls />
