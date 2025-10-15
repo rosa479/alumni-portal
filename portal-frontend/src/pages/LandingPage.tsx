@@ -559,7 +559,7 @@ const Footer = () => {
               href="#"
               className="text-3xl font-bold text-white inline-block mb-4"
             >
-              alumn<span className="text-primary">IIT</span>
+              kgpACT
             </a>
             <p className="mb-4">
               Connecting IIT Kharagpur alumni across the globe. Building

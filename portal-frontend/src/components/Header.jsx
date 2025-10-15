@@ -32,8 +32,8 @@ function Header() {
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center p-4">
-        <Link to="/" className="text-3xl font-bold text-[#0077B5]">
-          AlumnIIT
+        <Link to="/dashboard" className="text-3xl font-bold text-[#0077B5]">
+          kgpACT
         </Link>
 
         {/* Desktop Navigation */}
@@ -129,25 +129,62 @@ function Header() {
           </div>
         </nav>
 
-        {/* Mobile Profile Icon */}
-        <div className="md:hidden">
-          <Link to="/profile" className="block">
-            <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-blue-600 hover:border-blue-700 transition-colors">
+        <nav className="flex md:hidden items-center space-x-3">
+  {/* Profile Picture Dropdown (PFC) */}
+  <div className="relative">
+            <button
+              className="w-10 h-10 rounded-full overflow-hidden border-2 border-blue-600 hover:border-blue-700 transition-colors focus:outline-none"
+              onClick={() => setShowDropdown((prev) => !prev)}
+              aria-haspopup="true"
+              aria-expanded={showDropdown}
+            >
               <img
                 src={
-                  user?.alumni_profile?.profile_picture_url || 
+                  user?.alumni_profile?.profile_picture_url ||
                   `https://i.pravatar.cc/150?u=${user?.id || 'default'}`
                 }
                 alt="Profile"
                 className="w-full h-full object-cover"
                 onError={(e) => {
-                  // Fallback if image fails to load
                   e.target.src = `https://i.pravatar.cc/150?u=${user?.id || 'default'}`;
                 }}
               />
-            </div>
-          </Link>
-        </div>
+            </button>
+            {/* Dropdown menu */}
+            {showDropdown && (
+              <div className="absolute right-0 mt-2 w-70 bg-white border border-gray-200 rounded-lg shadow-lg py-4 px-4 z-50">
+                <div className="flex items-center gap-3 mb-4">
+                  <img
+                    src={
+                      user?.alumni_profile?.profile_picture_url ||
+                      `https://i.pravatar.cc/150?u=${user?.id || 'default'}`
+                    }
+                    alt="Profile"
+                    className="w-12 h-12 rounded-full object-cover border border-blue-600"
+                  />
+                  <div>
+                    <div className="font-semibold text-gray-900">{user?.alumni_profile?.full_name || user?.full_name || "User"}</div>
+                    <div className="text-xs text-gray-500">{user?.email}</div>
+                  </div>
+                </div>
+                <Link
+                  to="/profile"
+                  className="block w-full text-left px-4 py-2 mb-2 rounded-md text-blue-600 font-medium hover:bg-blue-50 transition-colors"
+                  onClick={() => setShowDropdown(false)}
+                >
+                  View Profile
+                </Link>
+                <button
+                  onClick={() => { setShowDropdown(false); handleLogout(); }}
+                  className="block w-full text-left px-4 py-2 rounded-md text-red-600 font-medium border border-red-500 hover:bg-red-500 hover:text-white transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+        </nav>
+
       </div>
     </header>
   );

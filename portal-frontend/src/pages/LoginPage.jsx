@@ -169,11 +169,11 @@ function LoginPage() {
             </div>
 
             <h1 className="hidden sm:block text-5xl md:text-6xl font-bold mb-4 text-[#0077B5]">
-              AlumnIIT
+              kgpACT
             </h1>
           </div>
           <p className="hidden sm:flex justify-center items-center text-lg md:text-xl text-gray-600 font-bold">
-            Connecting the Past, Empowering the Future. AlumnIIT connects IIT Kharagpur alumni, helping you reconnect, explore mentorship, and stay updated on events and achievements. Bridge generations, seek guidance, and give back to the KGP community.
+            Connecting the Past, Empowering the Future. kgpACT connects IIT Kharagpur alumni, helping you reconnect, explore mentorship, and stay updated on events and achievements. Bridge generations, seek guidance, and give back to the KGP community.
           </p>
         </div>
       </div>

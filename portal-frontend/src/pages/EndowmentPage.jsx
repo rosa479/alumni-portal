@@ -180,7 +180,7 @@ function EndowmentPage() {
                         : 'text-gray-600 hover:text-[#0077B5] hover:bg-white'
                         }`}
                   >
-                     All Endowment
+                     All
                   </button>
                   <button
                      onClick={() => setFilter('ACTIVE')}
