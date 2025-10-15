@@ -132,32 +132,36 @@ function CommunityDetailPage() {
           onJoinLeave={handleJoinLeave}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          <main className="lg:col-span-2 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8 items-start">
+          <main className="lg:col-span-2 space-y-4 lg:space-y-6">
             {/* Quick Post Bar or CreatePost Form */}
             {!showCreatePost ? (
-              <div className="bg-white rounded-2xl shadow flex items-center p-4 mb-4">
-                <img
-                  src={userProfile?.alumni_profile?.profile_picture_url || "https://i.pravatar.cc/150?u=user"}
-                  alt="Profile"
-                  className="w-12 h-12 rounded-full object-cover mr-4"
-                />
-                <input
-                  type="text"
-                  className="flex-1 bg-gray-100 rounded-full px-4 py-2 outline-none"
-                  placeholder={`What's your post about?`}
-                  value={quickTitle}
-                  onChange={(e) => setQuickTitle(e.target.value)}
-                  readOnly
-                  style={{ cursor: "pointer" }}
-                  onFocus={() => setShowCreatePost(true)}
-                />
-                <button
-                  className="ml-4 px-5 py-2 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition"
-                  onClick={() => setShowCreatePost(true)}
-                >
-                  Create Post
-                </button>
+              <div className="bg-white rounded-2xl shadow p-4 mb-4">
+                <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-0">
+                  <div className="flex items-center w-full sm:w-auto sm:flex-1">
+                    <img
+                      src={userProfile?.alumni_profile?.profile_picture_url || "https://i.pravatar.cc/150?u=user"}
+                      alt="Profile"
+                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover mr-3 sm:mr-4 flex-shrink-0"
+                    />
+                    <input
+                      type="text"
+                      className="flex-1 bg-gray-100 rounded-full px-4 py-2 outline-none text-sm sm:text-base"
+                      placeholder={`What's your post about?`}
+                      value={quickTitle}
+                      onChange={(e) => setQuickTitle(e.target.value)}
+                      readOnly
+                      style={{ cursor: "pointer" }}
+                      onFocus={() => setShowCreatePost(true)}
+                    />
+                  </div>
+                  <button
+                    className="w-full sm:w-auto sm:ml-4 px-4 sm:px-5 py-2 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition text-sm sm:text-base"
+                    onClick={() => setShowCreatePost(true)}
+                  >
+                    Create Post
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="bg-white rounded-2xl shadow p-4 mb-4">
@@ -173,7 +177,7 @@ function CommunityDetailPage() {
               </div>
             )}
 
-            <div className="space-y-6">
+            <div className="space-y-4 lg:space-y-6">
               {community.latest_posts && community.latest_posts.map((post) => (
                 <Post
                   key={post.id}
@@ -191,36 +195,36 @@ function CommunityDetailPage() {
           </main>
 
           {/* Community-specific right sidebar */}
-          <aside className="lg:col-span-1 space-y-6">
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <h4 className="text-xl font-bold text-gray-800 mb-4">
+          <aside className="lg:col-span-1 space-y-4 lg:space-y-6">
+            <div className="bg-white rounded-2xl shadow-lg p-4 lg:p-6 border border-gray-100">
+              <h4 className="text-lg lg:text-xl font-bold text-gray-800 mb-3 lg:mb-4">
                 About Community
               </h4>
-              <p className="text-gray-600 mb-6">
+              <p className="text-sm lg:text-base text-gray-600 mb-4 lg:mb-6">
                 This is a space for members to share insights, ask questions,
                 and collaborate.
               </p>
-              <div className="space-y-4">
+              <div className="space-y-3 lg:space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Members</span>
-                  <span className="font-bold text-blue-800">
+                  <span className="text-sm lg:text-base text-gray-600">Members</span>
+                  <span className="font-bold text-blue-800 text-sm lg:text-base">
                     {membersCount}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Posts</span>
-                  <span className="font-bold text-blue-800">
+                  <span className="text-sm lg:text-base text-gray-600">Posts</span>
+                  <span className="font-bold text-blue-800 text-sm lg:text-base">
                     {community.posts_count}
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <h4 className="text-xl font-bold text-gray-800 mb-4">
+            <div className="bg-white rounded-2xl shadow-lg p-4 lg:p-6 border border-gray-100">
+              <h4 className="text-lg lg:text-xl font-bold text-gray-800 mb-3 lg:mb-4">
                 Community Rules
               </h4>
-              <ul className="space-y-2 text-sm text-gray-600">
+              <ul className="space-y-2 text-xs lg:text-sm text-gray-600">
                 <li>• Be respectful and professional</li>
                 <li>• Stay on topic and relevant</li>
                 <li>• No spam or self-promotion</li>
