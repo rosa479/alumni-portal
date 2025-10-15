@@ -19,7 +19,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = False
 
 # cors setup
-CSRF_TRUSTED_ORIGINS = ['http://kgpact.apnadomain.qzz.io']
+CSRF_TRUSTED_ORIGINS = ['https://kgpact.apnadomain.qzz.io']
 # Extract host from BASE_URL environment variable
 BASE_URL = os.environ.get('BASE_URL', 'http://localhost:8000')
 from urllib.parse import urlparse
