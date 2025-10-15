@@ -106,7 +106,7 @@ function SkillsManager() {
         </button>
       ) : (
         <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-          <div className="flex gap-3 items-end">
+          <div className="flex flex-col sm:flex-row gap-3 sm:items-end">
             <div className="flex-1">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Skill Name
@@ -121,14 +121,14 @@ function SkillsManager() {
               />
             </div>
             
-            <div>
+            <div className="w-full sm:w-auto">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Level
               </label>
               <select
                 value={newSkill.level}
                 onChange={(e) => setNewSkill({...newSkill, level: e.target.value})}
-                className="p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full sm:w-auto p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none"
               >
                 {skillLevels.map((level) => (
                   <option key={level.value} value={level.value}>
@@ -138,22 +138,24 @@ function SkillsManager() {
               </select>
             </div>
             
-            <button
-              onClick={handleAddSkill}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-            >
-              Add
-            </button>
-            
-            <button
-              onClick={() => {
-                setIsAdding(false);
-                setNewSkill({ name: '', level: 'INTERMEDIATE' });
-              }}
-              className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
-            >
-              Cancel
-            </button>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+              <button
+                onClick={handleAddSkill}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+              >
+                Add
+              </button>
+              
+              <button
+                onClick={() => {
+                  setIsAdding(false);
+                  setNewSkill({ name: '', level: 'INTERMEDIATE' });
+                }}
+                className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}

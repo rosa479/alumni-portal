@@ -59,7 +59,7 @@ const AboutSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}
           >
-            AlumnIIT provides a comprehensive platform designed to strengthen
+            kgpACT provides a comprehensive platform designed to strengthen
             the bonds of our global alumni community
           </motion.p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">

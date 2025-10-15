@@ -262,7 +262,7 @@ function RegisterPage() {
               <Sparkles size={20} className="text-[#0077B5] rotate-[15deg]" />
             </div>
             <h1 className="hidden sm:block text-5xl md:text-6xl font-bold mb-4 text-[#0077B5]">
-              AlumnIIT
+              kgpACT
             </h1>
           </div>
           <p className="hidden sm:flex justify-center items-center text-lg md:text-xl text-gray-600 font-bold">
