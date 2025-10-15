@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { TrendingUp, Globe, Award, Heart } from "lucide-react";
 import { CountUp } from "countup.js";
 import iitkgpDrone from "../assets/dist_iitkgpvideo1.webm";
+import iitkgpPoster from "../assets/iitkgpvideo1.webp";
 import AboutSection from "../components/LandingPage/HomeFeatures";
 import FeaturedHalls from "../components/LandingPage/FeaturedHalls";
 import PlatinumJubilee from "../components/LandingPage/PlatinumJubilee";
@@ -99,7 +100,7 @@ const Navbar = () => {
           {/* Left Corner: Logo */}
           <div className="flex-shrink-0">
             <a href="#" className="text-3xl font-bold text-foreground">
-              alumn<span className="text-primary">IIT</span>
+              kgp<span className="text-primary">ACT</span>
             </a>
           </div>
 
@@ -249,8 +250,9 @@ const HeroSection = () => {
           loop
           muted
           playsInline
+          poster={iitkgpPoster}
           className="w-full h-full object-cover"
-        >
+        > 
           <source src={iitkgpDrone} type="video/mp4" />
           Your browser does not support the video tag.
         </video>
@@ -521,7 +523,7 @@ const CTASection = () => {
           Ready to Reconnect with Your Alma Mater?
         </h2>
         <p className="text-base sm:text-lg text-primary-foreground/90 mb-8 max-w-2xl mx-auto">
-          Join AlumnIIT today and become part of a thriving global community of
+          Join kgpACT today and become part of a thriving global community of
           IIT Kharagpur graduates making waves across industries.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -712,7 +714,7 @@ const Footer = () => {
 
         <div className="border-t border-gray-800 mt-12 pt-8 text-center">
           <p>
-            © {new Date().getFullYear()} AlumnIIT - IIT Kharagpur Alumni
+            © {new Date().getFullYear()} kgpACT - IIT Kharagpur Alumni
             Association. All rights reserved.
           </p>
         </div>
