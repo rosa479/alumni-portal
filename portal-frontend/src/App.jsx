@@ -25,6 +25,7 @@ import ContributionDetailPage from "./pages/ContributionDetailPage";
 import LandingPage from "./pages/LandingPage";
 import MobileBottomNav from "./components/MobileBottomNav";
 import OAuthCallback from "./pages/OAuthCallback";
+import AdminScholarship from "./pages/AdminScholarship";
 
 function MainLayout() {
   return (
@@ -51,6 +52,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/callback" element={<OAuthCallback />} />
+        <Route path="/admin" element={<AdminScholarship />} />
 
         {/* Routes WITH the main header */}
         <Route element={<MainLayout />}>
