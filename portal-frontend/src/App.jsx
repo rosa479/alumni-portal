@@ -31,6 +31,7 @@ import Applications from "./components/Applications";
 import ApplicationDetails from "./components/ApplicationDetails";
 import PendingApprovals from "./components/PendingApprovals";
 import AllScholarships from "./components/AllScholarships";
+import NewScholarship from "./components/NewScholarship";
 
 function MainLayout() {
   return (
@@ -64,6 +65,7 @@ function App() {
           <Route path="application/:id" element={<ApplicationDetails />} />
           <Route path="pending" element={<PendingApprovals/>} />
           <Route path="scholarships" element={<AllScholarships/>} />
+          <Route path="scholarships/new" element={<NewScholarship/>} />
         </Route>
 
         {/* Routes WITH the main header */}
