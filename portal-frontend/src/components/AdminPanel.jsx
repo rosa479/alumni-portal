@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from "react";
-import {} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-// AdminPanel.jsx
-// Full admin control: scholarships, approvals, posts, meetings, and stats.
-
+// AdminPanel.jsx — Full admin control: scholarships, approvals, posts, meetings, and stats.
 export default function AdminPanel() {
+  const navigate = useNavigate(); // ✅ inside the component
+
   // --- State Management ---
   const [scholarships, setScholarships] = useState([
     { id: 1, title: "Merit Scholarship", active: true, amount: "₹20,000" },
@@ -26,10 +26,6 @@ export default function AdminPanel() {
     { id: 202, title: "New mentorship program", author: "Prof. X", date: "2025-10-02" },
   ]);
 
-  // Form inputs
-  const [newTitle, setNewTitle] = useState("");
-  const [newAmount, setNewAmount] = useState("");
-
   // Derived stats
   const stats = useMemo(() => ({
     totalApplications: applications.length,
@@ -39,36 +35,10 @@ export default function AdminPanel() {
   }), [applications, posts, scholarships]);
 
   // --- Handlers ---
-  function handleCreateScholarship(e) {
-    e.preventDefault();
-    if (!newTitle.trim()) return;
-    const id = Date.now();
-    setScholarships((prev) => [
-      ...prev,
-      { id, title: newTitle.trim(), active: true, amount: newAmount || "TBD" },
-    ]);
-    setNewTitle("");
-    setNewAmount("");
-  }
-
   function toggleScholarship(id) {
-    setScholarships((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, active: !s.active } : s))
+    setScholarships(prev =>
+      prev.map(s => (s.id === id ? { ...s, active: !s.active } : s))
     );
-  }
-
-  function approveUser(id) {
-    setApplications((prev) =>
-      prev.map((u) => (u.id === id ? { ...u, approved: true } : u))
-    );
-  }
-
-  function deleteUser(id) {
-    setApplications((prev) => prev.filter((u) => u.id !== id));
-  }
-
-  function deletePost(id) {
-    setPosts((prev) => prev.filter((p) => p.id !== id));
   }
 
   // --- JSX ---
@@ -88,21 +58,24 @@ export default function AdminPanel() {
           title="Total Applications"
           value={String(stats.totalApplications)}
           buttonLabel="View"
-          onClick={() => alert("Opening Applications...")}
+          onClick={() => navigate("/admin/applications")} // ✅ absolute path
         />
         <StatCard
           title="Pending Approvals"
           value={String(stats.pendingApprovals)}
           buttonLabel="View"
-          onClick={() => alert("Showing Pending Approvals...")}
+          onClick={() => navigate("/admin/pending")} // ✅ absolute path
         />
         <StatCard
           title="Active Scholarships"
           value={String(stats.activeScholarships)}
           buttonLabel="View"
-          onClick={() => alert("Showing Active Scholarships...")}
+          onClick={() => navigate("/admin/scholarships")} // ✅ absolute path
         />
-        <div className="bg-[hsl(199,89%,48%)] hover:bg-blue-500 p-4 rounded-lg shadow-sm flex flex-col justify-between">
+        <div
+          className="bg-[hsl(199,89%,48%)] hover:bg-blue-500 p-4 rounded-lg shadow-sm flex flex-col justify-between cursor-pointer"
+          onClick={() => navigate("/admin/scholarships/new")} // ✅ absolute path
+        >
           <div className="text-sm text-white">Create New Scholarship</div>
           <div className="flex justify-center items-center h-20 w-full">
             <img className="h-10 w-10 invert" src="./plus.png" alt="add" />
@@ -116,27 +89,6 @@ export default function AdminPanel() {
           <h2 className="text-lg font-medium">Scholarships</h2>
           <span className="text-sm text-gray-500">Manage active scholarships</span>
         </div>
-
-        <form onSubmit={handleCreateScholarship} className="flex gap-3 mb-4">
-          <input
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-            placeholder="Scholarship Title"
-            className="border p-2 rounded flex-1"
-          />
-          <input
-            value={newAmount}
-            onChange={(e) => setNewAmount(e.target.value)}
-            placeholder="Amount (₹)"
-            className="border p-2 rounded w-40"
-          />
-          <button
-            type="submit"
-            className="px-4 py-2 rounded bg-[hsl(199,89%,48%)] text-white"
-          >
-            Add
-          </button>
-        </form>
 
         <div className="space-y-2">
           {scholarships.map((s) => (
@@ -182,7 +134,6 @@ export default function AdminPanel() {
           ))}
         </div>
       </Card>
-
     </div>
   );
 }
