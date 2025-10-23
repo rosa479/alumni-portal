@@ -26,6 +26,9 @@ import LandingPage from "./pages/LandingPage";
 import MobileBottomNav from "./components/MobileBottomNav";
 import OAuthCallback from "./pages/OAuthCallback";
 import AdminScholarship from "./pages/AdminScholarship";
+import AdminPanel from "./components/AdminPanel";
+import Applications from "./components/Applications";
+import ApplicationDetails from "./components/ApplicationDetails";
 
 function MainLayout() {
   return (
@@ -52,7 +55,12 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/callback" element={<OAuthCallback />} />
-        <Route path="/admin" element={<AdminScholarship />} />
+        {/* Admin area (uses AdminScholarship as a layout for nested admin routes) */}
+        <Route path="/admin" element={<AdminScholarship />}> 
+          <Route index element={<AdminPanel />} />
+          <Route path="applications" element={<Applications />} />
+          <Route path="application/:id" element={<ApplicationDetails />} />
+        </Route>
 
         {/* Routes WITH the main header */}
         <Route element={<MainLayout />}>
