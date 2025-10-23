@@ -26,6 +26,7 @@ import LandingPage from "./pages/LandingPage";
 import MobileBottomNav from "./components/MobileBottomNav";
 import OAuthCallback from "./pages/OAuthCallback";
 import AdminScholarship from "./pages/AdminScholarship";
+import AccountsPanel from "./pages/AccountsPanel";
 import AdminPanel from "./components/AdminScholarship/AdminPanel";
 import Applications from "./components/AdminScholarship/Applications";
 import ApplicationDetails from "./components/AdminScholarship/ApplicationDetails";
@@ -67,6 +68,8 @@ function App() {
           <Route path="scholarships" element={<AllScholarships/>} />
           <Route path="scholarships/new" element={<NewScholarship/>} />
         </Route>
+
+        <Route path="/accounts" element={<AccountsPanel/>}/>
 
         {/* Routes WITH the main header */}
         <Route element={<MainLayout />}>
