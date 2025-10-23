@@ -26,12 +26,12 @@ import LandingPage from "./pages/LandingPage";
 import MobileBottomNav from "./components/MobileBottomNav";
 import OAuthCallback from "./pages/OAuthCallback";
 import AdminScholarship from "./pages/AdminScholarship";
-import AdminPanel from "./components/AdminPanel";
-import Applications from "./components/Applications";
-import ApplicationDetails from "./components/ApplicationDetails";
-import PendingApprovals from "./components/PendingApprovals";
-import AllScholarships from "./components/AllScholarships";
-import NewScholarship from "./components/NewScholarship";
+import AdminPanel from "./components/AdminScholarship/AdminPanel";
+import Applications from "./components/AdminScholarship/Applications";
+import ApplicationDetails from "./components/AdminScholarship/ApplicationDetails";
+import PendingApprovals from "./components/AdminScholarship/PendingApprovals";
+import AllScholarships from "./components/AdminScholarship/AllScholarships";
+import NewScholarship from "./components/AdminScholarship/NewScholarship";
 
 function MainLayout() {
   return (
