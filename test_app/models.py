@@ -38,6 +38,7 @@ class User(AbstractUser):
         ALUMNI = "ALUMNI", "Alumni"
         ASSOCIATE = "ASSOCIATE", "Associate Member"
         ADMIN = "ADMIN", "Admin"
+        ACCOUNTS = "ACCOUNTS", "Accounts"
 
     class Status(models.TextChoices):
         PENDING = "PENDING", "Pending Verification"
