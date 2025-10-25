@@ -38,11 +38,11 @@ function MainLayout() {
   return (
     <div className="relative min-h-screen font-sans">
       <Header />
-      
+
       {/* 👇 UPDATE THE PADDING HERE */}
       {/* Increase bottom padding to give the floating nav space */}
-      <main className="pb-28 md:pb-0"> 
-        <Outlet /> 
+      <main className="pb-28 md:pb-0">
+        <Outlet />
       </main>
 
       <MobileBottomNav />
@@ -60,16 +60,16 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/callback" element={<OAuthCallback />} />
         {/* Admin area (uses AdminScholarship as a layout for nested admin routes) */}
-        <Route path="/admin" element={<AdminScholarship />}> 
+        <Route path="/admin-panel" element={<AdminScholarship />}>
           <Route index element={<AdminPanel />} />
           <Route path="applications" element={<Applications />} />
           <Route path="application/:id" element={<ApplicationDetails />} />
-          <Route path="pending" element={<PendingApprovals/>} />
-          <Route path="scholarships" element={<AllScholarships/>} />
-          <Route path="scholarships/new" element={<NewScholarship/>} />
+          <Route path="pending" element={<PendingApprovals />} />
+          <Route path="scholarships" element={<AllScholarships />} />
+          <Route path="scholarships/new" element={<NewScholarship />} />
         </Route>
 
-        <Route path="/accounts" element={<AccountsPanel/>}/>
+        <Route path="/accounts" element={<AccountsPanel />} />
 
         {/* Routes WITH the main header */}
         <Route element={<MainLayout />}>
