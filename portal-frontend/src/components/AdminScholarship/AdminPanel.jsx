@@ -12,30 +12,55 @@ export default function AdminPanel() {
 
   const [applications] = useState([
     { id: 101, name: "Asha Sen", email: "asha@example.com", approved: false },
-    { id: 102, name: "Rohan Kumar", email: "rohan@example.com", approved: true },
+    {
+      id: 102,
+      name: "Rohan Kumar",
+      email: "rohan@example.com",
+      approved: true,
+    },
   ]);
 
   const [posts] = useState([
-    { id: 201, title: "Scholarship deadline extended", author: "Admin", date: "2025-10-15" },
-    { id: 202, title: "New mentorship program", author: "Prof. X", date: "2025-10-02" },
+    {
+      id: 201,
+      title: "Scholarship deadline extended",
+      author: "Admin",
+      date: "2025-10-15",
+    },
+    {
+      id: 202,
+      title: "New mentorship program",
+      author: "Prof. X",
+      date: "2025-10-02",
+    },
   ]);
 
   // Stakeholder meeting conclusions for each scholarship
   const [stakeholderConclusions] = useState({
     1: [
-      { date: "2025-10-10", conclusion: "Prioritize high-merit applicants for early disbursal." },
-      { date: "2025-10-12", conclusion: "Increase outreach to rural schools for Merit Scholarship." },
+      {
+        date: "2025-10-10",
+        conclusion: "Prioritize high-merit applicants for early disbursal.",
+      },
+      {
+        date: "2025-10-12",
+        conclusion: "Increase outreach to rural schools for Merit Scholarship.",
+      },
     ],
     2: [
       { date: "2025-09-15", conclusion: "Ensure transparent fund allocation." },
-      { date: "2025-09-20", conclusion: "Monitor disbursement closely for Need-based Aid." },
+      {
+        date: "2025-09-20",
+        conclusion: "Monitor disbursement closely for Need-based Aid.",
+      },
     ],
   });
 
   // Latest update to attach under each scholarship
   const [latestUpdate] = useState({
     date: "2025-10-10",
-    summary: "Application review window extended by one week for all scholarships.",
+    summary:
+      "Application review window extended by one week for all scholarships.",
   });
 
   // Modal state
@@ -67,7 +92,7 @@ export default function AdminPanel() {
     <div className="space-y-8">
       {/* Header */}
       <header>
-        <h1 className="text-3xl font-semibold">Admin — Scholarships</h1>
+        <h1 className="text-3xl font-semibold">Manage Scholarships</h1>
         <p className="text-sm text-gray-600 mt-1">
           Manage scholarships, applications, and stakeholder conclusions.
         </p>
@@ -108,16 +133,23 @@ export default function AdminPanel() {
       <Card>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-medium">Scholarships</h2>
-          <span className="text-sm text-gray-500">Manage active scholarships</span>
+          <span className="text-sm text-gray-500">
+            Manage active scholarships
+          </span>
         </div>
 
         <div className="space-y-2">
           {scholarships.map((s) => (
-            <div key={s.id} className="p-3 bg-white rounded shadow-sm space-y-2">
+            <div
+              key={s.id}
+              className="p-3 bg-white rounded shadow-sm space-y-2"
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium">{s.title}</div>
-                  <div className="text-xs text-gray-500">Amount: {s.amount}</div>
+                  <div className="text-xs text-gray-500">
+                    Amount: {s.amount}
+                  </div>
                 </div>
                 <button
                   onClick={() => openModal(s)}
@@ -129,7 +161,9 @@ export default function AdminPanel() {
 
               {/* Latest Update Section */}
               <div className="mt-2 text-sm text-gray-600 ">
-                <span className="font-medium text-blue-500">Latest Update:</span>{" "}
+                <span className="font-medium text-blue-500">
+                  Latest Update:
+                </span>{" "}
                 <span>{latestUpdate.summary}</span>
                 <div className="text-xs text-gray-500 mt-1">
                   Date: {latestUpdate.date}
@@ -149,13 +183,15 @@ export default function AdminPanel() {
             </h2>
 
             <ul className="space-y-3 border-l-2 border-gray-300 pl-4">
-              {(stakeholderConclusions[selectedScholarship.id] || []).map((item, idx) => (
-                <li key={idx} className="relative">
-                  <div className="absolute -left-3 w-2 h-2 bg-blue-500 rounded-full mt-1"></div>
-                  <span className="text-sm text-gray-500">{item.date}</span>
-                  <p className="text-gray-700">{item.conclusion}</p>
-                </li>
-              ))}
+              {(stakeholderConclusions[selectedScholarship.id] || []).map(
+                (item, idx) => (
+                  <li key={idx} className="relative">
+                    <div className="absolute -left-3 w-2 h-2 bg-blue-500 rounded-full mt-1"></div>
+                    <span className="text-sm text-gray-500">{item.date}</span>
+                    <p className="text-gray-700">{item.conclusion}</p>
+                  </li>
+                )
+              )}
             </ul>
 
             <div className="flex justify-end mt-6">
