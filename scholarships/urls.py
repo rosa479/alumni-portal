@@ -4,9 +4,12 @@ from . import views
 app_name = 'scholarships'
 
 urlpatterns = [
+    # Statistics endpoint
+    path('statistics/', views.scholarship_statistics, name='scholarship-statistics'),
+    
     # Scholarship endpoints
-    path('list', views.scholarship_list, name='scholarship-list'),
-    path('<uuid:pk>/', views.scholarship_detail, name='scholarship-detail'),
+    path('list/', views.scholarship_list, name='scholarship-list'),
+    path('list/<uuid:pk>/', views.scholarship_detail, name='scholarship-detail'),
     
     # Application endpoints
     path('applications/', views.application_list, name='application-list'),

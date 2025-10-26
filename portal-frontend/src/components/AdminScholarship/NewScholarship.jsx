@@ -1,18 +1,20 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "../../interceptor";
 
 export default function NewScholarship() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    name: "",
-    amount: "",
+    title: "",
+    target_amount: "",
     description: "",
     eligibility: "",
-    deadline: "",
+    image_url: "",
   });
 
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // --- Handle Input Change ---
   const handleChange = (e) => {
@@ -22,18 +24,48 @@ export default function NewScholarship() {
   };
 
   // --- Handle Submit ---
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Basic validation
-    if (!formData.name || !formData.amount || !formData.description) {
+    if (!formData.title || !formData.target_amount || !formData.description) {
       setError("Please fill in all required fields.");
       return;
     }
 
-    // Simulate saving to backend
-    alert(`🎉 Scholarship "${formData.name}" created successfully!`);
-    navigate("/admin/scholarships"); // redirect to all scholarships page
+    // Validate target_amount is a number
+    if (isNaN(formData.target_amount) || Number(formData.target_amount) <= 0) {
+      setError("Please enter a valid amount.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError("");
+
+      // Submit to backend
+      await axios.post("/scholarships/list/", {
+        title: formData.title,
+        target_amount: formData.target_amount,
+        description: formData.description,
+        eligibility: formData.eligibility,
+        image_url: formData.image_url || null,
+        status: "ACTIVE",
+      });
+
+      // Success - navigate to all scholarships page
+      alert(`🎉 Scholarship "${formData.title}" created successfully!`);
+      navigate("/admin/scholarships");
+    } catch (err) {
+      console.error("Error creating scholarship:", err);
+      setError(
+        err.response?.data?.detail ||
+          err.response?.data?.error ||
+          "Failed to create scholarship. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -62,29 +94,29 @@ export default function NewScholarship() {
           {/* Scholarship Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Scholarship Name <span className="text-red-500">*</span>
+              Scholarship Title <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
-              name="name"
-              value={formData.name}
+              name="title"
+              value={formData.title}
               onChange={handleChange}
               placeholder="e.g. Merit Scholarship"
               className="w-full p-2 border rounded-md focus:outline-none focus:border-[hsl(199,89%,48%)] focus:ring-2 focus:ring-[hsl(199,89%,48%)]"
             />
           </div>
 
-          {/* Amount */}
+          {/* Target Amount */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Amount <span className="text-red-500">*</span>
+              Target Amount (₹) <span className="text-red-500">*</span>
             </label>
             <input
-              type="text"
-              name="amount"
-              value={formData.amount}
+              type="number"
+              name="target_amount"
+              value={formData.target_amount}
               onChange={handleChange}
-              placeholder="e.g. ₹20,000"
+              placeholder="e.g. 2000000"
               className="w-full p-2 border rounded-md focus:outline-none focus:border-[hsl(199,89%,48%)] focus:ring-2 focus:ring-[hsl(199,89%,48%)]"
             />
           </div>
@@ -119,16 +151,17 @@ export default function NewScholarship() {
             ></textarea>
           </div>
 
-          {/* Deadline */}
+          {/* Image URL */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Application Deadline
+              Image URL (Optional)
             </label>
             <input
-              type="date"
-              name="deadline"
-              value={formData.deadline}
+              type="url"
+              name="image_url"
+              value={formData.image_url}
               onChange={handleChange}
+              placeholder="https://example.com/image.jpg"
               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:border-[hsl(199,89%,48%)] focus:ring-[hsl(199,89%,48%)]"
             />
           </div>
@@ -137,9 +170,14 @@ export default function NewScholarship() {
           <div className="flex justify-end">
             <button
               type="submit"
-              className="px-5 py-2 rounded bg-[hsl(199,89%,48%)] text-white hover:bg-blue-500"
+              disabled={loading}
+              className={`px-5 py-2 rounded text-white ${
+                loading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-[hsl(199,89%,48%)] hover:bg-blue-500"
+              }`}
             >
-              Create Scholarship
+              {loading ? "Creating..." : "Create Scholarship"}
             </button>
           </div>
         </form>

@@ -85,10 +85,10 @@ urlpatterns = [
     path('communities/<uuid:community_id>/posts/', CommunityPostListView.as_view(), name='community_post_list'),
 
     # Service: Scholarships
-    path('scholarships/', ScholarshipListView.as_view(), name='scholarship_list'),
-    path('scholarships/<uuid:pk>/', ScholarshipDetailView.as_view(), name='scholarship_detail'),
-    path('scholarships/<uuid:scholarship_id>/endowment/', ScholarshipContributionCreateView.as_view(), name='scholarship_contribution_create'),
-    path('scholarships/<uuid:scholarship_id>/endowment/list/', ScholarshipEndowmentListView.as_view(), name='scholarship_endowment_list'),
+    path('endowment/', ScholarshipListView.as_view(), name='scholarship_list'),
+    path('endowment/<uuid:pk>/', ScholarshipDetailView.as_view(), name='scholarship_detail'),
+    path('endowment/<uuid:scholarship_id>/endowment/', ScholarshipContributionCreateView.as_view(), name='scholarship_contribution_create'),
+    path('endowment/<uuid:scholarship_id>/endowment/list/', ScholarshipEndowmentListView.as_view(), name='scholarship_endowment_list'),
 
     # Service: Tags
     path('communities/<uuid:community_id>/tags/', TagListCreateView.as_view(), name='tag_list_create'),

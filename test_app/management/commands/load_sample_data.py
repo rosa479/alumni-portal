@@ -80,7 +80,7 @@ class Command(BaseCommand):
             },
             {
                 'email': 'sneha.reddy@example.com',
-                'roll_number': '24MA10063',
+                'roll_number': '24MA10059',
                 'password': 'password123',
                 'role': User.Role.ALUMNI,
                 'status': User.Status.VERIFIED,

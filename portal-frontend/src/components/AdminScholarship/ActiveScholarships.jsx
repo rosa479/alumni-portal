@@ -19,11 +19,20 @@ export default function ActiveScholarships({ scholarships, onToggle }) {
       {activeScholarships.map((s) => (
         <div
           key={s.id}
-          className="flex items-center justify-between p-3 bg-white rounded shadow-sm"
+          className="flex items-center justify-between p-3 bg-white rounded shadow-sm hover:shadow-md transition-shadow"
         >
-          <div>
-            <div className="font-medium">{s.title}</div>
-            <div className="text-xs text-gray-500">Amount: {s.amount}</div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <div className="font-medium">{s.name || s.title}</div>
+              {s.type && (
+                <span className="px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-700">
+                  {s.type}
+                </span>
+              )}
+            </div>
+            <div className="text-xs text-gray-500">
+              Amount: {s.amount} • Corpus: {s.corpus || "N/A"}
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <div className="px-2 py-1 rounded bg-green-100 text-green-800 text-sm">
@@ -31,7 +40,7 @@ export default function ActiveScholarships({ scholarships, onToggle }) {
             </div>
             <button
               onClick={() => onToggle(s.id)}
-              className="px-3 py-1 rounded border text-sm"
+              className="px-3 py-1 rounded border text-sm hover:bg-gray-50"
             >
               Discontinue
             </button>

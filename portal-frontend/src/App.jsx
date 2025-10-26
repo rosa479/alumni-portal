@@ -60,7 +60,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/callback" element={<OAuthCallback />} />
         {/* Admin area (uses AdminScholarship as a layout for nested admin routes) */}
-        <Route path="/admin-panel" element={<AdminScholarship />}>
+        <Route path="/admin" element={<AdminScholarship />}>
           <Route index element={<AdminPanel />} />
           <Route path="applications" element={<Applications />} />
           <Route path="application/:id" element={<ApplicationDetails />} />

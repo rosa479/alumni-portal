@@ -118,9 +118,9 @@ function Header() {
                   </div>
                 </div>
                 <Link
-                  to="/admin-panel"
+                  to="/admin"
                   className={
-                    user?.role === "ALUMNI"
+                    user?.role === "ALUMNI" || user?.role === "ADMIN"
                       ? "block w-full text-left px-4 py-2 mb-2 rounded-md text-blue-600 font-medium hover:bg-blue-50 transition-colors"
                       : "hidden"
                   }
@@ -131,7 +131,7 @@ function Header() {
                 <Link
                   to="/accounts"
                   className={
-                    user?.role === "ACCOUNTS"
+                    user?.role === "ACCOUNTS" || user?.role === "ADMIN"
                       ? "block w-full text-left px-4 py-2 mb-2 rounded-md text-blue-600 font-medium hover:bg-blue-50 transition-colors"
                       : "hidden"
                   }

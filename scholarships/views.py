@@ -19,10 +19,27 @@ from .serializers import (
 @api_view(['GET', 'POST'])
 def scholarship_list(request):
     """
-    List all active scholarships or create a new one (admin only)
+    List all scholarships or create a new one (admin only)
+    Query params:
+    - status: filter by status (ACTIVE, INACTIVE, COMPLETED)
+    - include_inactive: if 'true', returns all scholarships regardless of status
     """
     if request.method == 'GET':
-        scholarships = Scholarship.objects.filter(status=Scholarship.Status.ACTIVE)
+        # Check if we should include all scholarships or just active ones
+        include_inactive = request.query_params.get('include_inactive', 'false').lower() == 'true'
+        status_filter = request.query_params.get('status')
+        
+        if include_inactive:
+            # Return all scholarships regardless of status
+            scholarships = Scholarship.objects.all()
+        elif status_filter:
+            # Filter by specific status
+            scholarships = Scholarship.objects.filter(status=status_filter.upper())
+        else:
+            # Default: only active scholarships
+            scholarships = Scholarship.objects.filter(status=Scholarship.Status.ACTIVE)
+        
+        scholarships = scholarships.order_by('-created_at')
         serializer = ScholarshipListSerializer(scholarships, many=True)
         return Response(serializer.data)
     
@@ -215,4 +232,35 @@ def approve_application(request, pk):
         return Response(ScholarshipApplicationDetailSerializer(application).data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(['GET'])
+def scholarship_statistics(request):
+    """
+    Get statistics for scholarship dashboard
+    Returns:
+    - total_scholarships: total number of scholarships
+    - active_scholarships: number of active scholarships
+    - total_applications: total number of applications
+    - pending_applications: number of pending applications
+    - approved_applications: number of approved applications
+    - rejected_applications: number of rejected applications
+    """
+    stats = {
+        'total_scholarships': Scholarship.objects.count(),
+        'active_scholarships': Scholarship.objects.filter(status=Scholarship.Status.ACTIVE).count(),
+        'inactive_scholarships': Scholarship.objects.filter(status=Scholarship.Status.INACTIVE).count(),
+        'completed_scholarships': Scholarship.objects.filter(status=Scholarship.Status.COMPLETED).count(),
+        'total_applications': ScholarshipApplication.objects.count(),
+        'pending_applications': ScholarshipApplication.objects.filter(
+            approved=ScholarshipApplication.ApprovalStatus.PENDING
+        ).count(),
+        'approved_applications': ScholarshipApplication.objects.filter(
+            approved=ScholarshipApplication.ApprovalStatus.APPROVED
+        ).count(),
+        'rejected_applications': ScholarshipApplication.objects.filter(
+            approved=ScholarshipApplication.ApprovalStatus.REJECTED
+        ).count(),
+    }
+    
+    return Response(stats)
 
