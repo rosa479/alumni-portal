@@ -91,6 +91,12 @@ class AlumniProfile(models.Model):
     about_me = models.TextField(blank=True)
     credit_score = models.IntegerField(default=0)
 
+    # Social links
+    # linkedin_url = models.URLField(max_length=500, null=True, blank=True)
+    # github_url = models.URLField(max_length=500, null=True, blank=True)
+    # twitter_url = models.URLField(max_length=500, null=True, blank=True)
+    # insta_url = models.URLField(max_length=500, null=True, blank=True)
+    
     def __str__(self):
         return self.full_name
     
